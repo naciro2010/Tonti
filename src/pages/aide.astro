@@ -1,0 +1,59 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { defaultLocale } from '../lib/i18n';
+const lang = defaultLocale;
+---
+<BaseLayout lang={lang} title="Aide – Tonti" description="Obtenez de l'aide sur l'utilisation de Tonti.">
+  <section class="bg-secondary/30 py-16">
+    <div class="mx-auto w-full max-w-4xl px-4">
+      <div class="mb-8 space-y-3">
+        <h1 class="text-3xl font-semibold text-white">Support & assistance</h1>
+        <p class="text-sm text-white/70">
+          Notre équipe répond sous 24h ouvrées. Consultez d’abord les ressources ci-dessous puis écrivez-nous pour un accompagnement personnalisé.
+        </p>
+      </div>
+      <div class="grid gap-4 md:grid-cols-2">
+        <div class="flex flex-col rounded-3xl border border-white/10 bg-white/[0.04] p-6 shadow-lg shadow-primary/5">
+          <h2 class="text-lg font-semibold text-white">Documentation réglementaire</h2>
+          <p class="mt-2 text-sm text-white/70">Synthèse de la loi 15-18 et checklist conformité.</p>
+          <a
+            href="#"
+            class="mt-4 inline-flex items-center justify-center rounded-lg border border-white/20 px-4 py-2 text-sm font-semibold text-white/80 transition hover:border-primary hover:text-white"
+          >
+            Télécharger le PDF
+          </a>
+        </div>
+        <div class="flex flex-col rounded-3xl border border-white/10 bg-white/[0.04] p-6 shadow-lg shadow-primary/5">
+          <h2 class="text-lg font-semibold text-white">Contact email</h2>
+          <p class="mt-2 text-sm text-white/70">Envoyez-nous votre dossier pour vérification.</p>
+          <a
+            href="mailto:compliance@tonti.app"
+            class="mt-4 inline-flex items-center justify-center rounded-lg border border-white/20 px-4 py-2 text-sm font-semibold text-white/80 transition hover:border-primary hover:text-white"
+          >
+            compliance@tonti.app
+          </a>
+        </div>
+        <div class="flex flex-col rounded-3xl border border-white/10 bg-white/[0.04] p-6 shadow-lg shadow-primary/5">
+          <h2 class="text-lg font-semibold text-white">Session onboarding</h2>
+          <p class="mt-2 text-sm text-white/70">Formation à distance pour les associations et startups.</p>
+          <a
+            href="#"
+            class="mt-4 inline-flex items-center justify-center rounded-lg border border-white/20 px-4 py-2 text-sm font-semibold text-white/80 transition hover:border-primary hover:text-white"
+          >
+            Réserver un créneau
+          </a>
+        </div>
+        <div class="flex flex-col rounded-3xl border border-white/10 bg-white/[0.04] p-6 shadow-lg shadow-primary/5">
+          <h2 class="text-lg font-semibold text-white">Statut des incidents</h2>
+          <p class="mt-2 text-sm text-white/70">Suivez la disponibilité de la plateforme.</p>
+          <a
+            href="https://status.tonti.app"
+            class="mt-4 inline-flex items-center justify-center rounded-lg border border-white/20 px-4 py-2 text-sm font-semibold text-white/80 transition hover:border-primary hover:text-white"
+          >
+            status.tonti.app
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

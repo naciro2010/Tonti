@@ -1,0 +1,20 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { CreateCagnotteForm } from '../components/CreateCagnotteForm';
+import { translate, defaultLocale } from '../lib/i18n';
+const lang = defaultLocale;
+---
+<BaseLayout lang={lang} title="Créer une cagnotte - Tonti" description="Initiez votre cagnotte solidaire en quelques étapes.">
+  <section class="bg-gradient-to-b from-secondary/40 to-background py-16">
+    <div class="mx-auto w-full max-w-6xl px-4">
+      <div class="mb-10 space-y-3">
+        <span class="text-sm font-semibold uppercase tracking-wide text-primary">{translate('cta.create', lang)}</span>
+        <h1 class="text-3xl font-semibold text-white">Créez votre cagnotte en 5 étapes claires.</h1>
+        <p class="text-sm text-white/70">
+          Tonti respecte la réglementation marocaine sur le financement collaboratif. Vos données restent sur votre appareil jusqu'à la soumission à l'équipe conformité.
+        </p>
+      </div>
+      <CreateCagnotteForm client:load />
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,45 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { defaultLocale } from '../lib/i18n';
+const lang = defaultLocale;
+const sections = [
+  {
+    title: 'Collecte des données',
+    content:
+      'Tonti ne collecte aucune donnée personnelle sans consentement. Les brouillons de cagnottes sont stockés localement sur votre appareil via localStorage.',
+  },
+  {
+    title: 'Données analytiques',
+    content:
+      'Plausible Analytics mesure l’audience sans cookie ni identifiant nominatif. Les données sont hébergées en Europe.',
+  },
+  {
+    title: 'Sécurité',
+    content:
+      'Le site est servi en HTTPS via GitHub Pages. Les contributions financières sont simulées et ne transitent par aucun prestataire.',
+  },
+  {
+    title: 'Vos droits',
+    content:
+      'Vous pouvez demander la suppression de vos données en contactant privacy@tonti.app. Une réponse est apportée sous 72 heures.',
+  },
+];
+---
+<BaseLayout lang={lang} title="Politique de confidentialité – Tonti" description="Politique de confidentialité de Tonti.">
+  <section class="py-16">
+    <div class="mx-auto w-full max-w-4xl px-4">
+      <h1 class="mb-8 text-3xl font-semibold text-white">Politique de confidentialité</h1>
+      <div class="space-y-6 text-sm text-white/70">
+        {sections.map((section) => (
+          <section key={section.title} class="space-y-2">
+            <h2 class="text-lg font-semibold text-white">{section.title}</h2>
+            <p>{section.content}</p>
+          </section>
+        ))}
+        <p class="text-xs text-white/50">
+          Dernière mise à jour : 4 avril 2024. Pour toute question, contactez privacy@tonti.app.
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
