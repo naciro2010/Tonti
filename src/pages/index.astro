@@ -1,0 +1,184 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import cagnottes from '../data/cagnottes.json';
+import { Tabs } from '../components/ui/Tabs';
+import { translate, defaultLocale } from '../lib/i18n';
+const lang = defaultLocale;
+const categories = Array.from(new Set(cagnottes.map((c) => c.category)));
+const topCagnottes = cagnottes.slice(0, 3);
+---
+<BaseLayout lang={lang}>
+  <section class="relative overflow-hidden">
+    <div class="mx-auto grid min-h-[70vh] w-full max-w-6xl grid-cols-1 items-center gap-12 px-4 py-16 md:grid-cols-2">
+      <div class="space-y-6">
+        <span class="inline-flex items-center rounded-full bg-primary/20 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-primary">
+          {translate('app.tagline', lang)}
+        </span>
+        <h1 class="text-4xl font-bold leading-tight text-white md:text-5xl" data-i18n="home.hero.headline">
+          {translate('home.hero.headline', lang)}
+        </h1>
+        <p class="max-w-xl text-base text-white/70">
+          {translate('app.description', lang)}
+        </p>
+        <div class="flex flex-wrap gap-3">
+          <a
+            href="/creer"
+            class="inline-flex items-center justify-center rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-secondary transition hover:bg-primary/90"
+          >
+            {translate('cta.create', lang)}
+          </a>
+          <a
+            href="/comment-ca-marche"
+            class="inline-flex items-center justify-center rounded-lg border border-white/20 px-5 py-3 text-sm font-semibold text-white/80 transition hover:border-primary hover:text-white"
+          >
+            {translate('nav.how', lang)}
+          </a>
+        </div>
+        <div class="rounded-3xl border border-primary/20 bg-primary/10 p-6 text-sm text-primary/90">
+          {translate('home.legal.banner', lang)}
+        </div>
+      </div>
+      <div class="relative">
+        <div class="absolute -left-10 top-10 hidden h-40 w-40 rounded-full bg-primary/30 blur-3xl md:block" aria-hidden />
+        <div class="rounded-3xl border border-white/10 bg-white/[0.04] p-6 shadow-lg shadow-primary/5">
+          <h2 class="text-lg font-semibold text-white" data-i18n="home.stats.title">
+            {translate('home.stats.title', lang)}
+          </h2>
+          <p class="mt-1 text-sm text-white/60" data-i18n="home.stats.description">
+            {translate('home.stats.description', lang)}
+          </p>
+          <div class="mt-6">
+            <Tabs
+              client:load
+              items={[
+                {
+                  id: 'progress',
+                  title: 'Progression',
+                  content: (
+                    <div class="space-y-3 text-sm">
+                      {topCagnottes.map((cagnotte) => (
+                        <div class="rounded-2xl border border-white/10 bg-white/5 p-3" key={cagnotte.slug}>
+                          <div class="flex items-center justify-between text-xs font-semibold text-white/70">
+                            <span>{cagnotte.title}</span>
+                            <span>{cagnotte.raised.toLocaleString('fr-MA')} MAD</span>
+                          </div>
+                          <div class="relative mt-2 h-2 overflow-hidden rounded-full bg-white/10">
+                            <div
+                              class="absolute inset-y-0 left-0 rounded-full bg-primary transition-all duration-500"
+                              style={`width: ${Math.min(100, Math.round((cagnotte.raised / cagnotte.goal) * 100))}%`}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ),
+                },
+                {
+                  id: 'security',
+                  title: 'Sécurité',
+                  content: (
+                    <ul class="list-disc space-y-2 pl-5 text-sm text-white/70">
+                      <li>Vérification KYC intégrée (à venir)</li>
+                      <li>Monitoring Plausible sans cookies</li>
+                      <li>Déploiement GitHub Pages & audits Lighthouse ≥ 90</li>
+                    </ul>
+                  ),
+                },
+                {
+                  id: 'legal',
+                  title: 'Conformité',
+                  content: (
+                    <ul class="list-disc space-y-2 pl-5 text-sm text-white/70">
+                      <li>Conforme à la loi 15-18</li>
+                      <li>Traçabilité des contributions</li>
+                      <li>Gestion des plafonds réglementaires</li>
+                    </ul>
+                  ),
+                },
+              ]}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-secondary/30 py-16">
+    <div class="mx-auto w-full max-w-6xl px-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-2xl font-semibold text-white" data-i18n="home.categories.title">
+          {translate('home.categories.title', lang)}
+        </h2>
+      </div>
+      <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {categories.map((category) => (
+          <div
+            class="flex flex-col rounded-3xl border border-white/10 bg-white/[0.04] p-6 shadow-lg shadow-primary/5 backdrop-blur"
+            key={category}
+          >
+            <h3 class="text-lg font-semibold text-white">{category}</h3>
+            <p class="mt-2 text-sm text-white/60">
+              Découvrez les projets vérifiés dans cette catégorie et invitez votre communauté.
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="py-16">
+    <div class="mx-auto w-full max-w-6xl px-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-2xl font-semibold text-white" data-i18n="home.top.title">
+          {translate('home.top.title', lang)}
+        </h2>
+        <a href="/creer" class="text-sm font-semibold text-primary hover:text-white">
+          {translate('cta.create', lang)}
+        </a>
+      </div>
+      <div class="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {topCagnottes.map((cagnotte) => (
+          <div
+            class="flex flex-col rounded-3xl border border-white/10 bg-white/[0.04] p-6 shadow-lg shadow-primary/5"
+            key={cagnotte.slug}
+          >
+            <h3 class="text-lg font-semibold text-white">{cagnotte.title}</h3>
+            <p class="mt-2 text-sm text-white/70">{cagnotte.description}</p>
+            <img
+              src={cagnotte.cover}
+              alt={cagnotte.title}
+              class="mt-4 h-40 w-full rounded-2xl object-cover"
+              loading="lazy"
+            />
+            <div class="mt-4 flex items-center justify-between text-sm text-white/60">
+              <span>{cagnotte.organizer}</span>
+              <span>{cagnotte.category}</span>
+            </div>
+            <div class="mt-4 space-y-2 text-sm text-white/70">
+              <div class="flex items-center justify-between">
+                <span>Objectif</span>
+                <span>{cagnotte.goal.toLocaleString('fr-MA')} MAD</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span>Collecté</span>
+                <span>{cagnotte.raised.toLocaleString('fr-MA')} MAD</span>
+              </div>
+              <div class="relative h-2 overflow-hidden rounded-full bg-white/10">
+                <div
+                  class="absolute inset-y-0 left-0 rounded-full bg-primary transition-all duration-500"
+                  style={`width: ${Math.min(100, Math.round((cagnotte.raised / cagnotte.goal) * 100))}%`}
+                />
+              </div>
+            </div>
+            <a
+              href={`/cagnotte/${cagnotte.slug}`}
+              class="mt-4 inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-secondary transition hover:bg-primary/90"
+            >
+              {translate('contribute.cta', lang)}
+            </a>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

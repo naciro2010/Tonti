@@ -1,0 +1,88 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { Tabs } from '../components/ui/Tabs';
+import { defaultLocale } from '../lib/i18n';
+const lang = defaultLocale;
+const steps = [
+  {
+    id: '1',
+    title: '1. Créez',
+    content:
+      'Définissez le titre, la description et la visibilité de votre cagnotte en moins de cinq minutes. Chaque champ est validé et sauvegardé automatiquement.',
+  },
+  {
+    id: '2',
+    title: '2. Partagez',
+    content:
+      'Un lien unique, un QR code et des options de partage direct vers WhatsApp et email sont générés pour inviter votre communauté.',
+  },
+  {
+    id: '3',
+    title: '3. Contribuez',
+    content:
+      'Les contributeurs suivent l’avancement en temps réel et participent via une expérience fluide. Les paiements sont pour le moment simulés.',
+  },
+  {
+    id: '4',
+    title: '4. Suivez & clôturez',
+    content:
+      'Votre tableau de bord met en avant les montants collectés, les contributeurs récents et génère une bannière de clôture automatique.',
+  },
+];
+---
+<BaseLayout lang={lang} title="Comment ça marche – Tonti" description="Découvrez les étapes de création d'une cagnotte Tonti.">
+  <section class="bg-secondary/40 py-16">
+    <div class="mx-auto w-full max-w-5xl px-4">
+      <div class="mb-10 space-y-3 text-center">
+        <h1 class="text-3xl font-semibold text-white">Le parcours Tonti, conforme et transparent.</h1>
+        <p class="text-sm text-white/70">
+          La plateforme Tonti applique les exigences de la loi 15-18 et propose un parcours entièrement statique et auditable.
+        </p>
+      </div>
+      <div class="grid gap-6 md:grid-cols-2">
+        {steps.map((step) => (
+          <div
+            key={step.id}
+            class="flex flex-col rounded-3xl border border-white/10 bg-white/[0.04] p-6 shadow-lg shadow-primary/5"
+          >
+            <h2 class="text-lg font-semibold text-white">{step.title}</h2>
+            <p class="mt-2 text-sm text-white/70">{step.content}</p>
+          </div>
+        ))}
+      </div>
+      <div class="mt-12">
+        <Tabs
+          items={[
+            {
+              id: 'autosave',
+              title: 'Autosave & conformité',
+              content: (
+                <p class="text-sm text-white/70">
+                  Chaque saisie est conservée en localStorage et peut être supprimée à tout moment. Aucun paiement réel n’est opéré tant que la réglementation ne l’autorise pas.
+                </p>
+              ),
+            },
+            {
+              id: 'accessibility',
+              title: 'Accessibilité',
+              content: (
+                <p class="text-sm text-white/70">
+                  Navigation clavier, focus visibles, contrastes AA et support RTL garantissent l’accessibilité à tous les utilisateurs, y compris sur mobile.
+                </p>
+              ),
+            },
+            {
+              id: 'security',
+              title: 'Sécurité',
+              content: (
+                <p class="text-sm text-white/70">
+                  Déploiement statique sur GitHub Pages, audit Lighthouse ≥ 90 et scripts analytiques sans cookie via Plausible.
+                </p>
+              ),
+            },
+          ]}
+        />
+      </div>
+    </div>
+  </section>
+</BaseLayout>
