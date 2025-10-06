@@ -1,0 +1,136 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import cagnottes from '../../data/cagnottes.json';
+import users from '../../data/users.json';
+import transactions from '../../data/transactions.json';
+import { ContributionWidget } from '../../components/ContributionWidget';
+import { translate, defaultLocale } from '../../lib/i18n';
+const { slug } = Astro.params;
+const cagnotte = cagnottes.find((item) => item.slug === slug);
+
+if (!cagnotte) {
+  throw Astro.redirect('/');
+}
+
+const lang = defaultLocale;
+const relatedTransactions = transactions
+  .filter((txn) => txn.cagnotte === cagnotte.slug)
+  .slice()
+  .sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1));
+
+const enrichedTransactions = relatedTransactions.map((txn) => {
+  const user = users.find((u) => u.id === txn.user);
+  return {
+    ...txn,
+    user,
+  };
+});
+
+const deadline = new Date(cagnotte.deadline);
+const isClosed = Date.now() > deadline.getTime();
+const progress = Math.min(100, Math.round((cagnotte.raised / cagnotte.goal) * 100));
+---
+<BaseLayout lang={lang} title={`${cagnotte.title} – Tonti`} description={cagnotte.description}>
+  <article class="bg-gradient-to-b from-secondary/40 to-background pb-16">
+    <div class="h-64 w-full overflow-hidden">
+      <img src={cagnotte.cover} alt={cagnotte.title} class="h-full w-full object-cover" />
+    </div>
+    <div class="mx-auto -mt-16 w-full max-w-6xl px-4">
+      <div class="relative -top-20 flex flex-col gap-8 rounded-3xl border border-white/10 bg-background/90 p-8 shadow-xl shadow-primary/5 lg:flex-row">
+        <div class="flex flex-col gap-8 lg:flex-row">
+          <div class="flex-1 space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h1 class="text-3xl font-semibold text-white">{cagnotte.title}</h1>
+                <p class="text-sm text-white/60">{cagnotte.category} • {cagnotte.organizer}</p>
+              </div>
+              <span class="rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary">
+                {progress}%
+              </span>
+            </div>
+            <p class="text-base text-white/80">{cagnotte.description}</p>
+            <div class="grid gap-4 md:grid-cols-3">
+              <div class="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm text-white/70">
+                <span class="block text-xs uppercase tracking-wide text-white/50">Objectif</span>
+                <span class="text-lg font-semibold text-white">{cagnotte.goal.toLocaleString('fr-MA')} MAD</span>
+              </div>
+              <div class="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm text-white/70">
+                <span class="block text-xs uppercase tracking-wide text-white/50">Collecté</span>
+                <span class="text-lg font-semibold text-white">{cagnotte.raised.toLocaleString('fr-MA')} MAD</span>
+              </div>
+              <div class="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm text-white/70">
+                <span class="block text-xs uppercase tracking-wide text-white/50">Clôture</span>
+                <span class="text-lg font-semibold text-white">{deadline.toLocaleDateString('fr-MA')}</span>
+              </div>
+            </div>
+            {isClosed ? (
+              <div class="rounded-2xl border border-primary/30 bg-primary/10 p-4 text-sm font-semibold text-primary">
+                {translate('status.closed', lang)}
+              </div>
+            ) : null}
+          </div>
+          <div class="w-full max-w-sm flex-none">
+            <ContributionWidget
+              client:load
+              goal={cagnotte.goal}
+              raised={cagnotte.raised}
+              minContribution={50}
+              quickOptions={[50, 100, 200]}
+              slug={cagnotte.slug}
+            />
+          </div>
+        </div>
+      </div>
+
+      <section class="mt-8 grid gap-8 lg:grid-cols-[1.2fr,0.8fr]">
+        <div class="rounded-3xl border border-white/10 bg-white/[0.04] p-6 shadow-lg shadow-primary/5">
+          <h2 class="text-lg font-semibold text-white">Participants récents</h2>
+          <ul class="mt-4 space-y-4">
+            {enrichedTransactions.map((txn) => (
+              <li key={txn.id} class="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm text-white/70">
+                <div class="flex items-center gap-3">
+                  <div class="h-10 w-10 overflow-hidden rounded-full border border-white/20">
+                    <img src={txn.user?.avatar ?? '/images/users/default.svg'} alt={txn.user?.name ?? 'Anonyme'} class="h-full w-full object-cover" />
+                  </div>
+                  <div>
+                    <p class="font-semibold text-white">{txn.anonymous ? 'Anonyme' : txn.user?.name ?? 'Participant'}</p>
+                    <p class="text-xs text-white/50">{new Date(txn.createdAt).toLocaleDateString('fr-MA')}</p>
+                  </div>
+                </div>
+                <span class="font-semibold text-primary">{txn.amount.toLocaleString('fr-MA')} MAD</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div class="rounded-3xl border border-white/10 bg-white/[0.04] p-6 shadow-lg shadow-primary/5">
+          <h2 class="text-lg font-semibold text-white">Résumé de la cagnotte</h2>
+          <dl class="mt-4 space-y-3 text-sm text-white/70">
+            <div class="flex items-center justify-between">
+              <dt>Total contributeurs</dt>
+              <dd>{enrichedTransactions.length}</dd>
+            </div>
+            <div class="flex items-center justify-between">
+              <dt>Montant moyen</dt>
+              <dd>
+                {enrichedTransactions.length
+                  ? Math.round(
+                      enrichedTransactions.reduce((sum, txn) => sum + txn.amount, 0) / enrichedTransactions.length,
+                    ).toLocaleString('fr-MA')
+                  : 0}{' '}
+                MAD
+              </dd>
+            </div>
+            <div class="flex items-center justify-between">
+              <dt>Visibilité</dt>
+              <dd class="capitalize">{cagnotte.visibility}</dd>
+            </div>
+            <div class="flex items-center justify-between">
+              <dt>Date limite</dt>
+              <dd>{deadline.toLocaleDateString('fr-MA')}</dd>
+            </div>
+          </dl>
+        </div>
+      </section>
+    </div>
+  </article>
+</BaseLayout>

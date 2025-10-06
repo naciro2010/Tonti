@@ -1,0 +1,38 @@
+[
+  {
+    "slug": "solidarite-agadir",
+    "title": "Solidarité pour Agadir",
+    "category": "Solidarité",
+    "organizer": "Association Main dans la Main",
+    "description": "Aidez les familles touchées par les inondations à Agadir.",
+    "goal": 120000,
+    "raised": 84500,
+    "deadline": "2024-09-01",
+    "visibility": "public",
+    "cover": "/images/cagnottes/agadir.svg"
+  },
+  {
+    "slug": "equipement-ecole",
+    "title": "Équipements pour l'école rurale",
+    "category": "Éducation",
+    "organizer": "Collectif Éclaireurs",
+    "description": "Financer du matériel numérique pour une école de l'Atlas.",
+    "goal": 60000,
+    "raised": 21500,
+    "deadline": "2024-06-30",
+    "visibility": "public",
+    "cover": "/images/cagnottes/ecole.svg"
+  },
+  {
+    "slug": "soutien-startup",
+    "title": "Soutien à la startup GreenTech",
+    "category": "Entrepreneuriat",
+    "organizer": "Collecte Entreprendre",
+    "description": "Accélérer le développement d'une solution de recyclage innovante.",
+    "goal": 180000,
+    "raised": 45000,
+    "deadline": "2024-12-31",
+    "visibility": "private",
+    "cover": "/images/cagnottes/startup.svg"
+  }
+]

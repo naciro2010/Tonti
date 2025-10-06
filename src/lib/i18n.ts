@@ -1,460 +1,289 @@
-export type Locale = "fr" | "ar";
+export type Locale = 'fr' | 'ar';
 
-export const LOCALES: Record<Locale, { label: string; dir: "ltr" | "rtl" }> = {
-  fr: { label: "Français", dir: "ltr" },
-  ar: { label: "العربية", dir: "rtl" }
-};
+export type TranslationKey = keyof typeof translations;
 
-export type StepOption = {
-  id: string;
-  label: string;
-  description: string;
-};
-
-export type LocaleMessages = {
-  nav: {
-    home: string;
-    create: string;
-    how: string;
-    faq: string;
-    help: string;
-    legal: string;
-  };
-  footer: {
-    legal: string;
-    privacy: string;
-    terms: string;
-  };
-  home: {
-    heroTitle: string;
-    heroSubtitle: string;
-    heroCta: string;
-    legalHeading: string;
-    legalDescription: string;
-    categoriesTitle: string;
-    featuredTitle: string;
-    featuredCta: string;
-    cardCollected: string;
-    cardGoal: string;
-    cardDaysLeft: string;
-    cardView: string;
-  };
-  create: {
-    title: string;
-    description: string;
-    steps: StepOption[];
-    descriptionStep: {
-      titleLabel: string;
-      titlePlaceholder: string;
-      descriptionLabel: string;
-      descriptionPlaceholder: string;
-      categoryLabel: string;
-    };
-    illustrationStep: {
-      intro: string;
-      placeholder: string;
-    };
-    visibilityStep: {
-      intro: string;
-      options: StepOption[];
-    };
-    amountsStep: {
-      goalLabel: string;
-      minLabel: string;
-      feesNotice: string;
-    };
-    invitationsStep: {
-      intro: string;
-      messagePlaceholder: string;
-      note: string;
-    };
-    actions: {
-      skip: string;
-      continue: string;
-    };
-    toasts: {
-      successTitle: string;
-      successDescription: string;
-      errorTitle: string;
-      errorDescription: string;
-    };
-  };
-  how: {
-    title: string;
-    steps: { title: string; description: string }[];
-  };
-  faq: {
-    title: string;
-    items: { question: string; answer: string; defaultOpen?: boolean }[];
-  };
-  help: {
-    title: string;
-    description: string;
-  };
-  legal: { title: string; description: string };
-  privacy: { title: string; description: string };
-  terms: { title: string; description: string };
-  cagnotte: {
-    notFoundTitle: string;
-    notFoundDescription: string;
-    backHome: string;
-    organizerPrefix: string;
-    progressTitle: string;
-    collectedLabel: string;
-    goalLabel: string;
-    daysLeftLabel: string;
-    participateCta: string;
-    recentParticipants: string;
-    participantsCount: string;
-    detailsTitle: string;
-    beneficiaryLabel: string;
-    visibilityLabel: string;
-    statusLabel: string;
-    paymentNote: string;
-    loginTitle: string;
-    loginDescription: string;
-    loginCta: string;
-    visibilityMap: Record<string, string>;
-    statusMap: Record<string, string>;
-  };
-  login: {
-    title: string;
-    emailLabel: string;
-    passwordLabel: string;
-    submit: string;
-    socialNote: string;
-  };
-  toastClose: string;
-  notFound: {
-    title: string;
-    description: string;
-    back: string;
-  };
-};
-
-export const messages: Record<Locale, LocaleMessages> = {
-  fr: {
-    nav: {
-      home: "Accueil",
-      create: "Créer une cagnotte",
-      how: "Comment ça marche",
-      faq: "FAQ",
-      help: "Aide",
-      legal: "Mentions légales"
-    },
-    footer: {
-      legal: "Mentions légales",
-      privacy: "Politique de confidentialité",
-      terms: "CGU"
-    },
-    home: {
-      heroTitle: "Tonti, la cagnotte digitale des Marocains",
-      heroSubtitle:
-        "Créez et partagez vos cagnottes en toute transparence pour soutenir vos proches au Maroc et à l'étranger.",
-      heroCta: "Lancer ma cagnotte",
-      legalHeading: "Cadre légal marocain",
-      legalDescription:
-        "Tonti est une plateforme de financement collaboratif en cours d'homologation. Les collectes sont simulées et ne représentent pas un service de paiement effectif.",
-      categoriesTitle: "Catégories populaires",
-      featuredTitle: "Cagnottes mises en avant",
-      featuredCta: "Créer une cagnotte",
-      cardCollected: "Collecté",
-      cardGoal: "Objectif",
-      cardDaysLeft: "Jours restants",
-      cardView: "Voir la cagnotte"
-    },
-    create: {
-      title: "Créer une cagnotte",
-      description: "Simulez la création d'une cagnotte conforme au cadre marocain. Les paiements seront activés prochainement.",
-      steps: [
-        { id: "description", label: "Description", description: "Titre, objectif et catégorie" },
-        { id: "illustration", label: "Illustration", description: "Image de couverture" },
-        { id: "visibility", label: "Visibilité", description: "Contrôlez qui peut participer" },
-        { id: "amounts", label: "Montants", description: "Objectif et contributions" },
-        { id: "invitations", label: "Invitations", description: "Message de partage" }
-      ],
-      descriptionStep: {
-        titleLabel: "Titre",
-        titlePlaceholder: "Mariage de Samia & Youssef",
-        descriptionLabel: "Description",
-        descriptionPlaceholder: "Décrivez l'histoire de votre cagnotte...",
-        categoryLabel: "Catégorie"
-      },
-      illustrationStep: {
-        intro: "Ajoutez une image 16:9 pour illustrer votre cagnotte.",
-        placeholder: "Glissez-déposez votre visuel (mock)"
-      },
-      visibilityStep: {
-        intro: "Choisissez la visibilité",
-        options: [
-          { id: "publique", label: "Publique", description: "Accessible à tous" },
-          { id: "privee", label: "Privée", description: "Accès via un code" },
-          { id: "non-listee", label: "Non listée", description: "Lien direct uniquement" }
-        ]
-      },
-      amountsStep: {
-        goalLabel: "Objectif (MAD)",
-        minLabel: "Don suggéré minimum",
-        feesNotice:
-          "Les frais de service seront communiqués prochainement. Aucune transaction réelle n'est opérée via Tonti pour le moment."
-      },
-      invitationsStep: {
-        intro: "Préparez votre message de partage",
-        messagePlaceholder: "Rejoignez ma cagnotte sur Tonti !",
-        note: "Import de contacts et partage par QR code disponibles prochainement. Copiez/collez ce message pour prévenir vos proches."
-      },
-      actions: {
-        skip: "Ignorer",
-        continue: "Sauvegarder & continuer"
-      },
-      toasts: {
-        successTitle: "Cagnotte sauvegardée",
-        successDescription: "Nous vous contacterons dès l'ouverture des paiements.",
-        errorTitle: "Complétez les informations",
-        errorDescription: "Vérifiez le formulaire"
-      }
-    },
-    how: {
-      title: "Comment ça marche",
-      steps: [
-        { title: "1. Créez votre cagnotte", description: "Définissez un titre, une description et une catégorie pour contextualiser." },
-        { title: "2. Personnalisez", description: "Ajoutez une illustration et choisissez la visibilité adaptée à votre cercle." },
-        { title: "3. Partagez", description: "Diffusez le lien sécurisé auprès de vos proches et suivez les contributions." }
-      ]
-    },
-    faq: {
-      title: "Questions fréquentes",
-      items: [
-        {
-          question: "Tonti gère-t-il les paiements ?",
-          answer: "Les paiements sont simulés pour le prototype. L'intégration PSP est en cours de conformité.",
-          defaultOpen: true
-        },
-        {
-          question: "La plateforme est-elle conforme au cadre marocain ?",
-          answer: "Oui, le wording et les mentions légales respectent le projet de loi sur le financement collaboratif."
-        }
-      ]
-    },
-    help: {
-      title: "Aide",
-      description: "Besoin d'assistance ? Contactez-nous sur support@tonti.ma ou consultez la FAQ pour une réponse immédiate."
-    },
-    legal: {
-      title: "Mentions légales",
-      description: "Ce contenu est un placeholder conforme au cadre marocain du financement collaboratif."
-    },
-    privacy: {
-      title: "Politique de confidentialité",
-      description:
-        "Ce contenu présente les engagements de Tonti en matière de protection des données à caractère personnel dans le cadre marocain."
-    },
-    terms: {
-      title: "Conditions générales d'utilisation",
-      description: "Cette page décrit les règles d'utilisation du service Tonti conformément au droit marocain."
-    },
-    cagnotte: {
-      notFoundTitle: "Cagnotte introuvable",
-      notFoundDescription: "La cagnotte recherchée n'existe plus ou a été archivée.",
-      backHome: "Retour à l'accueil",
-      organizerPrefix: "Organisé par",
-      progressTitle: "Progression",
-      collectedLabel: "Collecté",
-      goalLabel: "Objectif",
-      daysLeftLabel: "Jours restants",
-      participateCta: "Je participe (mock)",
-      recentParticipants: "Participants récents",
-      participantsCount: "{count} participants",
-      detailsTitle: "Détails",
-      beneficiaryLabel: "Bénéficiaire",
-      visibilityLabel: "Visibilité",
-      statusLabel: "Statut",
-      paymentNote: "Les paiements par carte, virement et cash seront intégrés prochainement.",
-      loginTitle: "Connexion",
-      loginDescription: "Connectez-vous pour suivre vos contributions.",
-      loginCta: "Ouvrir la modale de connexion",
-      visibilityMap: {
-        publique: "Publique",
-        privee: "Privée",
-        "non-listee": "Non listée"
-      },
-      statusMap: {
-        ouverte: "Ouverte",
-        close: "Clôturée"
-      }
-    },
-    login: {
-      title: "Connexion",
-      emailLabel: "Email",
-      passwordLabel: "Mot de passe",
-      submit: "Se connecter",
-      socialNote: "Connexion sociale disponible prochainement."
-    },
-    toastClose: "Fermer",
-    notFound: {
-      title: "Page introuvable",
-      description: "La page demandée n'existe pas ou n'est plus disponible.",
-      back: "Retour à l'accueil"
-    }
+export const translations = {
+  'app.name': {
+    fr: 'Tonti',
+    ar: 'طنطي',
   },
-  ar: {
-    nav: {
-      home: "الرئيسية",
-      create: "إنشاء حملة",
-      how: "كيف تعمل",
-      faq: "الأسئلة الشائعة",
-      help: "مساعدة",
-      legal: "إشعارات قانونية"
-    },
-    footer: {
-      legal: "إشعارات قانونية",
-      privacy: "سياسة الخصوصية",
-      terms: "الشروط"
-    },
-    home: {
-      heroTitle: "تونتي، الحملة الرقمية للمغاربة",
-      heroSubtitle: "أنشئ وشارك حملاتك بكل شفافية لدعم أحبائك في المغرب وخارجه.",
-      heroCta: "أنشئ حملتي",
-      legalHeading: "إطار قانوني مغربي",
-      legalDescription: "تونتي منصة تمويل تعاوني قيد الاعتماد. المعاملات محاكاة ولا تمثل خدمة دفع فعلية.",
-      categoriesTitle: "الفئات",
-      featuredTitle: "حملات مميزة",
-      featuredCta: "أنشئ حملة",
-      cardCollected: "المبلغ المحصل",
-      cardGoal: "الهدف",
-      cardDaysLeft: "الأيام المتبقية",
-      cardView: "عرض الحملة"
-    },
-    create: {
-      title: "إنشاء حملة",
-      description: "هذه تجربة لإنشاء حملة متوافقة مع الإطار المغربي. سيتم تفعيل المدفوعات لاحقًا.",
-      steps: [
-        { id: "description", label: "الوصف", description: "العنوان، الهدف والفئة" },
-        { id: "illustration", label: "الصورة", description: "صورة الغلاف" },
-        { id: "visibility", label: "الظهور", description: "تحكم بمن يمكنه المشاركة" },
-        { id: "amounts", label: "المبالغ", description: "الهدف والمساهمات" },
-        { id: "invitations", label: "الدعوات", description: "رسالة المشاركة" }
-      ],
-      descriptionStep: {
-        titleLabel: "العنوان",
-        titlePlaceholder: "حملة زفاف سامية ويوسف",
-        descriptionLabel: "الوصف",
-        descriptionPlaceholder: "اشرح قصة حملتك...",
-        categoryLabel: "الفئة"
-      },
-      illustrationStep: {
-        intro: "أضف صورة بنسبة 16:9 لتمثيل حملتك.",
-        placeholder: "اسحب وأفلت الصورة (محاكاة)"
-      },
-      visibilityStep: {
-        intro: "اختر مستوى الظهور",
-        options: [
-          { id: "publique", label: "عامة", description: "متاحة للجميع" },
-          { id: "privee", label: "خاصة", description: "ولوج عبر رمز" },
-          { id: "non-listee", label: "غير مدرجة", description: "رابط مباشر فقط" }
-        ]
-      },
-      amountsStep: {
-        goalLabel: "الهدف (درهم)",
-        minLabel: "الحد الأدنى المقترح",
-        feesNotice: "سيتم توضيح رسوم الخدمة لاحقًا. لا تتم أي معاملة حقيقية عبر تونتي حاليًا."
-      },
-      invitationsStep: {
-        intro: "حضّر رسالة المشاركة",
-        messagePlaceholder: "انضموا إلى حملتي على تونتي!",
-        note: "إمكانية استيراد جهات الاتصال ومشاركة رمز QR قريبًا. انسخ الرسالة لإبلاغ المقربين."
-      },
-      actions: {
-        skip: "تخطي",
-        continue: "حفظ ومتابعة"
-      },
-      toasts: {
-        successTitle: "تم حفظ الحملة",
-        successDescription: "سنتواصل معك فور فتح المدفوعات.",
-        errorTitle: "أكمل المعلومات",
-        errorDescription: "تحقق من الحقول"
-      }
-    },
-    how: {
-      title: "كيف تعمل",
-      steps: [
-        { title: "١. أنشئ حملتك", description: "حدد عنواناً ووصفاً وفئة لتوضيح سياق الحملة." },
-        { title: "٢. خصص", description: "أضف صورة واختر مستوى الظهور الملائم لدائرتك." },
-        { title: "٣. شارك", description: "شارك الرابط الآمن مع أحبائك وتابع المساهمات." }
-      ]
-    },
-    faq: {
-      title: "الأسئلة الشائعة",
-      items: [
-        {
-          question: "هل تدير تونتي المدفوعات؟",
-          answer: "المدفوعات محاكاة في هذا النموذج الأولي. تكامل مزود الخدمة قيد الامتثال.",
-          defaultOpen: true
-        },
-        {
-          question: "هل المنصة متوافقة مع الإطار المغربي؟",
-          answer: "نعم، تمت مواءمة المحتوى والعبارات القانونية مع مشروع قانون التمويل التعاوني."
-        }
-      ]
-    },
-    help: {
-      title: "مساعدة",
-      description: "هل تحتاج إلى دعم؟ راسلنا على support@tonti.ma أو تصفح قسم الأسئلة الشائعة."
-    },
-    legal: {
-      title: "إشعارات قانونية",
-      description: "هذا المحتوى تمهيدي ومتوافق مع الإطار المغربي للتمويل التعاوني."
-    },
-    privacy: {
-      title: "سياسة الخصوصية",
-      description: "يعرض هذا المحتوى التزامات تونتي بحماية المعطيات الشخصية وفق التشريع المغربي."
-    },
-    terms: {
-      title: "الشروط العامة للاستخدام",
-      description: "تصف هذه الصفحة قواعد استخدام خدمة تونتي بما يتماشى مع القانون المغربي."
-    },
-    cagnotte: {
-      notFoundTitle: "الحملة غير متوفرة",
-      notFoundDescription: "الحملة المطلوبة غير موجودة أو تم أرشفتها.",
-      backHome: "العودة إلى الرئيسية",
-      organizerPrefix: "بإدارة",
-      progressTitle: "التقدم",
-      collectedLabel: "المبلغ المحصل",
-      goalLabel: "الهدف",
-      daysLeftLabel: "الأيام المتبقية",
-      participateCta: "أشارك (محاكاة)",
-      recentParticipants: "مساهمات حديثة",
-      participantsCount: "{count} مساهم",
-      detailsTitle: "تفاصيل",
-      beneficiaryLabel: "المستفيد",
-      visibilityLabel: "الظهور",
-      statusLabel: "الحالة",
-      paymentNote: "سيتم دمج وسائل الدفع المغربية قريبًا.",
-      loginTitle: "تسجيل الدخول",
-      loginDescription: "سجل الدخول لمتابعة مساهماتك.",
-      loginCta: "افتح نافذة تسجيل الدخول",
-      visibilityMap: {
-        publique: "عامة",
-        privee: "خاصة",
-        "non-listee": "غير مدرجة"
-      },
-      statusMap: {
-        ouverte: "مفتوحة",
-        close: "مغلقة"
-      }
-    },
-    login: {
-      title: "تسجيل الدخول",
-      emailLabel: "البريد الإلكتروني",
-      passwordLabel: "كلمة المرور",
-      submit: "دخول",
-      socialNote: "دعم تسجيل الدخول الاجتماعي قريبًا."
-    },
-    toastClose: "إغلاق",
-    notFound: {
-      title: "الصفحة غير موجودة",
-      description: "الصفحة المطلوبة غير متوفرة أو تم إزالتها.",
-      back: "العودة إلى الرئيسية"
-    }
-  }
+  'app.tagline': {
+    fr: 'La cagnotte digitale conforme à la loi 15-18',
+    ar: 'المنصة الرقمية للتمويل التضامني المطابقة للقانون 15-18',
+  },
+  'app.description': {
+    fr: 'Créez, partagez et suivez vos cagnottes solidaires avec transparence et sécurité.',
+    ar: 'أنشئ وشارك وتابع حملاتك التضامنية بكل شفافية وأمان.',
+  },
+  'cta.create': {
+    fr: 'Créer une cagnotte',
+    ar: 'إنشاء حملة',
+  },
+  'cta.login': {
+    fr: 'Se connecter',
+    ar: 'تسجيل الدخول',
+  },
+  'nav.how': {
+    fr: 'Comment ça marche',
+    ar: 'كيف تعمل',
+  },
+  'nav.faq': {
+    fr: 'FAQ',
+    ar: 'الأسئلة الشائعة',
+  },
+  'nav.support': {
+    fr: 'Aide',
+    ar: 'مساعدة',
+  },
+  'nav.legal': {
+    fr: 'Conditions',
+    ar: 'الشروط',
+  },
+  'nav.privacy': {
+    fr: 'Confidentialité',
+    ar: 'الخصوصية',
+  },
+  'home.categories.title': {
+    fr: 'Catégories populaires',
+    ar: 'الفئات الأكثر انتشارًا',
+  },
+  'home.hero.headline': {
+    fr: 'La cagnotte digitale des Marocains, sécurisée et inclusive.',
+    ar: 'منصة الادخار الرقمية للمغاربة، آمنة وشاملة.',
+  },
+  'home.stats.title': {
+    fr: 'Statistiques en temps réel',
+    ar: 'إحصائيات آنية',
+  },
+  'home.stats.description': {
+    fr: 'Une transparence totale sur vos collectes.',
+    ar: 'شفافية كاملة حول حملاتكم.',
+  },
+  'home.top.title': {
+    fr: 'Cagnottes en lumière',
+    ar: 'حملات مميزة',
+  },
+  'home.legal.banner': {
+    fr: 'Tonti est conforme à la loi 15-18 sur le financement collaboratif au Maroc.',
+    ar: 'طنطي متوافقة مع القانون 18-15 للتمويل التعاوني في المغرب.',
+  },
+  'form.next': {
+    fr: 'Suivant',
+    ar: 'التالي',
+  },
+  'form.prev': {
+    fr: 'Précédent',
+    ar: 'السابق',
+  },
+  'form.finish': {
+    fr: 'Finaliser',
+    ar: 'إنهاء',
+  },
+  'form.save.success': {
+    fr: 'Brouillon enregistré',
+    ar: 'تم حفظ المسودة',
+  },
+  'form.validation.required': {
+    fr: 'Complétez les champs avant de continuer.',
+    ar: 'يرجى استكمال الخانات قبل المتابعة.',
+  },
+  'form.validation.error': {
+    fr: 'Veuillez vérifier les champs requis.',
+    ar: 'تحقق من الخانات المطلوبة.',
+  },
+  'create.step1.title': {
+    fr: 'Description',
+    ar: 'الوصف',
+  },
+  'create.step2.title': {
+    fr: 'Illustration',
+    ar: 'الصورة',
+  },
+  'create.step3.title': {
+    fr: 'Visibilité',
+    ar: 'الظهور',
+  },
+  'create.step4.title': {
+    fr: 'Montants',
+    ar: 'المبالغ',
+  },
+  'create.step5.title': {
+    fr: 'Invitations',
+    ar: 'الدعوات',
+  },
+  'create.autosave': {
+    fr: 'Votre progression est enregistrée automatiquement sur cet appareil.',
+    ar: 'يتم حفظ تقدمك تلقائيًا على هذا الجهاز.',
+  },
+  'create.title.label': {
+    fr: 'Titre',
+    ar: 'العنوان',
+  },
+  'create.description.label': {
+    fr: 'Description',
+    ar: 'الوصف',
+  },
+  'create.description.helper': {
+    fr: "Ajoutez le contexte, le besoin et l'impact.",
+    ar: 'أضف السياق والحاجة والأثر.',
+  },
+  'create.category.label': {
+    fr: 'Catégorie',
+    ar: 'الفئة',
+  },
+  'create.visibility.legend': {
+    fr: 'Choisissez la visibilité',
+    ar: 'اختر مستوى الظهور',
+  },
+  'create.visibility.public': {
+    fr: 'Publique',
+    ar: 'عمومية',
+  },
+  'create.visibility.public.helper': {
+    fr: 'Référencée et visible par tous.',
+    ar: 'مرئية للجميع ومفهرسة.',
+  },
+  'create.visibility.private': {
+    fr: 'Privée',
+    ar: 'خاصة',
+  },
+  'create.visibility.private.helper': {
+    fr: 'Accessible uniquement aux invités.',
+    ar: 'يمكن الوصول إليها للمدعوين فقط.',
+  },
+  'create.visibility.unlisted': {
+    fr: 'Non listée',
+    ar: 'غير مدرجة',
+  },
+  'create.visibility.unlisted.helper': {
+    fr: 'Accès via lien direct.',
+    ar: 'الوصول عبر رابط مباشر.',
+  },
+  'create.goal.label': {
+    fr: 'Objectif (MAD)',
+    ar: 'الهدف (درهم)',
+  },
+  'create.minContribution.label': {
+    fr: 'Contribution minimum (MAD)',
+    ar: 'أدنى مساهمة (درهم)',
+  },
+  'create.quickOptions.label': {
+    fr: 'Options rapides',
+    ar: 'مبالغ سريعة',
+  },
+  'create.invitation.label': {
+    fr: 'Message d\'invitation',
+    ar: 'رسالة الدعوة',
+  },
+  'create.share.helper': {
+    fr: 'Partagez ce lien unique avec vos proches.',
+    ar: 'شارك هذا الرابط الفريد مع مجتمعك.',
+  },
+  'create.share.qr': {
+    fr: 'QR Code à télécharger et partager.',
+    ar: 'رمز QR للتحميل والمشاركة.',
+  },
+  'share.copy': {
+    fr: 'Copier le lien',
+    ar: 'نسخ الرابط',
+  },
+  'share.whatsapp': {
+    fr: 'Partager sur WhatsApp',
+    ar: 'مشاركة عبر واتساب',
+  },
+  'share.email': {
+    fr: 'Partager par email',
+    ar: 'مشاركة عبر البريد',
+  },
+  'contribute.cta': {
+    fr: 'Je participe',
+    ar: 'أشارك',
+  },
+  'contribute.modal.title': {
+    fr: 'Je participe',
+    ar: 'أشارك',
+  },
+  'contribute.modal.description': {
+    fr: 'Choisissez un montant sécurisé et validez la simulation de paiement.',
+    ar: 'اختر مبلغاً آمناً وأكد محاكاة الدفع.',
+  },
+  'contribute.amount.placeholder': {
+    fr: 'Montant personnalisé',
+    ar: 'مبلغ مخصص',
+  },
+  'contribute.pay': {
+    fr: 'Payer',
+    ar: 'الدفع',
+  },
+  'contribute.anonymous': {
+    fr: 'Participer en anonyme',
+    ar: 'المشاركة بشكل مجهول',
+  },
+  'contribute.collected': {
+    fr: 'Montant collecté',
+    ar: 'المبلغ المجموع',
+  },
+  'contribute.goal': {
+    fr: 'Objectif',
+    ar: 'الهدف',
+  },
+  'contribute.simulated.success': {
+    fr: 'Contribution simulée',
+    ar: 'تمت محاكاة المساهمة',
+  },
+  'contribute.simulated.error': {
+    fr: 'Simulation indisponible',
+    ar: 'المحاكاة غير متاحة',
+  },
+  'status.closed': {
+    fr: 'Cagnotte terminée',
+    ar: 'تم إغلاق الحملة',
+  },
+  'footer.rights': {
+    fr: '© 2024 Tonti. Tous droits réservés.',
+    ar: '© 2024 طنطي. جميع الحقوق محفوظة.',
+  },
+  'toggle.language': {
+    fr: 'العربية',
+    ar: 'Français',
+  },
+  'auth.login.title': {
+    fr: 'Connexion sécurisée',
+    ar: 'تسجيل دخول آمن',
+  },
+  'auth.login.description': {
+    fr: 'Accédez à votre espace organisateur. Les options sociales seront activées après homologation.',
+    ar: 'ادخل إلى مساحة المنظم. سيتم تفعيل الدخول الاجتماعي بعد الاعتماد.',
+  },
+  'auth.login.email': {
+    fr: 'Email professionnel',
+    ar: 'البريد المهني',
+  },
+  'auth.login.magic': {
+    fr: 'Recevoir un lien magique',
+    ar: 'استلام رابط آمن',
+  },
+  'auth.login.socialSoon': {
+    fr: 'Connexion sociale (bientôt) :',
+    ar: 'تسجيل عبر الشبكات (قريباً):',
+  },
+  'auth.login.google': {
+    fr: 'Google (bientôt)',
+    ar: 'جوجل (قريباً)',
+  },
+  'auth.login.apple': {
+    fr: 'Apple (bientôt)',
+    ar: 'آبل (قريباً)',
+  },
+  'auth.login.open': {
+    fr: 'Ouvrir la modale',
+    ar: 'فتح النافذة',
+  },
 };
+
+export const defaultLocale: Locale = 'fr';
+
+export function translate(key: TranslationKey, locale: Locale): string {
+  const entry = translations[key];
+  return entry?.[locale] ?? entry?.[defaultLocale] ?? key;
+}
