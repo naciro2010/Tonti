@@ -1,26 +1,35 @@
-import { watch } from 'vue';
 import { createI18n } from 'vue-i18n';
-import fr from './fr';
-import ar from './ar';
 
-const defaultLocale = typeof window !== 'undefined' ? localStorage.getItem('tonti_locale') ?? 'fr' : 'fr';
+import ar from './ar.json';
+import fr from './fr.json';
 
-export const i18n = createI18n({
-  legacy: false,
-  locale: defaultLocale,
-  fallbackLocale: 'fr',
-  messages: {
-    fr,
-    ar,
-  },
-});
+const STORAGE_KEY = 'tonti:locale';
 
-if (typeof window !== 'undefined') {
-  watch(
-    () => i18n.global.locale.value,
-    (locale) => {
-      localStorage.setItem('tonti_locale', locale);
+type MessageSchema = typeof fr;
+
+declare module 'vue-i18n' {
+  export interface DefineLocaleMessage extends MessageSchema {}
+}
+
+export function createI18nInstance() {
+  const initialLocale =
+    typeof window !== 'undefined' ? (window.localStorage.getItem(STORAGE_KEY) ?? 'fr') : 'fr';
+
+  const i18n = createI18n({
+    legacy: false,
+    locale: initialLocale,
+    fallbackLocale: 'fr',
+    messages: {
+      fr,
+      ar,
     },
-    { immediate: true }
-  );
+  });
+
+  return { i18n, initialLocale };
+}
+
+export function persistLocale(locale: string) {
+  if (typeof window !== 'undefined') {
+    window.localStorage.setItem(STORAGE_KEY, locale);
+  }
 }

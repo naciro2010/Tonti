@@ -1,0 +1,102 @@
+{
+  "app": {
+    "name": "Tonti",
+    "tagline": "La cagnotte rotative statique et inclusive",
+    "language": "Langue"
+  },
+  "nav": {
+    "home": "Accueil",
+    "create": "Créer",
+    "join": "Rejoindre"
+  },
+  "actions": {
+    "create": "Créer une Daret",
+    "join": "Rejoindre",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "save": "Enregistrer",
+    "closeRound": "Clore le round",
+    "markPaid": "Marquer payé",
+    "markLate": "Marquer retard",
+    "markPending": "Remettre à payer",
+    "randomize": "Randomiser",
+    "addMember": "Ajouter un membre",
+    "copyLink": "Copier le lien",
+    "downloadIcs": "Exporter calendrier (.ics)",
+    "toggleCurrency": "Alterner la devise",
+    "remove": "Supprimer"
+  },
+  "statuses": {
+    "a_payer": "À payer",
+    "paye": "Payé",
+    "retard": "Retard"
+  },
+  "form": {
+    "name": "Nom de la Daret",
+    "description": "Description (optionnel)",
+    "amount": "Montant mensuel",
+    "size": "Nombre de participants",
+    "currency": "Devise",
+    "startDate": "Date de début",
+    "visibility": "Visibilité",
+    "visibilityOptions": {
+      "privee": "Privée",
+      "non-listee": "Non listée",
+      "publique": "Publique"
+    },
+    "gracePeriod": "Délai de grâce (jours)",
+    "localReminders": "Rappels locaux",
+    "memberName": "Nom",
+    "memberContact": "Contact",
+    "invitationCode": "Code d'invitation"
+  },
+  "wizard": {
+    "step1": "Informations",
+    "step2": "Membres",
+    "step3": "Règles",
+    "step4": "Récapitulatif",
+    "autosave": "Sauvegarde automatique activée",
+    "review": "Vérifiez les informations avant de valider",
+    "emptyRoster": "Ajoutez des membres pour construire le roster.",
+    "success": "Daret créée !",
+    "error": "Impossible de créer la Daret.",
+    "validation": "Veuillez corriger les erreurs.",
+    "summary": {
+      "title": "Récapitulatif",
+      "details": "Détails de la Daret"
+    },
+    "seed": "Graine aléatoire"
+  },
+  "dashboard": {
+    "round": "Round {current}/{total}",
+    "daysRemaining": "{count} jours restants",
+    "daysRemainingLabel": "Jours restants",
+    "today": "Dernier jour",
+    "receiver": "Receveur",
+    "total": "Total à encaisser",
+    "history": "Historique des rounds",
+    "roster": "Roster",
+    "payments": "Paiements",
+    "noHistory": "Pas encore d'historique",
+    "late": "Retards",
+    "statusUpdated": "Statut mis à jour",
+    "roundClosed": "Round clôturé"
+  },
+  "invite": {
+    "title": "Inviter des membres",
+    "share": "Partagez ce lien ou le QR code pour inviter",
+    "copied": "Lien copié !",
+    "qrAlt": "QR code d'invitation"
+  },
+  "join": {
+    "title": "Rejoindre une Daret",
+    "subtitle": "Saisissez le code partagé par l'organisateur",
+    "success": "Bienvenue ! Vous avez rejoint la Daret.",
+    "error": "Code invalide ou inscriptions fermées."
+  },
+  "notifications": {
+    "enable": "Activer les notifications locales",
+    "enabled": "Notifications activées",
+    "denied": "Notifications bloquées par le navigateur"
+  }
+}
