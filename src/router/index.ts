@@ -11,7 +11,7 @@ const CagnottePage = () => import('../pages/CagnottePage.vue');
 const LoginPage = () => import('../pages/LoginPage.vue');
 
 export const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     { path: '/', component: HomePage, meta: { title: 'Accueil' } },
     { path: '/comment-ca-marche', component: HowItWorksPage, meta: { title: 'Comment ça marche ?' } },
