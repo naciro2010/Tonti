@@ -1,20 +1,17 @@
 [
   {
     "id": "user-1",
-    "name": "Sara El Mansouri",
-    "email": "sara@tonti.app",
+    "name": "Sara El Idrissi",
     "avatar": "/images/users/sara.svg"
   },
   {
     "id": "user-2",
-    "name": "Yassine Amrani",
-    "email": "yassine@tonti.app",
-    "avatar": "/images/users/yassine.svg"
+    "name": "Collectif Impact",
+    "avatar": "/images/users/collectif.svg"
   },
   {
     "id": "user-3",
-    "name": "Collectif Solidarité Maroc",
-    "email": "contact@solidmaroc.ma",
-    "avatar": "/images/users/collectif.svg"
+    "name": "Yassine A.",
+    "avatar": "/images/users/yassine.svg"
   }
 ]

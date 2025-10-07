@@ -1,29 +1,26 @@
 [
   {
-    "id": "txn-1001",
+    "id": "txn-1",
     "cagnotte": "solidarite-agadir",
     "user": "user-1",
-    "amount": 500,
-    "currency": "MAD",
-    "createdAt": "2024-04-02T09:30:00.000Z",
+    "amount": 400,
+    "createdAt": "2024-04-20T10:00:00Z",
     "anonymous": false
   },
   {
-    "id": "txn-1002",
+    "id": "txn-2",
     "cagnotte": "solidarite-agadir",
     "user": "user-2",
-    "amount": 200,
-    "currency": "MAD",
-    "createdAt": "2024-04-03T15:45:00.000Z",
+    "amount": 800,
+    "createdAt": "2024-04-19T15:30:00Z",
     "anonymous": true
   },
   {
-    "id": "txn-1003",
-    "cagnotte": "equipement-ecole",
+    "id": "txn-3",
+    "cagnotte": "ecole-nador",
     "user": "user-3",
-    "amount": 1000,
-    "currency": "MAD",
-    "createdAt": "2024-03-29T11:00:00.000Z",
+    "amount": 150,
+    "createdAt": "2024-04-18T08:12:00Z",
     "anonymous": false
   }
 ]

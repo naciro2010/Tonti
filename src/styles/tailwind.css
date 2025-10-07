@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  font-family: theme('fontFamily.sans');
+  background-color: theme('colors.background');
+}
+
+body {
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+}
+
+::-moz-selection {
+  background: rgba(255, 179, 0, 0.3);
+}
+
+::selection {
+  background: rgba(255, 179, 0, 0.3);
+}
