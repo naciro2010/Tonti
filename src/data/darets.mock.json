@@ -1,0 +1,100 @@
+[
+  {
+    "id": "demo-mad",
+    "nom": "Daret Demo MAD",
+    "description": "Daret de démonstration avec 10 membres (MAD).",
+    "devise": "MAD",
+    "montantMensuel": 100,
+    "taille": 10,
+    "etat": "active",
+    "createurId": "orga",
+    "membres": [
+      { "id": "m1", "nom": "Personne 1" },
+      { "id": "m2", "nom": "Personne 2" },
+      { "id": "m3", "nom": "Personne 3" },
+      { "id": "m4", "nom": "Personne 4" },
+      { "id": "m5", "nom": "Personne 5" },
+      { "id": "m6", "nom": "Personne 6" },
+      { "id": "m7", "nom": "Personne 7" },
+      { "id": "m8", "nom": "Personne 8" },
+      { "id": "m9", "nom": "Personne 9" },
+      { "id": "m10", "nom": "Personne 10" }
+    ],
+    "roster": ["m1", "m2", "m3", "m4", "m5", "m6", "m7", "m8", "m9", "m10"],
+    "rounds": [
+      {
+        "index": 1,
+        "receveurId": "m1",
+        "dateDebut": "2024-06-01",
+        "dateFin": "2024-06-30",
+        "clos": false
+      }
+    ],
+    "paiements": [
+      { "membreId": "m1", "round": 1, "montant": 100, "statut": "paye", "dateMaj": "2024-06-01" },
+      { "membreId": "m2", "round": 1, "montant": 100, "statut": "paye", "dateMaj": "2024-06-01" },
+      { "membreId": "m3", "round": 1, "montant": 100, "statut": "paye", "dateMaj": "2024-06-01" },
+      { "membreId": "m4", "round": 1, "montant": 100, "statut": "retard", "dateMaj": "2024-06-05" },
+      { "membreId": "m5", "round": 1, "montant": 100, "statut": "paye", "dateMaj": "2024-06-02" },
+      { "membreId": "m6", "round": 1, "montant": 100, "statut": "paye", "dateMaj": "2024-06-02" },
+      { "membreId": "m7", "round": 1, "montant": 100, "statut": "paye", "dateMaj": "2024-06-03" },
+      { "membreId": "m8", "round": 1, "montant": 100, "statut": "paye", "dateMaj": "2024-06-03" },
+      { "membreId": "m9", "round": 1, "montant": 100, "statut": "paye", "dateMaj": "2024-06-04" },
+      { "membreId": "m10", "round": 1, "montant": 100, "statut": "paye", "dateMaj": "2024-06-04" }
+    ],
+    "visibilite": "non-listee",
+    "codeInvitation": "MAD2024",
+    "dateCreation": "2024-04-15",
+    "dateDebut": "2024-06-01",
+    "regles": { "delaiGraceJours": 3, "rappelLocal": true }
+  },
+  {
+    "id": "demo-eur",
+    "nom": "Daret Demo EUR",
+    "description": "Variante Euro pour démonstration conversion.",
+    "devise": "EUR",
+    "montantMensuel": 100,
+    "taille": 10,
+    "etat": "verrouillee",
+    "createurId": "orga",
+    "membres": [
+      { "id": "e1", "nom": "Amal" },
+      { "id": "e2", "nom": "Youssef" },
+      { "id": "e3", "nom": "Sofia" },
+      { "id": "e4", "nom": "Karim" },
+      { "id": "e5", "nom": "Nadia" },
+      { "id": "e6", "nom": "Hassan" },
+      { "id": "e7", "nom": "Lina" },
+      { "id": "e8", "nom": "Mounir" },
+      { "id": "e9", "nom": "Imane" },
+      { "id": "e10", "nom": "Rachid" }
+    ],
+    "roster": ["e1", "e2", "e3", "e4", "e5", "e6", "e7", "e8", "e9", "e10"],
+    "rounds": [
+      {
+        "index": 1,
+        "receveurId": "e1",
+        "dateDebut": "2024-07-01",
+        "dateFin": "2024-07-31",
+        "clos": false
+      }
+    ],
+    "paiements": [
+      { "membreId": "e1", "round": 1, "montant": 100, "statut": "a_payer", "dateMaj": "2024-07-01" },
+      { "membreId": "e2", "round": 1, "montant": 100, "statut": "a_payer", "dateMaj": "2024-07-01" },
+      { "membreId": "e3", "round": 1, "montant": 100, "statut": "a_payer", "dateMaj": "2024-07-01" },
+      { "membreId": "e4", "round": 1, "montant": 100, "statut": "a_payer", "dateMaj": "2024-07-01" },
+      { "membreId": "e5", "round": 1, "montant": 100, "statut": "a_payer", "dateMaj": "2024-07-01" },
+      { "membreId": "e6", "round": 1, "montant": 100, "statut": "a_payer", "dateMaj": "2024-07-01" },
+      { "membreId": "e7", "round": 1, "montant": 100, "statut": "a_payer", "dateMaj": "2024-07-01" },
+      { "membreId": "e8", "round": 1, "montant": 100, "statut": "a_payer", "dateMaj": "2024-07-01" },
+      { "membreId": "e9", "round": 1, "montant": 100, "statut": "a_payer", "dateMaj": "2024-07-01" },
+      { "membreId": "e10", "round": 1, "montant": 100, "statut": "a_payer", "dateMaj": "2024-07-01" }
+    ],
+    "visibilite": "privee",
+    "codeInvitation": "EU2024",
+    "dateCreation": "2024-04-15",
+    "dateDebut": "2024-07-01",
+    "regles": { "delaiGraceJours": 3, "rappelLocal": false }
+  }
+]

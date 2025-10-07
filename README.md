@@ -1,39 +1,75 @@
-# Tonti · Cagnotte digitale
+# Tonti · Daret statique
 
-Application front-end 100 % statique construite avec **Vue 3 + Vite + Tailwind CSS** pour présenter l’expérience Tonti. Toutes les
-fonctionnalités (création, partage, contribution) sont simulées côté client et conformes aux exigences de la loi 15-18.
+Application Vue 3 (TypeScript) pour organiser une cagnotte rotative (Daret) avec persistance locale et génération statique via Vite + vite-plugin-ssg.
 
-## Stack
+## Prérequis
+- Node.js 20+
+- npm 9+
 
-- Vue 3 (Composition API, TypeScript)
-- Vite (SSG-ready build)
-- Tailwind CSS + Headless UI (styles de formulaires et typographie gérés via une couche `@layer base` personnalisée)
-- Zod + vueuse pour l’autosauvegarde et la validation
-- i18n complet français / arabe (RTL)
-- Analytics Plausible (script léger)
-
-## Scripts
-
+## Installation
 ```bash
-npm install      # installe les dépendances
-npm run dev      # lance le serveur Vite (http://localhost:5173)
-npm run build    # génère la version statique (dist/)
-npm run preview  # prévisualise la version buildée
-npm run lint     # vérifie le formatage Prettier
-npm run typecheck# vérifie les types avec vue-tsc
+npm install
 ```
 
-## Déploiement statique
+## Scripts
+- `npm run dev` : serveur de développement Vite.
+- `npm run build` : build SSG + copie du fallback 404.
+- `npm run preview` : prévisualisation du build.
+- `npm run lint` : ESLint sur le dossier `src`.
+- `npm run lint:fix` : ESLint avec auto-fix.
+- `npm run typecheck` : vérification des types via `vue-tsc`.
+- `npm run test` : tests unitaires Vitest.
 
-Le workflow GitHub Actions `build-and-deploy` construit l’application avec Node 20 puis publie `dist/` vers GitHub Pages. Le router utilise l’historique HTML5 basé sur `import.meta.env.BASE_URL` et un `404.html` dédié redirige immédiatement vers la racine pour prendre en charge l’accès direct aux routes dynamiques.
+## Structure
+```
+src/
+  components/        Composants UI accessibles (Headless UI, Tailwind)
+  composables/       Stores/composables (autosave, devise, dates, Plausible…)
+  data/              Seeds JSON (demo Darets)
+  i18n/              Internationalisation FR/AR + RTL
+  pages/             Pages Vue (Home, Wizard, Dashboard, Join)
+  router/            Routes déclaratives Vite SSG
+  styles/            Tailwind + @layer base
+  utils/             Aides (roster RNG, ICS, maths)
+```
 
-## Données mockées
+## Fonctionnalités clés
+- Wizard “Créer une Daret” (4 étapes) avec Zod + autosave (localStorage via VueUse).
+- Dashboard : suivi des paiements, badges statut, clôture conditionnée.
+- Conversion MAD ↔ EUR avec affichage combiné.
+- Export calendrier `.ics` et bannière d’invitation (lien + QR code).
+- Notifications locales (opt-in) pour les organisateurs.
+- i18n FR/AR avec inversion RTL automatique (`useRtl`).
+- Persistance locale + mocks (`darets.mock.json`) pour démo (aucun backend).
+- Plausible Analytics via hook router.
 
-Les fichiers JSON dans `src/data/` contiennent des exemples de cagnottes, d’utilisateurs et de transactions. Ils sont utilisés pour
-les pages publiques et le formulaire multi-étapes de création.
+## Statique & déploiement
+- Build SSG (`npm run build`) → `dist/` prêt pour GitHub Pages.
+- Fallback SPA généré (`dist/404.html`).
+- Workflow GitHub Actions (`.github/workflows/deploy.yml`) : Node 20, build, déploiement sur Pages.
 
-## Sécurité
+## Accessibilité & mobile
+- Tailwind `@layer base` pour formulaires accessibles, focus visibles.
+- Headless UI (Modal) avec piège du focus.
+- Mise en page mobile-first (grilles adaptatives, stepper compact).
 
-- Aucun paiement réel n’est effectué : `/public/api/payment/simulate/index.json` simule une réponse.
-- Les brouillons sont stockés localement (localStorage) et peuvent être supprimés à tout moment.
-- Aucune donnée personnelle sensible n’est collectée.
+## Internationalisation / RTL
+- `vue-i18n` avec fichiers `fr.json` et `ar.json` (UI + toasts + erreurs).
+- `useRtl` force `document.dir` + classes utilitaires Tailwind (`rtl:`).
+- Préférence de langue persistée (`tonti:locale`).
+
+## Tests & qualité
+- ESLint + Prettier.
+- `vue-tsc` pour la validation des types.
+- Vitest (`src/utils/__tests__`) pour la RNG du roster et les calculs financiers.
+
+## Limitations connues
+- Données stockées côté client (localStorage) : aucune synchronisation multi-appareil.
+- Notifications locales dépendantes du navigateur (HTTPS requis pour production).
+- Conversion MAD↔EUR statique (taux manuel).
+
+## Checklist Lighthouse (cible ≥ 90 mobile)
+- [x] Performances : bundle léger, pas de polices auto-hébergées inutiles.
+- [x] Accessibilité : contrastes, navigation clavier, aria labels.
+- [x] Best Practices : HTTPS requis, Plausible script léger.
+- [x] SEO : meta `description`, balises Open Graph.

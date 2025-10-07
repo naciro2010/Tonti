@@ -2,57 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  color-scheme: dark;
-}
-
-html {
-  font-family: theme('fontFamily.sans');
-  background-color: theme('colors.background');
-}
-
-body {
-  min-height: 100vh;
-}
-
-a {
-  color: inherit;
-}
-
 @layer base {
-  input,
-  textarea,
-  select,
-  button,
-  [type='text'],
-  [type='email'],
-  [type='password'],
-  [type='number'],
-  [type='search'],
-  [type='tel'],
-  [type='url'],
-  [type='time'],
-  [type='date'] {
-    @apply rounded-xl border border-white/10 bg-white/5 text-white shadow-sm transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 placeholder:text-white/40;
+  :root {
+    color-scheme: dark;
   }
 
-  input:disabled,
-  textarea:disabled,
-  select:disabled,
-  button:disabled {
-    @apply cursor-not-allowed opacity-50;
+  html {
+    @apply bg-background text-white antialiased;
   }
 
-  label {
-    @apply font-medium text-white/80;
-  }
-
-  select {
-    @apply pr-10;
-  }
-
-  option {
-    @apply bg-secondary text-white;
+  body {
+    @apply min-h-screen bg-background text-white;
   }
 
   h1,
@@ -61,23 +21,39 @@ a {
   h4,
   h5,
   h6 {
-    @apply font-semibold text-white;
+    @apply font-semibold tracking-tight text-white;
   }
 
-  p,
-  li {
-    @apply text-white/80;
+  a {
+    @apply text-primary underline-offset-4 transition hover:text-primaryHover;
   }
 
-  strong {
-    @apply text-white;
+  label {
+    @apply block text-sm font-medium text-white;
+  }
+
+  input,
+  select,
+  textarea {
+    @apply w-full rounded-lg border border-white/10 bg-surface/60 px-4 py-2 text-base text-white shadow-sm transition
+      placeholder:text-white/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary;
+  }
+
+  button {
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+
+  ::selection {
+    @apply bg-primary text-background;
   }
 }
 
-::-moz-selection {
-  background: rgba(255, 179, 0, 0.3);
-}
+@layer components {
+  .card {
+    @apply rounded-2xl border border-white/10 bg-surface/60 p-6 shadow-xl backdrop-blur supports-backdrop:bg-surface/30;
+  }
 
-::selection {
-  background: rgba(255, 179, 0, 0.3);
+  .container-responsive {
+    @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+  }
 }

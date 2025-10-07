@@ -1,0 +1,102 @@
+{
+  "app": {
+    "name": "تونتي",
+    "tagline": "حَلْقة ادخار دوّارة، ثابتة وسهلة الوصول",
+    "language": "اللغة"
+  },
+  "nav": {
+    "home": "الرئيسية",
+    "create": "إنشاء",
+    "join": "الانضمام"
+  },
+  "actions": {
+    "create": "إنشاء دارِت",
+    "join": "الانضمام",
+    "next": "التالي",
+    "previous": "السابق",
+    "save": "حفظ",
+    "closeRound": "إغلاق الدورة",
+    "markPaid": "تم الدفع",
+    "markLate": "متأخر",
+    "markPending": "إعادة التعيين",
+    "randomize": "ترتيب عشوائي",
+    "addMember": "إضافة عضو",
+    "copyLink": "نسخ الرابط",
+    "downloadIcs": "تصدير التقويم (.ics)",
+    "toggleCurrency": "تبديل العملة",
+    "remove": "حذف"
+  },
+  "statuses": {
+    "a_payer": "في الانتظار",
+    "paye": "مدفوع",
+    "retard": "متأخر"
+  },
+  "form": {
+    "name": "اسم الدارت",
+    "description": "وصف (اختياري)",
+    "amount": "المبلغ الشهري",
+    "size": "عدد المشاركين",
+    "currency": "العملة",
+    "startDate": "تاريخ البدء",
+    "visibility": "الظهور",
+    "visibilityOptions": {
+      "privee": "خاصة",
+      "non-listee": "غير مدرجة",
+      "publique": "عامة"
+    },
+    "gracePeriod": "مهلة سماح (أيام)",
+    "localReminders": "تفعيل التذكيرات",
+    "memberName": "الاسم",
+    "memberContact": "التواصل",
+    "invitationCode": "رمز الدعوة"
+  },
+  "wizard": {
+    "step1": "المعلومات",
+    "step2": "الأعضاء",
+    "step3": "القواعد",
+    "step4": "مراجعة",
+    "autosave": "حفظ تلقائي مفعّل",
+    "review": "راجع البيانات قبل التأكيد",
+    "emptyRoster": "أضف أعضاء لإعداد الترتيب.",
+    "success": "تم إنشاء الدارت!",
+    "error": "تعذّر إنشاء الدارت.",
+    "validation": "يرجى تصحيح الأخطاء.",
+    "summary": {
+      "title": "مُلخّص",
+      "details": "تفاصيل الدارت"
+    },
+    "seed": "بذرة عشوائية"
+  },
+  "dashboard": {
+    "round": "دورة {current}/{total}",
+    "daysRemaining": "متبقي {count} يومًا",
+    "daysRemainingLabel": "الأيام المتبقية",
+    "today": "اليوم الأخير",
+    "receiver": "المستفيد",
+    "total": "الإجمالي المستحق",
+    "history": "سجل الدورات",
+    "roster": "الترتيب",
+    "payments": "المدفوعات",
+    "noHistory": "لا يوجد سجل بعد",
+    "late": "متأخرون",
+    "statusUpdated": "تم تحديث الحالة",
+    "roundClosed": "تم إغلاق الدورة"
+  },
+  "invite": {
+    "title": "دعوة الأعضاء",
+    "share": "شارك الرابط أو رمز QR للانضمام",
+    "copied": "تم نسخ الرابط!",
+    "qrAlt": "رمز QR للدعوة"
+  },
+  "join": {
+    "title": "الانضمام إلى دارت",
+    "subtitle": "أدخل الرمز الذي شاركه المنظم",
+    "success": "مرحبًا! تم انضمامك بنجاح.",
+    "error": "رمز غير صالح أو التحقّق مغلق."
+  },
+  "notifications": {
+    "enable": "تفعيل الإشعارات المحلية",
+    "enabled": "تم تفعيل الإشعارات",
+    "denied": "تم حظر الإشعارات من المتصفح"
+  }
+}
