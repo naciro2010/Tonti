@@ -17,7 +17,7 @@ import { formatCurrency } from '../../utils/currency';
 import { i18n } from '../../i18n';
 import VueCropper from 'vue-cropperjs';
 import 'cropperjs/dist/cropper.css';
-import { QrcodeVue } from 'qrcode.vue';
+import QrcodeVue from 'qrcode.vue';
 
 const { t } = useI18n();
 const { push } = useToast();

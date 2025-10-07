@@ -19,6 +19,61 @@ a {
   color: inherit;
 }
 
+@layer base {
+  input,
+  textarea,
+  select,
+  button,
+  [type='text'],
+  [type='email'],
+  [type='password'],
+  [type='number'],
+  [type='search'],
+  [type='tel'],
+  [type='url'],
+  [type='time'],
+  [type='date'] {
+    @apply rounded-xl border border-white/10 bg-white/5 text-white shadow-sm transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 placeholder:text-white/40;
+  }
+
+  input:disabled,
+  textarea:disabled,
+  select:disabled,
+  button:disabled {
+    @apply cursor-not-allowed opacity-50;
+  }
+
+  label {
+    @apply font-medium text-white/80;
+  }
+
+  select {
+    @apply pr-10;
+  }
+
+  option {
+    @apply bg-secondary text-white;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-semibold text-white;
+  }
+
+  p,
+  li {
+    @apply text-white/80;
+  }
+
+  strong {
+    @apply text-white;
+  }
+}
+
 ::-moz-selection {
   background: rgba(255, 179, 0, 0.3);
 }

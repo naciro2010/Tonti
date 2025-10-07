@@ -7,7 +7,7 @@ fonctionnalités (création, partage, contribution) sont simulées côté client
 
 - Vue 3 (Composition API, TypeScript)
 - Vite (SSG-ready build)
-- Tailwind CSS + Headless UI
+- Tailwind CSS + Headless UI (styles de formulaires et typographie gérés via une couche `@layer base` personnalisée)
 - Zod + vueuse pour l’autosauvegarde et la validation
 - i18n complet français / arabe (RTL)
 - Analytics Plausible (script léger)
@@ -23,10 +23,9 @@ npm run lint     # vérifie le formatage Prettier
 npm run typecheck# vérifie les types avec vue-tsc
 ```
 
-## Déploiement GitHub Pages
+## Déploiement statique
 
-Le workflow GitHub Actions `build-and-deploy` construit l’application avec Node 20 puis publie `dist/` vers GitHub Pages. Le router
-utilise l’historique HTML5 et un fichier `404.html` (copie de `index.html`) garantit l’accès direct aux routes dynamiques.
+Le workflow GitHub Actions `build-and-deploy` construit l’application avec Node 20 puis publie `dist/` vers GitHub Pages. Le router utilise l’historique HTML5 basé sur `import.meta.env.BASE_URL` et un `404.html` dédié redirige immédiatement vers la racine pour prendre en charge l’accès direct aux routes dynamiques.
 
 ## Données mockées
 
