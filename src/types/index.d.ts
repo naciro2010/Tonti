@@ -1,10 +1,38 @@
 export type Devise = 'MAD' | 'EUR';
 export type PaiementStatut = 'a_payer' | 'paye' | 'retard';
 
+export type UserRole = 'createur' | 'membre' | 'viewer';
+
+export type PaymentMethod = 'stripe' | 'paypal' | 'crypto' | 'mobile_money' | 'bank_transfer' | 'cash';
+
+export interface PaymentInfo {
+  method: PaymentMethod;
+  details: {
+    stripeLink?: string;
+    paypalEmail?: string;
+    cryptoAddress?: {
+      network: 'BTC' | 'ETH' | 'USDT';
+      address: string;
+    };
+    phoneNumber?: string; // pour mobile money
+    iban?: string;
+    accountName?: string;
+  };
+}
+
+export interface UserSession {
+  userId: string;
+  userName: string;
+  role: UserRole;
+  daretId: string;
+  joinedAt: string;
+}
+
 export interface Membre {
   id: string;
   nom: string;
   contact?: string;
+  paymentInfo?: PaymentInfo;
 }
 
 export interface Paiement {
