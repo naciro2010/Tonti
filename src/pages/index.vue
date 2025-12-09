@@ -119,7 +119,7 @@ const scrollToDemo = () => {
             <p class="text-sm leading-relaxed text-white/70">{{ t('landing.features.feature3_desc') }}</p>
           </article>
 
-          <!-- Feature 4: Easy Sharing -->
+          <!-- Feature 4: Payment Integration -->
           <article class="group card space-y-4 transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10">
             <div class="inline-flex rounded-xl bg-primary/10 p-3">
               <svg class="h-8 w-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -127,7 +127,7 @@ const scrollToDemo = () => {
                   stroke-linecap="round"
                   stroke-linejoin="round"
                   stroke-width="2"
-                  d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
+                  d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
                 />
               </svg>
             </div>
@@ -135,7 +135,7 @@ const scrollToDemo = () => {
             <p class="text-sm leading-relaxed text-white/70">{{ t('landing.features.feature4_desc') }}</p>
           </article>
 
-          <!-- Feature 5: Mobile-First -->
+          <!-- Feature 5: Access Management -->
           <article class="group card space-y-4 transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10">
             <div class="inline-flex rounded-xl bg-primary/10 p-3">
               <svg class="h-8 w-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -143,7 +143,7 @@ const scrollToDemo = () => {
                   stroke-linecap="round"
                   stroke-linejoin="round"
                   stroke-width="2"
-                  d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
+                  d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
                 />
               </svg>
             </div>
@@ -221,6 +221,147 @@ const scrollToDemo = () => {
             <h3 class="text-xl font-semibold">{{ t('landing.howItWorks.step3_title') }}</h3>
             <p class="text-sm leading-relaxed text-white/70">{{ t('landing.howItWorks.step3_desc') }}</p>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Payment Methods Section -->
+    <section class="px-4 sm:px-6">
+      <div class="mx-auto max-w-7xl">
+        <div class="text-center">
+          <h2 class="text-3xl font-bold sm:text-4xl">{{ t('landing.payments.title') }}</h2>
+          <p class="mt-4 text-lg text-white/70">{{ t('landing.payments.subtitle') }}</p>
+        </div>
+
+        <div class="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <!-- Payment Method 1: Cards -->
+          <article class="card space-y-3 text-center">
+            <div class="text-4xl">💳</div>
+            <h3 class="text-lg font-semibold">{{ t('landing.payments.method1_title') }}</h3>
+            <p class="text-sm leading-relaxed text-white/70">{{ t('landing.payments.method1_desc') }}</p>
+          </article>
+
+          <!-- Payment Method 2: PayPal -->
+          <article class="card space-y-3 text-center">
+            <div class="text-4xl">🅿️</div>
+            <h3 class="text-lg font-semibold">{{ t('landing.payments.method2_title') }}</h3>
+            <p class="text-sm leading-relaxed text-white/70">{{ t('landing.payments.method2_desc') }}</p>
+          </article>
+
+          <!-- Payment Method 3: Crypto -->
+          <article class="card space-y-3 text-center">
+            <div class="text-4xl">₿</div>
+            <h3 class="text-lg font-semibold">{{ t('landing.payments.method3_title') }}</h3>
+            <p class="text-sm leading-relaxed text-white/70">{{ t('landing.payments.method3_desc') }}</p>
+          </article>
+
+          <!-- Payment Method 4: Mobile Money -->
+          <article class="card space-y-3 text-center">
+            <div class="text-4xl">📱</div>
+            <h3 class="text-lg font-semibold">{{ t('landing.payments.method4_title') }}</h3>
+            <p class="text-sm leading-relaxed text-white/70">{{ t('landing.payments.method4_desc') }}</p>
+          </article>
+
+          <!-- Payment Method 5: Bank Transfer -->
+          <article class="card space-y-3 text-center">
+            <div class="text-4xl">🏦</div>
+            <h3 class="text-lg font-semibold">{{ t('landing.payments.method5_title') }}</h3>
+            <p class="text-sm leading-relaxed text-white/70">{{ t('landing.payments.method5_desc') }}</p>
+          </article>
+
+          <!-- Payment Method 6: Cash -->
+          <article class="card space-y-3 text-center">
+            <div class="text-4xl">💵</div>
+            <h3 class="text-lg font-semibold">{{ t('landing.payments.method6_title') }}</h3>
+            <p class="text-sm leading-relaxed text-white/70">{{ t('landing.payments.method6_desc') }}</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Security & Access Control Section -->
+    <section class="px-4 sm:px-6">
+      <div class="mx-auto max-w-7xl">
+        <div class="text-center">
+          <h2 class="text-3xl font-bold sm:text-4xl">{{ t('landing.security.title') }}</h2>
+          <p class="mt-4 text-lg text-white/70">{{ t('landing.security.subtitle') }}</p>
+        </div>
+
+        <div class="mt-16 grid gap-8 lg:grid-cols-3">
+          <!-- Role 1: Creator -->
+          <article class="card space-y-4">
+            <div class="flex items-center gap-3">
+              <div class="flex h-12 w-12 items-center justify-center rounded-full bg-primary/20 text-2xl">
+                👑
+              </div>
+              <h3 class="text-xl font-semibold">{{ t('landing.security.role1_title') }}</h3>
+            </div>
+            <p class="text-sm leading-relaxed text-white/70">{{ t('landing.security.role1_desc') }}</p>
+            <ul class="space-y-2 text-sm text-white/60">
+              <li class="flex items-start gap-2">
+                <span class="text-success">✓</span>
+                <span>Modifier les informations</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-success">✓</span>
+                <span>Gérer les membres</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-success">✓</span>
+                <span>Clôturer les rounds</span>
+              </li>
+            </ul>
+          </article>
+
+          <!-- Role 2: Member -->
+          <article class="card space-y-4">
+            <div class="flex items-center gap-3">
+              <div class="flex h-12 w-12 items-center justify-center rounded-full bg-primary/20 text-2xl">
+                👤
+              </div>
+              <h3 class="text-xl font-semibold">{{ t('landing.security.role2_title') }}</h3>
+            </div>
+            <p class="text-sm leading-relaxed text-white/70">{{ t('landing.security.role2_desc') }}</p>
+            <ul class="space-y-2 text-sm text-white/60">
+              <li class="flex items-start gap-2">
+                <span class="text-success">✓</span>
+                <span>Voir la Daret</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-success">✓</span>
+                <span>Marquer paiements</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-success">✓</span>
+                <span>Recevoir notifications</span>
+              </li>
+            </ul>
+          </article>
+
+          <!-- Role 3: Viewer -->
+          <article class="card space-y-4">
+            <div class="flex items-center gap-3">
+              <div class="flex h-12 w-12 items-center justify-center rounded-full bg-primary/20 text-2xl">
+                👁️
+              </div>
+              <h3 class="text-xl font-semibold">{{ t('landing.security.role3_title') }}</h3>
+            </div>
+            <p class="text-sm leading-relaxed text-white/70">{{ t('landing.security.role3_desc') }}</p>
+            <ul class="space-y-2 text-sm text-white/60">
+              <li class="flex items-start gap-2">
+                <span class="text-success">✓</span>
+                <span>Accès en lecture seule</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-danger">✗</span>
+                <span>Pas de modification</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-warning">∼</span>
+                <span>Suivre la progression</span>
+              </li>
+            </ul>
+          </article>
         </div>
       </div>
     </section>
