@@ -4,6 +4,76 @@
     "tagline": "La cagnotte rotative statique et inclusive",
     "language": "Langue"
   },
+  "landing": {
+    "hero": {
+      "title": "Gérez vos cagnottes rotatives en toute simplicité",
+      "subtitle": "Organisez, suivez et partagez vos Darets sans serveur : 100% local, sécurisé et multilingue.",
+      "cta_primary": "Créer une Daret",
+      "cta_secondary": "En savoir plus"
+    },
+    "features": {
+      "title": "Pourquoi choisir Tonti ?",
+      "subtitle": "Une solution moderne pour gérer vos cagnottes rotatives",
+      "feature1_title": "100% Sécurisé & Local",
+      "feature1_desc": "Vos données restent sur votre appareil. Aucun serveur, aucune fuite possible. Totalement chiffré.",
+      "feature2_title": "Multilingue & Inclusif",
+      "feature2_desc": "Interface en Français et العربية avec support RTL complet. Accessible à tous.",
+      "feature3_title": "Simple & Efficace",
+      "feature3_desc": "Créez votre Daret en 3 étapes. Suivez les contributions et rounds automatiquement.",
+      "feature4_title": "Partage Facile",
+      "feature4_desc": "Invitez des membres via QR code ou lien. Export calendrier (.ics) intégré.",
+      "feature5_title": "Mobile-First",
+      "feature5_desc": "Optimisé pour mobile. Conforme WCAG AA. Navigation clavier complète.",
+      "feature6_title": "Open Source",
+      "feature6_desc": "Code transparent et auditable. Pas de frais cachés. Liberté totale."
+    },
+    "howItWorks": {
+      "title": "Comment ça marche ?",
+      "subtitle": "Créez et gérez votre Daret en 3 étapes simples",
+      "step1_title": "Créez votre Daret",
+      "step1_desc": "Définissez le nom, le montant mensuel, le nombre de participants et les règles.",
+      "step2_title": "Invitez les membres",
+      "step2_desc": "Partagez le lien d'invitation ou le QR code avec vos participants.",
+      "step3_title": "Suivez les contributions",
+      "step3_desc": "Gérez les paiements, clôturez les rounds et exportez les données."
+    },
+    "stats": {
+      "stat1_value": "100%",
+      "stat1_label": "Sécurisé",
+      "stat2_value": "0€",
+      "stat2_label": "Aucun frais",
+      "stat3_value": "2",
+      "stat3_label": "Langues",
+      "stat4_value": "Open",
+      "stat4_label": "Source"
+    },
+    "cta": {
+      "title": "Prêt à commencer ?",
+      "subtitle": "Créez votre première Daret gratuitement en moins de 2 minutes.",
+      "button": "Créer ma Daret"
+    },
+    "demo": {
+      "title": "Darets de démonstration",
+      "viewDashboard": "Voir le tableau de bord",
+      "members": "membres"
+    },
+    "footer": {
+      "description": "Application de gestion de cagnottes rotatives (Daret) 100% statique, sécurisée et multilingue.",
+      "links_title": "Liens",
+      "resources_title": "Ressources",
+      "legal_title": "Légal",
+      "home": "Accueil",
+      "about": "À propos",
+      "contact": "Contact",
+      "documentation": "Documentation",
+      "github": "GitHub",
+      "license": "Licence MIT",
+      "privacy": "Confidentialité",
+      "terms": "Conditions",
+      "madeWith": "Fait avec",
+      "by": "par"
+    }
+  },
   "nav": {
     "home": "Accueil",
     "create": "Créer",
