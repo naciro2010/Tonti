@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  # ============================================
+  # PostgreSQL Database
+  # ============================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: tonti-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: tonti_db
+      POSTGRES_USER: tonti
+      POSTGRES_PASSWORD: tonti_secret
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tonti -d tonti_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tonti-network
+
+  # ============================================
+  # Tonti Backend
+  # ============================================
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tonti-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DATABASE_URL: jdbc:postgresql://postgres:5432/tonti_db?user=tonti&password=tonti_secret
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production-with-a-256-bit-secret-key}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:5173}
+      SERVER_PORT: 8080
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 60s
+      retries: 3
+    networks:
+      - tonti-network
+
+  # ============================================
+  # Redis (optional - for caching & rate limiting)
+  # ============================================
+  redis:
+    image: redis:7-alpine
+    container_name: tonti-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tonti-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  tonti-network:
+    driver: bridge

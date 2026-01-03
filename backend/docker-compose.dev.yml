@@ -1,0 +1,47 @@
+version: '3.8'
+
+# Development configuration
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+services:
+  postgres:
+    ports:
+      - "5432:5432"
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DATABASE_URL: jdbc:postgresql://postgres:5432/tonti_db?user=tonti&password=tonti_secret
+    volumes:
+      # Hot reload for development
+      - ./src:/app/src:ro
+    ports:
+      - "8080:8080"
+      - "5005:5005"  # Debug port
+    command: >
+      sh -c "java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+             -Dspring.profiles.active=dev
+             org.springframework.boot.loader.launch.JarLauncher"
+
+  # pgAdmin for database management
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: tonti-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@tonti.app
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+    networks:
+      - tonti-network
+
+volumes:
+  pgadmin_data:
