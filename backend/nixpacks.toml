@@ -1,0 +1,12 @@
+# Nixpacks configuration for Railway - Kotlin/Gradle
+[phases.setup]
+nixPkgs = ["jdk21", "gradle"]
+
+[phases.build]
+cmds = [
+  "chmod +x ./gradlew",
+  "./gradlew bootJar -x test"
+]
+
+[start]
+cmd = "java -Dserver.port=$PORT -Dspring.profiles.active=prod -jar build/libs/tonti-backend.jar"
