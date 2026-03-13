@@ -1,27 +1,14 @@
 package com.tonti.event
 
 import com.tonti.service.AuditService
-import mu.KotlinLogging
-import org.springframework.context.event.EventListener
-import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
-import org.springframework.transaction.annotation.Propagation
-import org.springframework.transaction.annotation.Transactional
-
-private val logger = KotlinLogging.logger {}
 
 @Component
 class AuditEventListener(
     private val auditService: AuditService
 ) {
 
-    // ==========================================
-    // User Events
-    // ==========================================
-
-    @Async
-    @EventListener
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @AsyncEventHandler
     fun onUserRegistered(event: UserRegisteredEvent) {
         auditService.log(
             userId = event.userId,
@@ -32,9 +19,7 @@ class AuditEventListener(
         )
     }
 
-    @Async
-    @EventListener
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @AsyncEventHandler
     fun onUserProfileUpdated(event: UserProfileUpdatedEvent) {
         auditService.log(
             userId = event.userId,
@@ -45,9 +30,7 @@ class AuditEventListener(
         )
     }
 
-    @Async
-    @EventListener
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @AsyncEventHandler
     fun onUserLoggedIn(event: UserLoggedInEvent) {
         auditService.log(
             userId = event.userId,
@@ -57,13 +40,7 @@ class AuditEventListener(
         )
     }
 
-    // ==========================================
-    // Daret Events
-    // ==========================================
-
-    @Async
-    @EventListener
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @AsyncEventHandler
     fun onDaretCreated(event: DaretCreatedEvent) {
         auditService.log(
             userId = event.createurId,
@@ -74,9 +51,7 @@ class AuditEventListener(
         )
     }
 
-    @Async
-    @EventListener
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @AsyncEventHandler
     fun onDaretUpdated(event: DaretUpdatedEvent) {
         auditService.log(
             userId = event.updatedByUserId,
@@ -87,9 +62,7 @@ class AuditEventListener(
         )
     }
 
-    @Async
-    @EventListener
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @AsyncEventHandler
     fun onDaretStarted(event: DaretStartedEvent) {
         auditService.log(
             userId = event.startedByUserId,
@@ -100,9 +73,7 @@ class AuditEventListener(
         )
     }
 
-    @Async
-    @EventListener
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @AsyncEventHandler
     fun onDaretCompleted(event: DaretCompletedEvent) {
         auditService.log(
             userId = null,
@@ -112,13 +83,7 @@ class AuditEventListener(
         )
     }
 
-    // ==========================================
-    // Member Events
-    // ==========================================
-
-    @Async
-    @EventListener
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @AsyncEventHandler
     fun onMemberJoined(event: MemberJoinedEvent) {
         auditService.log(
             userId = event.userId,
@@ -129,9 +94,7 @@ class AuditEventListener(
         )
     }
 
-    @Async
-    @EventListener
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @AsyncEventHandler
     fun onMemberLeft(event: MemberLeftEvent) {
         auditService.log(
             userId = event.userId,
@@ -141,13 +104,7 @@ class AuditEventListener(
         )
     }
 
-    // ==========================================
-    // Round Events
-    // ==========================================
-
-    @Async
-    @EventListener
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @AsyncEventHandler
     fun onRoundClosed(event: RoundClosedEvent) {
         auditService.log(
             userId = null,
@@ -158,13 +115,7 @@ class AuditEventListener(
         )
     }
 
-    // ==========================================
-    // Payment Events
-    // ==========================================
-
-    @Async
-    @EventListener
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @AsyncEventHandler
     fun onPaymentCreated(event: PaymentCreatedEvent) {
         auditService.log(
             userId = event.userId,
@@ -175,9 +126,7 @@ class AuditEventListener(
         )
     }
 
-    @Async
-    @EventListener
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @AsyncEventHandler
     fun onPaymentSucceeded(event: PaymentSucceededEvent) {
         auditService.log(
             userId = event.userId,
@@ -188,9 +137,7 @@ class AuditEventListener(
         )
     }
 
-    @Async
-    @EventListener
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @AsyncEventHandler
     fun onPaymentFailed(event: PaymentFailedEvent) {
         auditService.log(
             userId = event.userId,
@@ -201,9 +148,7 @@ class AuditEventListener(
         )
     }
 
-    @Async
-    @EventListener
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @AsyncEventHandler
     fun onPaymentCancelled(event: PaymentCancelledEvent) {
         auditService.log(
             userId = event.userId,
@@ -213,9 +158,7 @@ class AuditEventListener(
         )
     }
 
-    @Async
-    @EventListener
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @AsyncEventHandler
     fun onRefundCreated(event: RefundCreatedEvent) {
         auditService.log(
             userId = event.userId,

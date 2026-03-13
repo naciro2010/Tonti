@@ -51,7 +51,7 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
 
     // Stripe SDK
-    implementation("com.stripe:stripe-java:27.2.0")
+    implementation("com.stripe:stripe-java:27.1.2")
 
     // API Documentation
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")

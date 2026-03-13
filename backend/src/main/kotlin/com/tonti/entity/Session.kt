@@ -2,7 +2,7 @@ package com.tonti.entity
 
 import jakarta.persistence.*
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 
 @Entity
 @Table(

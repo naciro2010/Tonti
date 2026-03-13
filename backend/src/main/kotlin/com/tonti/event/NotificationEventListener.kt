@@ -3,11 +3,7 @@ package com.tonti.event
 import com.tonti.entity.NotificationType
 import com.tonti.service.NotificationService
 import mu.KotlinLogging
-import org.springframework.context.event.EventListener
-import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
-import org.springframework.transaction.annotation.Propagation
-import org.springframework.transaction.annotation.Transactional
 
 private val logger = KotlinLogging.logger {}
 
@@ -16,13 +12,7 @@ class NotificationEventListener(
     private val notificationService: NotificationService
 ) {
 
-    // ==========================================
-    // User Events
-    // ==========================================
-
-    @Async
-    @EventListener
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @AsyncEventHandler
     fun onUserRegistered(event: UserRegisteredEvent) {
         logger.info { "Handling UserRegisteredEvent for user ${event.userId}" }
         notificationService.createNotification(
@@ -34,13 +24,7 @@ class NotificationEventListener(
         )
     }
 
-    // ==========================================
-    // Daret Events
-    // ==========================================
-
-    @Async
-    @EventListener
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @AsyncEventHandler
     fun onDaretCreated(event: DaretCreatedEvent) {
         logger.info { "Handling DaretCreatedEvent for daret ${event.daretId}" }
         notificationService.createNotification(
@@ -52,9 +36,7 @@ class NotificationEventListener(
         )
     }
 
-    @Async
-    @EventListener
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @AsyncEventHandler
     fun onDaretStarted(event: DaretStartedEvent) {
         logger.info { "Handling DaretStartedEvent for daret ${event.daretId}" }
         event.membreIds.forEach { membreUserId ->
@@ -68,9 +50,7 @@ class NotificationEventListener(
         }
     }
 
-    @Async
-    @EventListener
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @AsyncEventHandler
     fun onDaretCompleted(event: DaretCompletedEvent) {
         logger.info { "Handling DaretCompletedEvent for daret ${event.daretId}" }
         event.membreIds.forEach { membreUserId ->
@@ -84,17 +64,9 @@ class NotificationEventListener(
         }
     }
 
-    // ==========================================
-    // Member Events
-    // ==========================================
-
-    @Async
-    @EventListener
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @AsyncEventHandler
     fun onMemberJoined(event: MemberJoinedEvent) {
         logger.info { "Handling MemberJoinedEvent: user ${event.userId} joined daret ${event.daretId}" }
-
-        // Notifier le créateur
         notificationService.createNotification(
             userId = event.createurId,
             type = NotificationType.MEMBER_JOINED,
@@ -102,8 +74,6 @@ class NotificationEventListener(
             message = "${event.userName} a rejoint le Daret \"${event.daretNom}\" (${event.currentCount}/${event.taille})",
             data = """{"daretId": "${event.daretId}", "userId": "${event.userId}"}"""
         )
-
-        // Notifier le nouveau membre
         notificationService.createNotification(
             userId = event.userId,
             type = NotificationType.DARET_INVITATION,
@@ -113,9 +83,7 @@ class NotificationEventListener(
         )
     }
 
-    @Async
-    @EventListener
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @AsyncEventHandler
     fun onMemberLeft(event: MemberLeftEvent) {
         logger.info { "Handling MemberLeftEvent: user ${event.userId} left daret ${event.daretId}" }
         notificationService.createNotification(
@@ -127,17 +95,9 @@ class NotificationEventListener(
         )
     }
 
-    // ==========================================
-    // Round Events
-    // ==========================================
-
-    @Async
-    @EventListener
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @AsyncEventHandler
     fun onRoundClosed(event: RoundClosedEvent) {
         logger.info { "Handling RoundClosedEvent for round ${event.roundId}" }
-
-        // Notifier le bénéficiaire
         notificationService.createNotification(
             userId = event.receveurId,
             type = NotificationType.ROUND_ENDED,
@@ -145,8 +105,6 @@ class NotificationEventListener(
             message = "Le round ${event.roundNumero} du Daret \"${event.daretNom}\" est clos. Vous recevez ${event.montantTotal}.",
             data = """{"daretId": "${event.daretId}", "roundId": "${event.roundId}", "montant": ${event.montantTotal}}"""
         )
-
-        // Notifier tous les autres membres
         event.membreIds.filter { it != event.receveurId }.forEach { membreUserId ->
             notificationService.createNotification(
                 userId = membreUserId,
@@ -158,17 +116,9 @@ class NotificationEventListener(
         }
     }
 
-    // ==========================================
-    // Payment Events
-    // ==========================================
-
-    @Async
-    @EventListener
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @AsyncEventHandler
     fun onPaymentSucceeded(event: PaymentSucceededEvent) {
         logger.info { "Handling PaymentSucceededEvent for payment ${event.paymentId}" }
-
-        // Notifier le payeur
         notificationService.createNotification(
             userId = event.userId,
             type = NotificationType.PAYMENT_RECEIVED,
@@ -176,8 +126,6 @@ class NotificationEventListener(
             message = "Votre paiement de ${event.montant} ${event.devise} pour le round ${event.roundNumero} du Daret \"${event.daretNom}\" a été confirmé.",
             data = """{"paymentId": "${event.paymentId}", "daretId": "${event.daretId}", "roundId": "${event.roundId}"}"""
         )
-
-        // Notifier le bénéficiaire du round
         if (event.receveurId != event.userId) {
             notificationService.createNotification(
                 userId = event.receveurId,
@@ -189,9 +137,7 @@ class NotificationEventListener(
         }
     }
 
-    @Async
-    @EventListener
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @AsyncEventHandler
     fun onPaymentFailed(event: PaymentFailedEvent) {
         logger.info { "Handling PaymentFailedEvent for payment ${event.paymentId}" }
         notificationService.createNotification(
@@ -203,9 +149,7 @@ class NotificationEventListener(
         )
     }
 
-    @Async
-    @EventListener
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @AsyncEventHandler
     fun onRefundCreated(event: RefundCreatedEvent) {
         logger.info { "Handling RefundCreatedEvent for refund ${event.refundId}" }
         notificationService.createNotification(

@@ -2,7 +2,7 @@ package com.tonti.dto.auth
 
 import jakarta.validation.constraints.*
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 
 // ==========================================
 // Registration

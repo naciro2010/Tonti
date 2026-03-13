@@ -28,8 +28,10 @@ class AsyncConfig : AsyncConfigurer {
     }
 
     override fun getAsyncUncaughtExceptionHandler(): AsyncUncaughtExceptionHandler {
-        return AsyncUncaughtExceptionHandler { ex: Throwable, method: Method, vararg params: Any ->
-            logger.error(ex) { "Async error in ${method.name} with params ${params.contentToString()}" }
+        return object : AsyncUncaughtExceptionHandler {
+            override fun handleUncaughtException(ex: Throwable, method: Method, vararg params: Any) {
+                logger.error(ex) { "Async error in ${method.name} with params ${params.contentToString()}" }
+            }
         }
     }
 }

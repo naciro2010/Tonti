@@ -4,7 +4,7 @@ import com.tonti.entity.AuditLog
 import com.tonti.repository.AuditLogRepository
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
-import java.util.*
+import java.util.UUID
 
 private val logger = KotlinLogging.logger {}
 

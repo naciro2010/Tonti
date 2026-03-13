@@ -4,7 +4,7 @@ import com.tonti.entity.StripeEvent
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
-import java.util.*
+import java.util.UUID
 
 @Repository
 interface StripeEventRepository : JpaRepository<StripeEvent, UUID> {
