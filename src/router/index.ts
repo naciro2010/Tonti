@@ -25,6 +25,12 @@ const routes: RouteRecordRaw[] = [
     props: true,
   },
   {
+    path: '/assistant',
+    name: 'assistant',
+    component: () => import('@/pages/assistant.vue'),
+    meta: { ssg: true },
+  },
+  {
     path: '/:pathMatch(.*)*',
     redirect: '/',
   },

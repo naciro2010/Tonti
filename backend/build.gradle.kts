@@ -53,6 +53,15 @@ dependencies {
     // Stripe SDK
     implementation("com.stripe:stripe-java:27.2.0")
 
+    // Spring WebFlux (WebClient for Ollama)
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
+
+    // PDF Generation
+    implementation("com.itextpdf:itext-core:8.0.5")
+
+    // Excel Generation
+    implementation("org.apache.poi:poi-ooxml:5.3.0")
+
     // API Documentation
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
 

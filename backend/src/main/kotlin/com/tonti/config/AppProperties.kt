@@ -6,7 +6,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 data class AppProperties(
     val jwt: JwtProperties,
     val stripe: StripeProperties,
-    val cors: CorsProperties
+    val cors: CorsProperties,
+    val ollama: OllamaProperties = OllamaProperties()
 )
 
 data class JwtProperties(
@@ -23,4 +24,10 @@ data class StripeProperties(
 
 data class CorsProperties(
     val allowedOrigins: String
+)
+
+data class OllamaProperties(
+    val baseUrl: String = "http://localhost:11434",
+    val model: String = "mistral",
+    val timeoutSeconds: Long = 120
 )

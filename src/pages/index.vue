@@ -38,6 +38,11 @@ const scrollToDemo = () => {
           <BaseButton size="lg" variant="secondary" @click="scrollToDemo">
             {{ t('landing.hero.cta_secondary') }}
           </BaseButton>
+          <RouterLink to="/assistant">
+            <BaseButton size="lg" variant="secondary" class="border-purple-500/30 text-purple-300 hover:bg-purple-500/10">
+              Assistant IA
+            </BaseButton>
+          </RouterLink>
         </div>
 
         <!-- Stats Section -->
