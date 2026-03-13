@@ -7,16 +7,32 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/pages/index.vue'),
   },
   {
+    path: '/login',
+    name: 'login',
+    component: () => import('@/pages/login.vue'),
+    meta: { guest: true },
+  },
+  {
+    path: '/inscription',
+    name: 'register',
+    component: () => import('@/pages/inscription.vue'),
+    meta: { guest: true },
+  },
+  {
+    path: '/mes-darets',
+    name: 'my-darets',
+    component: () => import('@/pages/mes-darets.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/daret/creer',
     name: 'daret-create',
     component: () => import('@/pages/daret/creer.vue'),
-    meta: { ssg: true },
   },
   {
     path: '/daret/rejoindre',
     name: 'daret-join',
     component: () => import('@/pages/daret/rejoindre.vue'),
-    meta: { ssg: true },
   },
   {
     path: '/daret/:id',
