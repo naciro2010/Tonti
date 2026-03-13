@@ -8,9 +8,11 @@ import com.stripe.param.*
 import com.tonti.config.AppProperties
 import com.tonti.dto.payment.*
 import com.tonti.entity.*
+import com.tonti.event.*
 import com.tonti.exception.PaymentException
 import com.tonti.repository.*
 import mu.KotlinLogging
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -26,7 +28,8 @@ class StripeService(
     private val paymentRepository: PaymentRepository,
     private val paymentMethodRepository: PaymentMethodRepository,
     private val stripeEventRepository: StripeEventRepository,
-    private val refundRepository: RefundRepository
+    private val refundRepository: RefundRepository,
+    private val eventPublisher: ApplicationEventPublisher
 ) {
 
     // ==========================================
@@ -354,7 +357,17 @@ class StripeService(
 
             logger.info { "Created refund ${stripeRefund.id} for payment ${payment.id}" }
 
-            return refundRepository.save(refund)
+            val savedRefund = refundRepository.save(refund)
+
+            eventPublisher.publishEvent(RefundCreatedEvent(
+                refundId = savedRefund.id!!,
+                paymentId = payment.id!!,
+                userId = payment.user.id!!,
+                montant = savedRefund.montant,
+                raison = savedRefund.raison
+            ))
+
+            return savedRefund
         } catch (e: StripeException) {
             logger.error(e) { "Failed to create refund for payment ${payment.id}" }
             throw PaymentException("Impossible de créer le remboursement: ${e.message}", e)
@@ -422,6 +435,19 @@ class StripeService(
             payment.stripeChargeId = paymentIntent.latestCharge
             paymentRepository.save(payment)
             logger.info { "Payment ${payment.id} marked as succeeded" }
+
+            eventPublisher.publishEvent(PaymentSucceededEvent(
+                paymentId = payment.id!!,
+                userId = payment.user.id!!,
+                userName = payment.user.fullName(),
+                daretId = payment.daret.id!!,
+                daretNom = payment.daret.nom,
+                roundId = payment.round.id!!,
+                roundNumero = payment.round.numero,
+                receveurId = payment.round.receveur.user.id!!,
+                montant = payment.montant,
+                devise = payment.daret.devise
+            ))
         }
     }
 
@@ -436,6 +462,15 @@ class StripeService(
             )
             paymentRepository.save(payment)
             logger.info { "Payment ${payment.id} marked as failed" }
+
+            eventPublisher.publishEvent(PaymentFailedEvent(
+                paymentId = payment.id!!,
+                userId = payment.user.id!!,
+                daretId = payment.daret.id!!,
+                roundId = payment.round.id!!,
+                errorMessage = paymentIntent.lastPaymentError?.message,
+                errorCode = paymentIntent.lastPaymentError?.code
+            ))
         }
     }
 
@@ -447,6 +482,13 @@ class StripeService(
             payment.statut = PaymentStatus.CANCELLED
             paymentRepository.save(payment)
             logger.info { "Payment ${payment.id} marked as cancelled" }
+
+            eventPublisher.publishEvent(PaymentCancelledEvent(
+                paymentId = payment.id!!,
+                userId = payment.user.id!!,
+                daretId = payment.daret.id!!,
+                roundId = payment.round.id!!
+            ))
         }
     }
 

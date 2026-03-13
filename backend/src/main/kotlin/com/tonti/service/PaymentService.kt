@@ -2,10 +2,12 @@ package com.tonti.service
 
 import com.tonti.dto.payment.*
 import com.tonti.entity.*
+import com.tonti.event.*
 import com.tonti.exception.*
 import com.tonti.repository.*
 import com.tonti.service.payment.StripeService
 import mu.KotlinLogging
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -20,7 +22,8 @@ class PaymentService(
     private val paymentRepository: PaymentRepository,
     private val paymentMethodRepository: PaymentMethodRepository,
     private val roundRepository: RoundRepository,
-    private val daretService: DaretService
+    private val daretService: DaretService,
+    private val eventPublisher: ApplicationEventPublisher
 ) {
 
     @Transactional
@@ -68,6 +71,15 @@ class PaymentService(
 
         logger.info { "Created payment ${payment.id} for user ${user.id} in round ${round.id}" }
 
+        eventPublisher.publishEvent(PaymentCreatedEvent(
+            paymentId = payment.id!!,
+            userId = user.id!!,
+            daretId = daret.id!!,
+            roundId = round.id!!,
+            montant = request.amount,
+            devise = daret.devise
+        ))
+
         return paymentIntentResponse
     }
 
@@ -93,6 +105,21 @@ class PaymentService(
         }
 
         paymentRepository.save(payment)
+
+        if (payment.statut == PaymentStatus.SUCCEEDED) {
+            eventPublisher.publishEvent(PaymentSucceededEvent(
+                paymentId = payment.id!!,
+                userId = payment.user.id!!,
+                userName = payment.user.fullName(),
+                daretId = payment.daret.id!!,
+                daretNom = payment.daret.nom,
+                roundId = payment.round.id!!,
+                roundNumero = payment.round.numero,
+                receveurId = payment.round.receveur.user.id!!,
+                montant = payment.montant,
+                devise = payment.daret.devise
+            ))
+        }
 
         return toPaymentResponse(payment)
     }
@@ -146,6 +173,13 @@ class PaymentService(
         paymentRepository.save(payment)
 
         logger.info { "Cancelled payment ${payment.id}" }
+
+        eventPublisher.publishEvent(PaymentCancelledEvent(
+            paymentId = payment.id!!,
+            userId = user.id!!,
+            daretId = payment.daret.id!!,
+            roundId = payment.round.id!!
+        ))
 
         return toPaymentResponse(payment)
     }
