@@ -77,6 +77,7 @@ dependencies {
     testImplementation("org.testcontainers:postgresql:1.20.4")
     testImplementation("org.testcontainers:junit-jupiter:1.20.4")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testRuntimeOnly("com.h2database:h2")
 }
 
 allOpen {

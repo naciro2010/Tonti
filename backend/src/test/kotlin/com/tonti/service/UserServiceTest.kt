@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.security.crypto.password.PasswordEncoder
 import java.util.*
 
@@ -28,11 +29,14 @@ class UserServiceTest {
     @MockK
     private lateinit var stripeService: StripeService
 
+    @MockK(relaxed = true)
+    private lateinit var eventPublisher: ApplicationEventPublisher
+
     private lateinit var userService: UserService
 
     @BeforeEach
     fun setup() {
-        userService = UserService(userRepository, passwordEncoder, stripeService)
+        userService = UserService(userRepository, passwordEncoder, stripeService, eventPublisher)
     }
 
     @Test
