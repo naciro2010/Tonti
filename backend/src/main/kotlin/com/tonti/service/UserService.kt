@@ -2,16 +2,20 @@ package com.tonti.service
 
 import com.tonti.dto.auth.*
 import com.tonti.entity.User
+import com.tonti.event.UserLoggedInEvent
+import com.tonti.event.UserProfileUpdatedEvent
+import com.tonti.event.UserRegisteredEvent
 import com.tonti.exception.ConflictException
 import com.tonti.exception.NotFoundException
 import com.tonti.repository.UserRepository
 import com.tonti.service.payment.StripeService
 import mu.KotlinLogging
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 
 private val logger = KotlinLogging.logger {}
 
@@ -19,7 +23,8 @@ private val logger = KotlinLogging.logger {}
 class UserService(
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder,
-    private val stripeService: StripeService
+    private val stripeService: StripeService,
+    private val eventPublisher: ApplicationEventPublisher
 ) {
 
     @Transactional
@@ -46,6 +51,13 @@ class UserService(
         }
 
         logger.info { "Created user ${savedUser.id} with email ${savedUser.email}" }
+
+        eventPublisher.publishEvent(UserRegisteredEvent(
+            userId = savedUser.id!!,
+            email = savedUser.email,
+            firstName = savedUser.firstName,
+            lastName = savedUser.lastName
+        ))
 
         return savedUser
     }
@@ -80,7 +92,15 @@ class UserService(
             }
         }
 
-        return userRepository.save(user)
+        val saved = userRepository.save(user)
+
+        eventPublisher.publishEvent(UserProfileUpdatedEvent(
+            userId = saved.id!!,
+            firstName = saved.firstName,
+            lastName = saved.lastName
+        ))
+
+        return saved
     }
 
     @Transactional
@@ -101,6 +121,11 @@ class UserService(
     fun updateLastLogin(user: User) {
         user.lastLoginAt = Instant.now()
         userRepository.save(user)
+
+        eventPublisher.publishEvent(UserLoggedInEvent(
+            userId = user.id!!,
+            email = user.email
+        ))
     }
 
     fun toUserResponse(user: User): UserResponse {

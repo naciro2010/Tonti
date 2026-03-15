@@ -51,7 +51,7 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
 
     // Stripe SDK
-    implementation("com.stripe:stripe-java:27.2.0")
+    implementation("com.stripe:stripe-java:27.1.2")
 
     // API Documentation
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
@@ -77,6 +77,7 @@ dependencies {
     testImplementation("org.testcontainers:postgresql:1.20.4")
     testImplementation("org.testcontainers:junit-jupiter:1.20.4")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testRuntimeOnly("com.h2database:h2")
 }
 
 allOpen {

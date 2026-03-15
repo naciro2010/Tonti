@@ -4,11 +4,14 @@ import { useI18n } from 'vue-i18n';
 
 import BaseButton from '@/components/BaseButton.vue';
 import { useDaretStore } from '@/composables/useDaretStore';
+import { useAuthStore } from '@/composables/useAuthStore';
 
 const { t } = useI18n();
 const store = useDaretStore();
+const auth = useAuthStore();
 
 const featured = computed(() => store.allDarets.value.slice(0, 3));
+const createLink = computed(() => auth.isAuthenticated.value ? '/daret/creer' : '/inscription');
 
 const scrollToDemo = () => {
   document.getElementById('demo')?.scrollIntoView({ behavior: 'smooth' });
@@ -30,7 +33,7 @@ const scrollToDemo = () => {
           {{ t('landing.hero.subtitle') }}
         </p>
         <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
-          <RouterLink to="/daret/creer">
+          <RouterLink :to="createLink">
             <BaseButton size="lg" class="shadow-lg shadow-primary/20 transition-all hover:shadow-xl hover:shadow-primary/30">
               {{ t('landing.hero.cta_primary') }}
             </BaseButton>
@@ -374,7 +377,7 @@ const scrollToDemo = () => {
             <h2 class="text-3xl font-bold">{{ t('landing.demo.title') }}</h2>
             <p class="mt-2 text-white/60">{{ t('app.tagline') }}</p>
           </div>
-          <RouterLink to="/daret/creer">
+          <RouterLink :to="createLink">
             <BaseButton variant="secondary">{{ t('actions.create') }}</BaseButton>
           </RouterLink>
         </div>
@@ -424,7 +427,7 @@ const scrollToDemo = () => {
             <h2 class="text-3xl font-bold sm:text-4xl">{{ t('landing.cta.title') }}</h2>
             <p class="mt-4 text-lg text-white/70">{{ t('landing.cta.subtitle') }}</p>
             <div class="mt-8">
-              <RouterLink to="/daret/creer">
+              <RouterLink :to="createLink">
                 <BaseButton size="lg" class="shadow-lg shadow-primary/20 transition-all hover:shadow-xl hover:shadow-primary/30">
                   {{ t('landing.cta.button') }}
                 </BaseButton>

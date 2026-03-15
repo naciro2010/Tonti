@@ -6,7 +6,7 @@ import com.tonti.entity.PaymentType
 import jakarta.validation.constraints.*
 import java.math.BigDecimal
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 
 // ==========================================
 // Payment Intent DTOs

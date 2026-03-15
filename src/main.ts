@@ -13,5 +13,18 @@ export const createApp = ViteSSG(App, { routes, base: import.meta.env.BASE_URL }
 
   if (isClient) {
     usePlausible(router);
+
+    // Navigation guard for auth
+    router.beforeEach((to, _from, next) => {
+      const isAuthenticated = !!localStorage.getItem('tonti:accessToken');
+
+      if (to.meta.requiresAuth && !isAuthenticated) {
+        next({ path: '/login', query: { redirect: to.fullPath } });
+      } else if (to.meta.guest && isAuthenticated) {
+        next('/mes-darets');
+      } else {
+        next();
+      }
+    });
   }
 });

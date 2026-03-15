@@ -2,9 +2,11 @@ package com.tonti.service
 
 import com.tonti.dto.daret.*
 import com.tonti.entity.*
+import com.tonti.event.*
 import com.tonti.exception.*
 import com.tonti.repository.*
 import mu.KotlinLogging
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -13,7 +15,7 @@ import java.math.BigDecimal
 import java.security.SecureRandom
 import java.time.Instant
 import java.time.temporal.ChronoUnit
-import java.util.*
+import java.util.UUID
 
 private val logger = KotlinLogging.logger {}
 
@@ -23,7 +25,8 @@ class DaretService(
     private val membreRepository: MembreRepository,
     private val roundRepository: RoundRepository,
     private val paymentRepository: PaymentRepository,
-    private val userService: UserService
+    private val userService: UserService,
+    private val eventPublisher: ApplicationEventPublisher
 ) {
 
     private val random = SecureRandom()
@@ -56,6 +59,17 @@ class DaretService(
         membreRepository.save(membre)
 
         logger.info { "Created Daret ${savedDaret.id} by user ${createur.id}" }
+
+        eventPublisher.publishEvent(DaretCreatedEvent(
+            daretId = savedDaret.id!!,
+            nom = savedDaret.nom,
+            createurId = createur.id!!,
+            createurName = createur.fullName(),
+            codeInvitation = savedDaret.codeInvitation,
+            montantMensuel = savedDaret.montantMensuel,
+            devise = savedDaret.devise,
+            taille = savedDaret.taille
+        ))
 
         return savedDaret
     }
@@ -104,7 +118,15 @@ class DaretService(
         request.visibilite?.let { daret.visibilite = it }
         request.delaiGraceJours?.let { daret.delaiGraceJours = it }
 
-        return daretRepository.save(daret)
+        val saved = daretRepository.save(daret)
+
+        eventPublisher.publishEvent(DaretUpdatedEvent(
+            daretId = saved.id!!,
+            nom = saved.nom,
+            updatedByUserId = userId
+        ))
+
+        return saved
     }
 
     @Transactional
@@ -133,6 +155,17 @@ class DaretService(
 
         val savedMembre = membreRepository.save(membre)
         logger.info { "User ${user.id} joined Daret ${daret.id}" }
+
+        eventPublisher.publishEvent(MemberJoinedEvent(
+            membreId = savedMembre.id!!,
+            userId = user.id!!,
+            userName = user.fullName(),
+            daretId = daret.id!!,
+            daretNom = daret.nom,
+            createurId = daret.createur.id!!,
+            currentCount = currentCount + 1,
+            taille = daret.taille
+        ))
 
         return savedMembre
     }
@@ -164,6 +197,14 @@ class DaretService(
         }
 
         logger.info { "User $userId left Daret $daretId" }
+
+        eventPublisher.publishEvent(MemberLeftEvent(
+            userId = userId,
+            userName = membre.user.fullName(),
+            daretId = daretId,
+            daretNom = daret.nom,
+            createurId = daret.createur.id!!
+        ))
     }
 
     @Transactional
@@ -219,6 +260,16 @@ class DaretService(
         val savedDaret = daretRepository.save(daret)
         logger.info { "Started Daret ${daret.id} with ${roster.size} members" }
 
+        eventPublisher.publishEvent(DaretStartedEvent(
+            daretId = savedDaret.id!!,
+            nom = savedDaret.nom,
+            startedByUserId = userId,
+            membresCount = roster.size,
+            dateDebut = savedDaret.dateDebut!!,
+            dateFin = savedDaret.dateFin!!,
+            membreIds = roster.map { it.user.id!! }
+        ))
+
         return savedDaret
     }
 
@@ -251,12 +302,31 @@ class DaretService(
 
         val savedRound = roundRepository.save(round)
 
+        val activeMembreIds = membreRepository.findActiveByDaretId(daretId).map { it.user.id!! }
+
+        eventPublisher.publishEvent(RoundClosedEvent(
+            roundId = savedRound.id!!,
+            roundNumero = savedRound.numero,
+            daretId = daretId,
+            daretNom = daret.nom,
+            receveurId = round.receveur.user.id!!,
+            receveurName = round.receveur.user.fullName(),
+            montantTotal = savedRound.montantTotal,
+            membreIds = activeMembreIds
+        ))
+
         // Vérifier si le Daret est terminé
         val allRoundsClosed = roundRepository.findByDaretId(daretId).all { it.estClos }
         if (allRoundsClosed) {
             daret.etat = DaretStatus.TERMINEE
             daretRepository.save(daret)
             logger.info { "Daret $daretId completed" }
+
+            eventPublisher.publishEvent(DaretCompletedEvent(
+                daretId = daretId,
+                nom = daret.nom,
+                membreIds = activeMembreIds
+            ))
         }
 
         logger.info { "Round $roundId closed for Daret $daretId" }
