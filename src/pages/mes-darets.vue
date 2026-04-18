@@ -49,13 +49,13 @@ function statusLabel(etat: string) {
 
 function statusColor(etat: string) {
   const map: Record<string, string> = {
-    RECRUTEMENT: 'bg-blue-500/20 text-blue-400',
-    VERROUILLEE: 'bg-yellow-500/20 text-yellow-400',
-    ACTIVE: 'bg-green-500/20 text-green-400',
-    TERMINEE: 'bg-white/10 text-white/50',
-    ANNULEE: 'bg-red-500/20 text-red-400',
+    RECRUTEMENT: 'bg-blue-500/15 text-blue-300 ring-1 ring-inset ring-blue-500/30',
+    VERROUILLEE: 'bg-warning/15 text-warningSoft ring-1 ring-inset ring-warning/30',
+    ACTIVE: 'bg-success/15 text-successSoft ring-1 ring-inset ring-success/30',
+    TERMINEE: 'bg-white/10 text-white/60 ring-1 ring-inset ring-white/10',
+    ANNULEE: 'bg-danger/15 text-dangerSoft ring-1 ring-inset ring-danger/30',
   }
-  return map[etat] || 'bg-white/10 text-white/50'
+  return map[etat] || 'bg-white/10 text-white/60 ring-1 ring-inset ring-white/10'
 }
 
 function formatCurrency(amount: number, devise: string) {
@@ -83,27 +83,38 @@ function formatCurrency(amount: number, devise: string) {
     </div>
 
     <!-- Loading -->
-    <div v-if="loading" class="space-y-4">
-      <div v-for="i in 3" :key="i" class="card animate-pulse p-6">
-        <div class="h-5 w-48 rounded bg-white/10" />
-        <div class="mt-3 h-4 w-32 rounded bg-white/5" />
+    <div v-if="loading" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div v-for="i in 3" :key="i" class="card space-y-3 p-5">
+        <div class="skeleton h-5 w-48" />
+        <div class="skeleton h-3 w-32" />
+        <div class="mt-4 space-y-2">
+          <div class="skeleton h-3 w-full" />
+          <div class="skeleton h-3 w-2/3" />
+        </div>
       </div>
     </div>
 
     <!-- Empty State -->
-    <div v-else-if="darets.length === 0" class="card flex flex-col items-center py-16 text-center">
-      <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-        <svg class="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+    <div
+      v-else-if="darets.length === 0"
+      class="card flex flex-col items-center py-20 text-center animate-fade-in-up"
+    >
+      <div class="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 ring-1 ring-inset ring-primary/30">
+        <svg class="h-10 w-10 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
       </div>
-      <h2 class="mb-2 text-lg font-semibold">Aucun Daret</h2>
-      <p class="mb-6 max-w-sm text-sm text-white/60">
-        Vous n'avez pas encore de Daret. Creez-en un ou rejoignez un Daret existant avec un code d'invitation.
+      <h2 class="mb-2 text-xl font-semibold">Aucun Daret pour le moment</h2>
+      <p class="mb-6 max-w-md text-sm leading-relaxed text-white/70">
+        Lancez votre premiere cagnotte rotative en quelques minutes ou rejoignez un Daret existant avec un code d'invitation.
       </p>
-      <div class="flex gap-3">
-        <BaseButton variant="secondary" @click="router.push('/daret/rejoindre')">Rejoindre un Daret</BaseButton>
-        <BaseButton variant="primary" @click="router.push('/daret/creer')">Creer un Daret</BaseButton>
+      <div class="flex flex-col gap-3 sm:flex-row">
+        <BaseButton variant="secondary" @click="router.push('/daret/rejoindre')">
+          Rejoindre un Daret
+        </BaseButton>
+        <BaseButton variant="primary" @click="router.push('/daret/creer')">
+          Creer un Daret
+        </BaseButton>
       </div>
     </div>
 
@@ -117,7 +128,7 @@ function formatCurrency(amount: number, devise: string) {
             v-for="daret in activeDarets"
             :key="daret.id"
             :to="`/daret/${daret.id}`"
-            class="card group p-5 transition hover:border-primary/30"
+            class="card group p-5 no-underline transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-glow"
           >
             <div class="mb-3 flex items-center justify-between">
               <h3 class="font-semibold group-hover:text-primary">{{ daret.nom }}</h3>
@@ -151,7 +162,7 @@ function formatCurrency(amount: number, devise: string) {
             v-for="daret in recruitingDarets"
             :key="daret.id"
             :to="`/daret/${daret.id}`"
-            class="card group p-5 transition hover:border-primary/30"
+            class="card group p-5 no-underline transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-glow"
           >
             <div class="mb-3 flex items-center justify-between">
               <h3 class="font-semibold group-hover:text-primary">{{ daret.nom }}</h3>

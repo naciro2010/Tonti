@@ -22,44 +22,67 @@ const scrollToDemo = () => {
   <div class="space-y-20 pb-12">
     <!-- Hero Section -->
     <section class="relative overflow-hidden">
-      <div class="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-primary/5" />
-      <div class="relative px-4 py-16 text-center sm:px-6 sm:py-24 lg:py-32">
-        <h1 class="mx-auto max-w-4xl text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-          <span class="bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent">
+      <div class="pointer-events-none absolute inset-0 bg-hero-radial" aria-hidden="true" />
+      <div
+        class="pointer-events-none absolute -top-24 left-1/2 h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-primary/20 blur-3xl"
+        aria-hidden="true"
+      />
+      <div class="relative px-4 py-16 text-center sm:px-6 sm:py-24 lg:py-28">
+        <div
+          class="mx-auto inline-flex animate-fade-in items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary"
+        >
+          <span class="relative flex h-2 w-2">
+            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-70" />
+            <span class="relative inline-flex h-2 w-2 rounded-full bg-primary" />
+          </span>
+          {{ t('app.tagline') }}
+        </div>
+        <h1 class="mx-auto mt-6 max-w-4xl animate-fade-in-up text-balance text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
+          <span class="bg-gradient-to-br from-white via-white to-white/60 bg-clip-text text-transparent">
             {{ t('landing.hero.title') }}
           </span>
         </h1>
-        <p class="mx-auto mt-6 max-w-2xl text-lg leading-8 text-white/70 sm:text-xl">
+        <p
+          class="mx-auto mt-6 max-w-2xl animate-fade-in-up text-pretty text-lg leading-8 text-white/70 sm:text-xl"
+          style="animation-delay: 80ms"
+        >
           {{ t('landing.hero.subtitle') }}
         </p>
-        <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
+        <div
+          class="mt-10 flex animate-fade-in-up flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center sm:gap-4"
+          style="animation-delay: 160ms"
+        >
           <RouterLink :to="createLink">
-            <BaseButton size="lg" class="shadow-lg shadow-primary/20 transition-all hover:shadow-xl hover:shadow-primary/30">
+            <BaseButton size="lg" block>
               {{ t('landing.hero.cta_primary') }}
+              <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path
+                  fill-rule="evenodd"
+                  d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                  clip-rule="evenodd"
+                />
+              </svg>
             </BaseButton>
           </RouterLink>
-          <BaseButton size="lg" variant="secondary" @click="scrollToDemo">
+          <BaseButton size="lg" variant="secondary" block @click="scrollToDemo">
             {{ t('landing.hero.cta_secondary') }}
           </BaseButton>
         </div>
 
         <!-- Stats Section -->
-        <div class="mx-auto mt-16 grid max-w-4xl grid-cols-2 gap-6 sm:gap-8 lg:grid-cols-4">
-          <div class="rounded-2xl border border-white/10 bg-surface/50 p-6 backdrop-blur-sm">
-            <div class="text-3xl font-bold text-primary sm:text-4xl">{{ t('landing.stats.stat1_value') }}</div>
-            <div class="mt-2 text-sm text-white/60">{{ t('landing.stats.stat1_label') }}</div>
-          </div>
-          <div class="rounded-2xl border border-white/10 bg-surface/50 p-6 backdrop-blur-sm">
-            <div class="text-3xl font-bold text-primary sm:text-4xl">{{ t('landing.stats.stat2_value') }}</div>
-            <div class="mt-2 text-sm text-white/60">{{ t('landing.stats.stat2_label') }}</div>
-          </div>
-          <div class="rounded-2xl border border-white/10 bg-surface/50 p-6 backdrop-blur-sm">
-            <div class="text-3xl font-bold text-primary sm:text-4xl">{{ t('landing.stats.stat3_value') }}</div>
-            <div class="mt-2 text-sm text-white/60">{{ t('landing.stats.stat3_label') }}</div>
-          </div>
-          <div class="rounded-2xl border border-white/10 bg-surface/50 p-6 backdrop-blur-sm">
-            <div class="text-3xl font-bold text-primary sm:text-4xl">{{ t('landing.stats.stat4_value') }}</div>
-            <div class="mt-2 text-sm text-white/60">{{ t('landing.stats.stat4_label') }}</div>
+        <div
+          class="mx-auto mt-16 grid max-w-4xl animate-fade-in-up grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4"
+          style="animation-delay: 240ms"
+        >
+          <div
+            v-for="n in 4"
+            :key="n"
+            class="group rounded-2xl border border-white/10 bg-surface/50 p-5 backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:bg-surface/70 hover:shadow-glow sm:p-6"
+          >
+            <div class="gradient-text text-3xl font-bold sm:text-4xl">
+              {{ t(`landing.stats.stat${n}_value`) }}
+            </div>
+            <div class="mt-2 text-sm text-white/60">{{ t(`landing.stats.stat${n}_label`) }}</div>
           </div>
         </div>
       </div>
@@ -75,7 +98,7 @@ const scrollToDemo = () => {
 
         <div class="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           <!-- Feature 1: Secure & Local -->
-          <article class="group card space-y-4 transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10">
+          <article class="group card-interactive space-y-4">
             <div class="inline-flex rounded-xl bg-primary/10 p-3">
               <svg class="h-8 w-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -91,7 +114,7 @@ const scrollToDemo = () => {
           </article>
 
           <!-- Feature 2: Multilingual -->
-          <article class="group card space-y-4 transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10">
+          <article class="group card-interactive space-y-4">
             <div class="inline-flex rounded-xl bg-primary/10 p-3">
               <svg class="h-8 w-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -107,7 +130,7 @@ const scrollToDemo = () => {
           </article>
 
           <!-- Feature 3: Simple & Efficient -->
-          <article class="group card space-y-4 transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10">
+          <article class="group card-interactive space-y-4">
             <div class="inline-flex rounded-xl bg-primary/10 p-3">
               <svg class="h-8 w-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -123,7 +146,7 @@ const scrollToDemo = () => {
           </article>
 
           <!-- Feature 4: Payment Integration -->
-          <article class="group card space-y-4 transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10">
+          <article class="group card-interactive space-y-4">
             <div class="inline-flex rounded-xl bg-primary/10 p-3">
               <svg class="h-8 w-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -139,7 +162,7 @@ const scrollToDemo = () => {
           </article>
 
           <!-- Feature 5: Access Management -->
-          <article class="group card space-y-4 transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10">
+          <article class="group card-interactive space-y-4">
             <div class="inline-flex rounded-xl bg-primary/10 p-3">
               <svg class="h-8 w-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -155,7 +178,7 @@ const scrollToDemo = () => {
           </article>
 
           <!-- Feature 6: Open Source -->
-          <article class="group card space-y-4 transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10">
+          <article class="group card-interactive space-y-4">
             <div class="inline-flex rounded-xl bg-primary/10 p-3">
               <svg class="h-8 w-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -383,7 +406,11 @@ const scrollToDemo = () => {
         </div>
 
         <div v-if="featured.length > 0" class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          <article v-for="daret in featured" :key="daret.id" class="card group space-y-4 transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10">
+          <article
+            v-for="daret in featured"
+            :key="daret.id"
+            class="card-interactive group space-y-4"
+          >
             <div class="flex items-start justify-between">
               <h3 class="text-xl font-semibold">{{ daret.nom }}</h3>
               <span class="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
@@ -426,10 +453,17 @@ const scrollToDemo = () => {
           <div class="rounded-3xl bg-background p-8 text-center sm:p-12">
             <h2 class="text-3xl font-bold sm:text-4xl">{{ t('landing.cta.title') }}</h2>
             <p class="mt-4 text-lg text-white/70">{{ t('landing.cta.subtitle') }}</p>
-            <div class="mt-8">
+            <div class="mt-8 flex justify-center">
               <RouterLink :to="createLink">
-                <BaseButton size="lg" class="shadow-lg shadow-primary/20 transition-all hover:shadow-xl hover:shadow-primary/30">
+                <BaseButton size="lg">
                   {{ t('landing.cta.button') }}
+                  <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path
+                      fill-rule="evenodd"
+                      d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
                 </BaseButton>
               </RouterLink>
             </div>

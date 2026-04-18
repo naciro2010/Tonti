@@ -45,10 +45,17 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <div class="mx-auto max-w-md py-12">
+  <div class="mx-auto max-w-md py-12 animate-fade-in-up">
     <div class="card p-8">
-      <h1 class="mb-2 text-2xl font-bold">{{ t('auth.login') }}</h1>
-      <p class="mb-8 text-sm text-white/60">Connectez-vous pour acceder a vos Darets</p>
+      <div class="mb-8 text-center">
+        <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/15 text-primary ring-1 ring-inset ring-primary/30">
+          <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.25c0-3.728 3.022-6.75 6.75-6.75h1.5c3.728 0 6.75 3.022 6.75 6.75" />
+          </svg>
+        </div>
+        <h1 class="text-2xl font-bold">{{ t('auth.login') }}</h1>
+        <p class="mt-2 text-sm text-white/60">Connectez-vous pour acceder a vos Darets</p>
+      </div>
 
       <form @submit.prevent="handleSubmit" class="space-y-5">
         <BaseInput
@@ -59,6 +66,7 @@ async function handleSubmit() {
           :error="errors.email"
           required
           autocomplete="email"
+          placeholder="you@example.com"
         />
 
         <BaseInput
@@ -69,23 +77,17 @@ async function handleSubmit() {
           :error="errors.password"
           required
           autocomplete="current-password"
+          placeholder="********"
         />
 
-        <BaseButton type="submit" variant="primary" block :disabled="submitting">
-          <span v-if="submitting" class="flex items-center gap-2">
-            <svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25" />
-              <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" class="opacity-75" />
-            </svg>
-            Connexion...
-          </span>
-          <span v-else>{{ t('auth.login') }}</span>
+        <BaseButton type="submit" variant="primary" block :loading="submitting">
+          {{ submitting ? 'Connexion...' : t('auth.login') }}
         </BaseButton>
       </form>
 
       <p class="mt-6 text-center text-sm text-white/60">
         Pas encore de compte ?
-        <RouterLink to="/inscription" class="font-medium text-primary hover:text-primaryHover">
+        <RouterLink to="/inscription" class="font-semibold text-primary no-underline transition-colors hover:text-primaryHover">
           Creer un compte
         </RouterLink>
       </p>
