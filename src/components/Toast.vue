@@ -1,25 +1,30 @@
 <script setup lang="ts">
-import { Transition } from 'vue';
+import { computed } from 'vue';
 
 const props = defineProps<{
   message: string;
   show: boolean;
   type?: 'success' | 'error' | 'info';
 }>();
+
+const config = computed(() => {
+  switch (props.type) {
+    case 'success':
+      return { classes: 'bg-success/90 text-white ring-success/40' };
+    case 'error':
+      return { classes: 'bg-danger/90 text-white ring-danger/40' };
+    default:
+      return { classes: 'bg-surface/95 text-white ring-white/10' };
+  }
+});
 </script>
 
 <template>
-  <Transition name="fade" mode="out-in">
+  <Transition name="toast" mode="out-in">
     <div
       v-if="props.show"
-      class="fixed bottom-6 inset-x-0 mx-auto w-fit rounded-full px-6 py-3 text-sm font-medium shadow-lg"
-      :class="[
-        props.type === 'success'
-          ? 'bg-success/90 text-white'
-          : props.type === 'error'
-            ? 'bg-danger/90 text-white'
-            : 'bg-white/20 text-white',
-      ]"
+      class="fixed inset-x-4 bottom-4 z-50 mx-auto w-fit max-w-[calc(100%-2rem)] rounded-full px-5 py-2.5 text-sm font-medium shadow-2xl ring-1 backdrop-blur-md sm:bottom-6"
+      :class="config.classes"
       role="status"
     >
       {{ props.message }}
@@ -28,13 +33,16 @@ const props = defineProps<{
 </template>
 
 <style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.2s ease;
+.toast-enter-active,
+.toast-leave-active {
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
 
-.fade-enter-from,
-.fade-leave-to {
+.toast-enter-from,
+.toast-leave-to {
   opacity: 0;
+  transform: translateY(8px);
 }
 </style>

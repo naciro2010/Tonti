@@ -61,10 +61,17 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <div class="mx-auto max-w-md py-12">
+  <div class="mx-auto max-w-md py-12 animate-fade-in-up">
     <div class="card p-8">
-      <h1 class="mb-2 text-2xl font-bold">Creer un compte</h1>
-      <p class="mb-8 text-sm text-white/60">Inscrivez-vous pour creer ou rejoindre un Daret</p>
+      <div class="mb-8 text-center">
+        <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/15 text-primary ring-1 ring-inset ring-primary/30">
+          <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM3 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 019.374 21c-2.331 0-4.512-.645-6.374-1.766z" />
+          </svg>
+        </div>
+        <h1 class="text-2xl font-bold">Creer un compte</h1>
+        <p class="mt-2 text-sm text-white/60">Inscrivez-vous pour creer ou rejoindre un Daret</p>
+      </div>
 
       <form @submit.prevent="handleSubmit" class="space-y-4">
         <div class="grid grid-cols-2 gap-4">
@@ -126,21 +133,14 @@ async function handleSubmit() {
           autocomplete="new-password"
         />
 
-        <BaseButton type="submit" variant="primary" block :disabled="submitting">
-          <span v-if="submitting" class="flex items-center gap-2">
-            <svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25" />
-              <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" class="opacity-75" />
-            </svg>
-            Inscription...
-          </span>
-          <span v-else>Creer mon compte</span>
+        <BaseButton type="submit" variant="primary" block :loading="submitting">
+          {{ submitting ? 'Inscription...' : 'Creer mon compte' }}
         </BaseButton>
       </form>
 
       <p class="mt-6 text-center text-sm text-white/60">
         Deja un compte ?
-        <RouterLink to="/login" class="font-medium text-primary hover:text-primaryHover">
+        <RouterLink to="/login" class="font-semibold text-primary no-underline transition-colors hover:text-primaryHover">
           Se connecter
         </RouterLink>
       </p>

@@ -5,38 +5,64 @@
 @layer base {
   :root {
     color-scheme: dark;
+    --scroll-padding: 5rem;
   }
 
   html {
     @apply bg-background text-white antialiased;
+    scroll-padding-top: var(--scroll-padding);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
   body {
     @apply min-h-screen bg-background text-white;
+    background-image:
+      radial-gradient(60% 60% at 20% 0%, rgba(255, 179, 0, 0.08) 0%, rgba(255, 179, 0, 0) 60%),
+      radial-gradient(50% 50% at 100% 20%, rgba(59, 130, 246, 0.06) 0%, rgba(59, 130, 246, 0) 60%);
+    background-attachment: fixed;
   }
 
-  h1,
-  h2,
-  h3,
+  h1 {
+    @apply font-display text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl;
+  }
+
+  h2 {
+    @apply font-display text-2xl font-bold leading-tight tracking-tight text-white sm:text-3xl;
+  }
+
+  h3 {
+    @apply font-display text-lg font-semibold leading-snug tracking-tight text-white sm:text-xl;
+  }
+
   h4,
   h5,
   h6 {
-    @apply font-semibold tracking-tight text-white;
+    @apply font-display font-semibold tracking-tight text-white;
+  }
+
+  p {
+    @apply leading-relaxed;
   }
 
   a {
-    @apply text-primary underline-offset-4 transition hover:text-primaryHover;
+    @apply text-primary underline-offset-4 transition-colors hover:text-primaryHover;
   }
 
   label {
-    @apply block text-sm font-medium text-white;
+    @apply block text-sm font-medium text-white/90;
   }
 
   input,
   select,
   textarea {
-    @apply w-full rounded-lg border border-white/10 bg-surface/60 px-4 py-2 text-base text-white shadow-sm transition
-      placeholder:text-white/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary;
+    @apply w-full rounded-xl border border-white/10 bg-surface/60 px-4 py-2.5 text-base text-white shadow-sm transition-all duration-150
+      placeholder:text-white/40
+      hover:border-white/20
+      focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40
+      disabled:cursor-not-allowed disabled:opacity-60
+      aria-[invalid=true]:border-danger aria-[invalid=true]:ring-2 aria-[invalid=true]:ring-danger/30;
   }
 
   button {
@@ -46,14 +72,70 @@
   ::selection {
     @apply bg-primary text-background;
   }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-white/10;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-white/20;
+  }
 }
 
 @layer components {
   .card {
-    @apply rounded-2xl border border-white/10 bg-surface/60 p-6 shadow-xl backdrop-blur supports-backdrop:bg-surface/30;
+    @apply rounded-2xl border border-white/10 bg-surface/60 p-6 shadow-card backdrop-blur-sm supports-backdrop:bg-surface/40 transition-colors duration-200;
+  }
+
+  .card-interactive {
+    @apply card hover:border-primary/40 hover:bg-surface/70 hover:shadow-glow;
   }
 
   .container-responsive {
     @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary via-primarySoft to-primary bg-clip-text text-transparent;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-medium text-white/80;
+  }
+
+  .badge-dot {
+    @apply inline-block h-1.5 w-1.5 rounded-full;
+  }
+
+  .skeleton {
+    @apply relative overflow-hidden rounded-md bg-white/5;
+  }
+
+  .skeleton::after {
+    content: '';
+    @apply absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/10 to-transparent;
+  }
+
+  .link-subtle {
+    @apply text-white/70 no-underline transition-colors hover:text-white;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-pretty {
+    text-wrap: pretty;
   }
 }

@@ -10,20 +10,33 @@ const props = defineProps<{
 
 const { t } = useI18n();
 
-const variant = computed(() => {
+const config = computed(() => {
   switch (props.statut) {
     case 'paye':
-      return 'bg-success/20 text-success';
+      return {
+        classes: 'bg-success/15 text-successSoft ring-1 ring-inset ring-success/30',
+        dot: 'bg-success',
+      };
     case 'retard':
-      return 'bg-danger/20 text-danger';
+      return {
+        classes: 'bg-danger/15 text-dangerSoft ring-1 ring-inset ring-danger/30',
+        dot: 'bg-danger',
+      };
     default:
-      return 'bg-warning/20 text-warning';
+      return {
+        classes: 'bg-warning/15 text-warningSoft ring-1 ring-inset ring-warning/30',
+        dot: 'bg-warning',
+      };
   }
 });
 </script>
 
 <template>
-  <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold" :class="variant">
+  <span
+    class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold"
+    :class="config.classes"
+  >
+    <span class="badge-dot" :class="config.dot" aria-hidden="true" />
     {{ t(`statuses.${props.statut}`) }}
   </span>
 </template>
