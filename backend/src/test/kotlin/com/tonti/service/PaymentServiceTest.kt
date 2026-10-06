@@ -10,6 +10,7 @@ import com.tonti.entity.MembreRole
 import com.tonti.entity.Payment
 import com.tonti.entity.PaymentProvider
 import com.tonti.entity.PaymentStatus
+import com.tonti.entity.Refund
 import com.tonti.entity.Round
 import com.tonti.entity.User
 import com.tonti.event.PaymentCreatedEvent
@@ -97,6 +98,7 @@ class PaymentServiceTest {
         every { roundRepository.findById(round.id!!) } returns Optional.of(round)
         every { paymentRepository.existsSucceededByUserIdAndRoundId(any(), any()) } returns false
         every { paymentRepository.findByUserIdAndRoundIdAndStatutIn(any(), any(), any()) } returns emptyList()
+        every { refundRepository.save(any<Refund>()) } answers { firstArg<Refund>().apply { id = UUID.randomUUID() } }
         every { paymentRepository.save(any()) } answers {
             firstArg<Payment>().apply { if (id == null) id = UUID.randomUUID() }
         }
