@@ -1,6 +1,8 @@
 package com.tonti.entity
 
 import jakarta.persistence.*
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 import java.math.BigDecimal
 import java.time.Instant
 
@@ -46,13 +48,32 @@ class Payment(
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    var provider: PaymentProvider = PaymentProvider.STRIPE,
+
+    /** Référence de commande chez le PSP (id de session Stripe Checkout). */
+    @Column(name = "provider_order_id", unique = true)
+    var providerOrderId: String? = null,
+
+    /** Identifiant de transaction renvoyé par le PSP (PaymentIntent Stripe). */
+    @Column(name = "provider_transaction_id")
+    var providerTransactionId: String? = null,
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    var channel: CheckoutChannel = CheckoutChannel.WEB,
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     var statut: PaymentStatus = PaymentStatus.PENDING,
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     var methode: PaymentType = PaymentType.CARD,
 
-    @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column
     var metadata: String? = null,
 
     @Column(name = "paid_at")
@@ -78,15 +99,24 @@ class Payment(
     fun isSucceeded(): Boolean = statut == PaymentStatus.SUCCEEDED
     fun isFailed(): Boolean = statut == PaymentStatus.FAILED
 
+    /** Un paiement est "ouvert" tant que le PSP peut encore le faire aboutir. */
+    fun isOpen(): Boolean = statut in OPEN_STATUSES
+
     fun markAsSucceeded() {
         statut = PaymentStatus.SUCCEEDED
         paidAt = Instant.now()
+        failureReason = null
+        failureCode = null
     }
 
     fun markAsFailed(reason: String?, code: String?) {
         statut = PaymentStatus.FAILED
         failedAt = Instant.now()
-        failureReason = reason
-        failureCode = code
+        failureReason = reason?.take(500)
+        failureCode = code?.take(50)
+    }
+
+    companion object {
+        val OPEN_STATUSES = setOf(PaymentStatus.PENDING, PaymentStatus.PROCESSING, PaymentStatus.REQUIRES_ACTION)
     }
 }

@@ -14,6 +14,8 @@ interface PaymentRepository : JpaRepository<Payment, UUID> {
 
     fun findByStripePaymentIntentId(stripePaymentIntentId: String): Payment?
 
+    fun findByProviderOrderId(providerOrderId: String): Payment?
+
     @Query("SELECT p FROM Payment p WHERE p.user.id = :userId ORDER BY p.createdAt DESC")
     fun findByUserId(userId: UUID, pageable: Pageable): Page<Payment>
 
@@ -23,8 +25,14 @@ interface PaymentRepository : JpaRepository<Payment, UUID> {
     @Query("SELECT p FROM Payment p WHERE p.round.id = :roundId ORDER BY p.createdAt DESC")
     fun findByRoundId(roundId: UUID): List<Payment>
 
-    @Query("SELECT p FROM Payment p WHERE p.user.id = :userId AND p.round.id = :roundId")
-    fun findByUserIdAndRoundId(userId: UUID, roundId: UUID): Payment?
+    @Query("SELECT p FROM Payment p WHERE p.user.id = :userId AND p.round.id = :roundId AND p.statut IN :statuts")
+    fun findByUserIdAndRoundIdAndStatutIn(userId: UUID, roundId: UUID, statuts: Collection<PaymentStatus>): List<Payment>
+
+    @Query(
+        "SELECT COUNT(p) > 0 FROM Payment p " +
+            "WHERE p.user.id = :userId AND p.round.id = :roundId AND p.statut = com.tonti.entity.PaymentStatus.SUCCEEDED"
+    )
+    fun existsSucceededByUserIdAndRoundId(userId: UUID, roundId: UUID): Boolean
 
     @Query("SELECT p FROM Payment p WHERE p.statut = :statut")
     fun findByStatut(statut: PaymentStatus): List<Payment>

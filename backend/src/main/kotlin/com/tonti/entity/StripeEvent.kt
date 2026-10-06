@@ -1,6 +1,8 @@
 package com.tonti.entity
 
 import jakarta.persistence.*
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 import java.time.Instant
 
 @Entity
@@ -19,7 +21,10 @@ class StripeEvent(
     @Column(nullable = false)
     var type: String,
 
-    @Column(columnDefinition = "jsonb", nullable = false)
+    @JdbcTypeCode(SqlTypes.JSON)
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(nullable = false)
     var data: String,
 
     @Column(nullable = false)

@@ -5,87 +5,99 @@ spring:
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}
 
-  # JPA / Hibernate
   jpa:
     hibernate:
       ddl-auto: validate
     open-in-view: false
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true
         jdbc:
           time_zone: UTC
         default_batch_fetch_size: 20
 
-  # Flyway migrations
   flyway:
     enabled: true
     locations: classpath:db/migration
     baseline-on-migrate: true
 
-  # Jackson
   jackson:
     serialization:
       write-dates-as-timestamps: false
-      indent-output: false
     deserialization:
       fail-on-unknown-properties: false
     default-property-inclusion: non_null
     time-zone: UTC
 
-# Server config
 server:
-  port: ${SERVER_PORT:8080}
+  port: ${PORT:${SERVER_PORT:8080}}
+  # Derrière le proxy de l'hébergeur (Railway, Fly, ALB…) : IP client et schéma réels
+  forward-headers-strategy: framework
   error:
-    include-message: always
-    include-binding-errors: always
+    include-message: never
+    include-binding-errors: never
+    include-stacktrace: never
   compression:
     enabled: true
-    mime-types: application/json,application/xml,text/html,text/xml,text/plain
+    mime-types: application/json,text/html,text/plain
 
-# Actuator
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics,prometheus
+        include: health,info
   endpoint:
     health:
-      show-details: when_authorized
-  health:
-    db:
-      enabled: true
+      show-details: never
+      probes:
+        enabled: true
 
-# Logging
 logging:
   level:
     root: INFO
-    com.tonti: DEBUG
-    org.springframework.security: INFO
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    com.tonti: INFO
 
-# Springdoc OpenAPI
 springdoc:
   api-docs:
     path: /api-docs
+    enabled: ${API_DOCS_ENABLED:true}
   swagger-ui:
     path: /swagger-ui.html
     operationsSorter: method
 
+app:
+  jwt:
+    secret: ${JWT_SECRET:dev-secret-key-must-be-at-least-256-bits-long-for-hs256-algorithm}
+    expiration: ${JWT_EXPIRATION_MS:3600000}             # 1 heure
+    refresh-expiration: ${JWT_REFRESH_EXPIRATION_MS:2592000000}  # 30 jours
+
+  cors:
+    # Web + application native (capacitor://localhost sur iOS, https://localhost sur Android)
+    allowed-origins: ${ALLOWED_ORIGINS:http://localhost:5173,capacitor://localhost,https://localhost}
+
+  urls:
+    api-base-url: ${API_BASE_URL:http://localhost:8080}
+    web-base-url: ${WEB_BASE_URL:http://localhost:5173}
+    app-scheme: ${APP_URL_SCHEME:tonti}
+
+  stripe:
+    enabled: ${STRIPE_ENABLED:false}
+    secret-key: ${STRIPE_SECRET_KEY:}
+    webhook-secret: ${STRIPE_WEBHOOK_SECRET:}
+
+  rate-limit:
+    auth-requests: ${AUTH_RATE_LIMIT:10}
+    auth-window: 1m
+
 ---
-# Development profile
 spring:
   config:
     activate:
       on-profile: dev
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/tonti_db
-    username: tonti
-    password: tonti_secret
-    driver-class-name: org.postgresql.Driver
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/tonti_db}
+    username: ${DATABASE_USERNAME:tonti}
+    password: ${DATABASE_PASSWORD:tonti_secret}
     hikari:
       maximum-pool-size: 10
       minimum-idle: 2
@@ -93,23 +105,15 @@ spring:
   jpa:
     show-sql: true
 
-# App config - Development
-app:
-  jwt:
-    secret: dev-secret-key-must-be-at-least-256-bits-long-for-hs256-algorithm
-    expiration: 86400000      # 24 heures
-    refresh-expiration: 604800000  # 7 jours
+server:
+  error:
+    include-message: always
 
-  stripe:
-    secret-key: ${STRIPE_SECRET_KEY:sk_test_your_key}
-    publishable-key: ${STRIPE_PUBLISHABLE_KEY:pk_test_your_key}
-    webhook-secret: ${STRIPE_WEBHOOK_SECRET:whsec_your_secret}
-
-  cors:
-    allowed-origins: http://localhost:5173,http://localhost:3000
+logging:
+  level:
+    com.tonti: DEBUG
 
 ---
-# Production profile
 spring:
   config:
     activate:
@@ -117,31 +121,25 @@ spring:
 
   datasource:
     url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME:}
+    password: ${DATABASE_PASSWORD:}
     hikari:
-      maximum-pool-size: 20
+      maximum-pool-size: ${DB_POOL_SIZE:20}
       minimum-idle: 5
       connection-timeout: 30000
 
-  jpa:
-    show-sql: false
+springdoc:
+  api-docs:
+    enabled: ${API_DOCS_ENABLED:false}
 
 logging:
   level:
     root: WARN
     com.tonti: INFO
-    org.hibernate.SQL: WARN
 
-# App config - Production
 app:
   jwt:
+    # Obligatoire en production (aucune valeur par défaut) : openssl rand -base64 64
     secret: ${JWT_SECRET}
-    expiration: 3600000       # 1 heure
-    refresh-expiration: 604800000  # 7 jours
-
   stripe:
-    secret-key: ${STRIPE_SECRET_KEY}
-    publishable-key: ${STRIPE_PUBLISHABLE_KEY}
-    webhook-secret: ${STRIPE_WEBHOOK_SECRET}
-
-  cors:
-    allowed-origins: ${ALLOWED_ORIGINS:https://tonti.app}
+    enabled: ${STRIPE_ENABLED:true}

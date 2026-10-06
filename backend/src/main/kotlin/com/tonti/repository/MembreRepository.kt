@@ -15,6 +15,9 @@ interface MembreRepository : JpaRepository<Membre, UUID> {
     @Query("SELECT m FROM Membre m WHERE m.daret.id = :daretId AND m.isActive = true ORDER BY m.position")
     fun findActiveByDaretId(daretId: UUID): List<Membre>
 
+    @Query("SELECT m FROM Membre m JOIN FETCH m.daret WHERE m.user.id = :userId AND m.isActive = true")
+    fun findActiveByUserId(userId: UUID): List<Membre>
+
     fun existsByUserIdAndDaretId(userId: UUID, daretId: UUID): Boolean
 
     @Query("SELECT COUNT(m) FROM Membre m WHERE m.daret.id = :daretId AND m.isActive = true")

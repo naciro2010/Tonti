@@ -20,6 +20,10 @@ data class UserProfileUpdatedEvent(
     val lastName: String
 )
 
+data class UserDeletedEvent(
+    val userId: UUID
+)
+
 data class UserLoggedInEvent(
     val userId: UUID,
     val email: String

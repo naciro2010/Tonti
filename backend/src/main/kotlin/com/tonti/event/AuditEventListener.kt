@@ -15,7 +15,7 @@ class AuditEventListener(
             action = "USER_REGISTERED",
             entity = "User",
             entityId = event.userId.toString(),
-            newData = """{"email": "${event.email}", "firstName": "${event.firstName}", "lastName": "${event.lastName}"}"""
+            newData = null
         )
     }
 
@@ -26,7 +26,17 @@ class AuditEventListener(
             action = "PROFILE_UPDATED",
             entity = "User",
             entityId = event.userId.toString(),
-            newData = """{"firstName": "${event.firstName}", "lastName": "${event.lastName}"}"""
+            newData = null
+        )
+    }
+
+    @AsyncEventHandler
+    fun onUserDeleted(event: UserDeletedEvent) {
+        auditService.log(
+            userId = event.userId,
+            action = "USER_DELETED",
+            entity = "User",
+            entityId = event.userId.toString()
         )
     }
 
@@ -47,7 +57,7 @@ class AuditEventListener(
             action = "DARET_CREATED",
             entity = "Daret",
             entityId = event.daretId.toString(),
-            newData = """{"nom": "${event.nom}", "montant": ${event.montantMensuel}, "devise": "${event.devise}", "taille": ${event.taille}}"""
+            newData = mapOf("nom" to event.nom, "montant" to event.montantMensuel, "devise" to event.devise, "taille" to event.taille)
         )
     }
 
@@ -58,7 +68,7 @@ class AuditEventListener(
             action = "DARET_UPDATED",
             entity = "Daret",
             entityId = event.daretId.toString(),
-            newData = """{"nom": "${event.nom}"}"""
+            newData = mapOf("nom" to event.nom)
         )
     }
 
@@ -69,7 +79,7 @@ class AuditEventListener(
             action = "DARET_STARTED",
             entity = "Daret",
             entityId = event.daretId.toString(),
-            newData = """{"membresCount": ${event.membresCount}, "dateDebut": "${event.dateDebut}", "dateFin": "${event.dateFin}"}"""
+            newData = mapOf("membresCount" to event.membresCount, "dateDebut" to event.dateDebut, "dateFin" to event.dateFin)
         )
     }
 
@@ -90,7 +100,7 @@ class AuditEventListener(
             action = "MEMBER_JOINED",
             entity = "Daret",
             entityId = event.daretId.toString(),
-            newData = """{"userId": "${event.userId}", "userName": "${event.userName}"}"""
+            newData = mapOf("userId" to event.userId)
         )
     }
 
@@ -111,7 +121,7 @@ class AuditEventListener(
             action = "ROUND_CLOSED",
             entity = "Round",
             entityId = event.roundId.toString(),
-            newData = """{"daretId": "${event.daretId}", "numero": ${event.roundNumero}, "receveur": "${event.receveurName}", "montantTotal": ${event.montantTotal}}"""
+            newData = mapOf("daretId" to event.daretId, "numero" to event.roundNumero, "receveurId" to event.receveurId, "montantTotal" to event.montantTotal)
         )
     }
 
@@ -122,7 +132,7 @@ class AuditEventListener(
             action = "PAYMENT_CREATED",
             entity = "Payment",
             entityId = event.paymentId.toString(),
-            newData = """{"daretId": "${event.daretId}", "roundId": "${event.roundId}", "montant": ${event.montant}, "devise": "${event.devise}"}"""
+            newData = mapOf("daretId" to event.daretId, "roundId" to event.roundId, "montant" to event.montant, "devise" to event.devise)
         )
     }
 
@@ -133,7 +143,7 @@ class AuditEventListener(
             action = "PAYMENT_SUCCEEDED",
             entity = "Payment",
             entityId = event.paymentId.toString(),
-            newData = """{"daretId": "${event.daretId}", "roundId": "${event.roundId}", "montant": ${event.montant}}"""
+            newData = mapOf("daretId" to event.daretId, "roundId" to event.roundId, "montant" to event.montant)
         )
     }
 
@@ -144,7 +154,7 @@ class AuditEventListener(
             action = "PAYMENT_FAILED",
             entity = "Payment",
             entityId = event.paymentId.toString(),
-            newData = """{"daretId": "${event.daretId}", "roundId": "${event.roundId}", "error": "${event.errorMessage ?: ""}"}"""
+            newData = mapOf("daretId" to event.daretId, "roundId" to event.roundId, "error" to event.errorMessage)
         )
     }
 
@@ -165,7 +175,7 @@ class AuditEventListener(
             action = "REFUND_CREATED",
             entity = "Refund",
             entityId = event.refundId.toString(),
-            newData = """{"paymentId": "${event.paymentId}", "montant": ${event.montant}, "raison": "${event.raison ?: ""}"}"""
+            newData = mapOf("paymentId" to event.paymentId, "montant" to event.montant, "raison" to event.raison)
         )
     }
 }

@@ -56,10 +56,24 @@ class User(
     var payments: MutableList<Payment> = mutableListOf()
 
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
-    var paymentMethods: MutableList<UserPaymentMethod> = mutableListOf()
-
-    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
     var notifications: MutableList<Notification> = mutableListOf()
 
     fun fullName(): String = "$firstName $lastName"
+
+    /**
+     * Anonymise le compte (droit à l'effacement / suppression de compte exigée par l'App Store).
+     * Les paiements et l'audit sont conservés pour les obligations comptables, mais ne sont plus
+     * rattachables à une personne identifiable.
+     */
+    fun anonymize(randomPasswordHash: String) {
+        val tag = id?.toString() ?: java.util.UUID.randomUUID().toString()
+        email = "deleted-$tag@deleted.tonti.invalid"
+        firstName = "Utilisateur"
+        lastName = "supprimé"
+        phone = null
+        avatarUrl = null
+        stripeCustomerId = null
+        passwordHash = randomPasswordHash
+        isActive = false
+    }
 }

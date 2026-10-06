@@ -22,6 +22,10 @@ interface NotificationRepository : JpaRepository<Notification, UUID> {
     fun countUnreadByUserId(userId: UUID): Long
 
     @Modifying
-    @Query("UPDATE Notification n SET n.isRead = true WHERE n.user.id = :userId")
+    @Query("UPDATE Notification n SET n.isRead = true, n.readAt = CURRENT_TIMESTAMP WHERE n.user.id = :userId AND n.isRead = false")
     fun markAllAsReadByUserId(userId: UUID)
+
+    @Modifying
+    @Query("DELETE FROM Notification n WHERE n.user.id = :userId")
+    fun deleteAllByUserId(userId: UUID)
 }

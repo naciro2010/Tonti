@@ -3,8 +3,17 @@ package com.tonti.service
 import com.tonti.dto.auth.RegisterRequest
 import com.tonti.entity.User
 import com.tonti.exception.ConflictException
+import com.tonti.entity.Currency
+import com.tonti.entity.Daret
+import com.tonti.entity.DaretStatus
+import com.tonti.entity.Membre
+import com.tonti.entity.MembreRole
+import com.tonti.event.UserDeletedEvent
+import com.tonti.exception.BadRequestException
+import com.tonti.repository.MembreRepository
+import com.tonti.repository.NotificationRepository
+import com.tonti.repository.SessionRepository
 import com.tonti.repository.UserRepository
-import com.tonti.service.payment.StripeService
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
@@ -26,8 +35,14 @@ class UserServiceTest {
     @MockK
     private lateinit var passwordEncoder: PasswordEncoder
 
-    @MockK
-    private lateinit var stripeService: StripeService
+    @MockK(relaxed = true)
+    private lateinit var membreRepository: MembreRepository
+
+    @MockK(relaxed = true)
+    private lateinit var sessionRepository: SessionRepository
+
+    @MockK(relaxed = true)
+    private lateinit var notificationRepository: NotificationRepository
 
     @MockK(relaxed = true)
     private lateinit var eventPublisher: ApplicationEventPublisher
@@ -36,7 +51,10 @@ class UserServiceTest {
 
     @BeforeEach
     fun setup() {
-        userService = UserService(userRepository, passwordEncoder, stripeService, eventPublisher)
+        userService = UserService(
+            userRepository, membreRepository, sessionRepository, notificationRepository,
+            passwordEncoder, eventPublisher
+        )
     }
 
     @Test
@@ -60,7 +78,6 @@ class UserServiceTest {
         every { userRepository.existsByEmail(any()) } returns false
         every { passwordEncoder.encode(any()) } returns hashedPassword
         every { userRepository.save(any()) } returns savedUser
-        every { stripeService.getOrCreateCustomer(any()) } returns "cus_test123"
 
         // When
         val result = userService.createUser(request)
@@ -124,5 +141,67 @@ class UserServiceTest {
 
         // Then
         assertNull(result)
+    }
+
+    @Test
+    fun `deleteAccount should anonymize the user and revoke sessions`() {
+        val userId = UUID.randomUUID()
+        val user = User(
+            email = "leaving@example.com",
+            passwordHash = "hash",
+            firstName = "Leila",
+            lastName = "Bennani",
+            phone = "+212600000000"
+        ).apply { id = userId }
+
+        every { userRepository.findById(userId) } returns Optional.of(user)
+        every { passwordEncoder.matches("secret123", "hash") } returns true
+        every { passwordEncoder.encode(any()) } returns "random-hash"
+        every { membreRepository.findActiveByUserId(userId) } returns emptyList()
+        every { userRepository.save(any()) } answers { firstArg() }
+
+        userService.deleteAccount(userId, "secret123")
+
+        assertFalse(user.isActive)
+        assertNull(user.phone)
+        assertTrue(user.email.endsWith("@deleted.tonti.invalid"))
+        assertEquals("random-hash", user.passwordHash)
+        verify { sessionRepository.deleteAllByUserId(userId) }
+        verify { notificationRepository.deleteAllByUserId(userId) }
+        verify { eventPublisher.publishEvent(any<UserDeletedEvent>()) }
+    }
+
+    @Test
+    fun `deleteAccount should refuse while the user takes part in an active daret`() {
+        val userId = UUID.randomUUID()
+        val user = User(email = "a@b.c", passwordHash = "hash", firstName = "A", lastName = "B").apply { id = userId }
+        val daret = Daret(
+            nom = "Daret",
+            devise = Currency.MAD,
+            montantMensuel = java.math.BigDecimal("500"),
+            taille = 3,
+            codeInvitation = "ABC234",
+            createur = user,
+            etat = DaretStatus.ACTIVE
+        )
+
+        every { userRepository.findById(userId) } returns Optional.of(user)
+        every { passwordEncoder.matches(any(), any()) } returns true
+        every { membreRepository.findActiveByUserId(userId) } returns
+            listOf(Membre(user = user, daret = daret, role = MembreRole.MEMBRE))
+
+        assertThrows<ConflictException> { userService.deleteAccount(userId, "secret123") }
+        assertTrue(user.isActive)
+    }
+
+    @Test
+    fun `deleteAccount should reject a wrong password`() {
+        val userId = UUID.randomUUID()
+        val user = User(email = "a@b.c", passwordHash = "hash", firstName = "A", lastName = "B").apply { id = userId }
+
+        every { userRepository.findById(userId) } returns Optional.of(user)
+        every { passwordEncoder.matches(any(), any()) } returns false
+
+        assertThrows<BadRequestException> { userService.deleteAccount(userId, "wrong") }
     }
 }

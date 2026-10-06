@@ -1,91 +1,73 @@
 package com.tonti.dto.payment
 
+import com.tonti.entity.CheckoutChannel
 import com.tonti.entity.Currency
+import com.tonti.entity.PaymentProvider
 import com.tonti.entity.PaymentStatus
 import com.tonti.entity.PaymentType
-import jakarta.validation.constraints.*
+import jakarta.validation.constraints.DecimalMin
+import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.Pattern
+import jakarta.validation.constraints.Size
 import java.math.BigDecimal
 import java.time.Instant
 import java.util.UUID
 
 // ==========================================
-// Payment Intent DTOs
+// Checkout
 // ==========================================
 
-data class CreatePaymentIntentRequest(
-    @field:NotNull
-    @field:DecimalMin("0.50")
-    val amount: BigDecimal,
-
-    @field:NotNull
-    val currency: Currency = Currency.MAD,
-
+/**
+ * Démarre le paiement de la cotisation d'un round.
+ * Le montant et la devise ne sont jamais fournis par le client : ils proviennent du Daret.
+ */
+data class CheckoutRequest(
     @field:NotNull
     val daretId: UUID,
 
     @field:NotNull
     val roundId: UUID,
 
-    val description: String? = null,
+    /** WEB : retour vers l'application web ; APP : retour via le deep link de l'application mobile. */
+    val channel: CheckoutChannel = CheckoutChannel.WEB,
 
-    val paymentMethodId: String? = null,
-
-    val returnUrl: String? = null
+    @field:Pattern(regexp = "^(fr|ar|en)$", message = "Langue non supportée")
+    val locale: String = "fr"
 )
 
-data class PaymentIntentResponse(
-    val paymentIntentId: String,
-    val clientSecret: String,
-    val status: String,
+data class CheckoutResponse(
+    val paymentId: UUID,
+    val provider: PaymentProvider,
+    val status: PaymentStatus,
     val amount: BigDecimal,
-    val currency: Currency
-)
-
-data class ConfirmPaymentRequest(
-    @field:NotBlank
-    val paymentIntentId: String,
-
-    @field:NotBlank
-    val paymentMethodId: String
+    val currency: Currency,
+    /** Page de paiement hébergée par le PSP, à ouvrir dans le navigateur. */
+    val redirectUrl: String
 )
 
 // ==========================================
-// Setup Intent DTOs
+// Payments
 // ==========================================
 
-data class SetupIntentResponse(
-    val setupIntentId: String,
-    val clientSecret: String,
-    val status: String
-)
-
-// ==========================================
-// Payment Method DTOs
-// ==========================================
-
-data class AttachPaymentMethodRequest(
-    @field:NotBlank
-    val paymentMethodId: String
-)
-
-data class PaymentMethodResponse(
+data class PaymentResponse(
     val id: UUID,
-    val type: String,
-    val brand: String?,
-    val last4: String?,
-    val expMonth: Int?,
-    val expYear: Int?,
-    val walletType: String?,
-    val isDefault: Boolean
-)
-
-data class SetDefaultPaymentMethodRequest(
-    @field:NotBlank
-    val paymentMethodId: String
+    val daretId: UUID,
+    val roundId: UUID,
+    val roundNumero: Int,
+    val userId: UUID,
+    val userName: String,
+    val amount: BigDecimal,
+    val currency: Currency,
+    val status: PaymentStatus,
+    val provider: PaymentProvider,
+    val method: PaymentType,
+    val failureReason: String?,
+    val paidAt: Instant?,
+    val createdAt: Instant
 )
 
 // ==========================================
-// Refund DTOs
+// Refunds
 // ==========================================
 
 data class CreateRefundRequest(
@@ -93,8 +75,9 @@ data class CreateRefundRequest(
     val paymentId: UUID,
 
     @field:DecimalMin("0.01")
-    val amount: BigDecimal? = null, // null = full refund
+    val amount: BigDecimal? = null, // null = remboursement total
 
+    @field:Size(max = 500)
     val reason: String? = null
 )
 
@@ -108,42 +91,10 @@ data class RefundResponse(
 )
 
 // ==========================================
-// Payment DTOs
+// Configuration publique
 // ==========================================
 
-data class PaymentResponse(
-    val id: UUID,
-    val daretId: UUID,
-    val roundId: UUID,
-    val amount: BigDecimal,
-    val currency: Currency,
-    val status: PaymentStatus,
-    val method: PaymentType,
-    val paidAt: Instant?,
-    val createdAt: Instant
-)
-
-// ==========================================
-// Apple Pay / Google Pay Configuration
-// ==========================================
-
-data class WalletConfigResponse(
-    val stripePublishableKey: String,
-    val merchantId: String,
-    val merchantName: String = "Tonti",
-    val countryCode: String = "MA",
-    val supportedNetworks: List<String> = listOf("visa", "mastercard", "amex"),
-
-    // Apple Pay specific
-    val applePayEnabled: Boolean = true,
-    val applePayMerchantId: String? = null,
-
-    // Google Pay specific
-    val googlePayEnabled: Boolean = true,
-    val googlePayEnvironment: String = "TEST" // "TEST" ou "PRODUCTION"
-)
-
-data class RegisterDomainRequest(
-    @field:NotBlank
-    val domain: String
+data class PaymentConfigResponse(
+    val onlinePaymentCurrencies: List<Currency>,
+    val provider: PaymentProvider?
 )

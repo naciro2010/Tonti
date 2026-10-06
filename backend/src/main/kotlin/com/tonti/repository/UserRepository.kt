@@ -17,7 +17,4 @@ interface UserRepository : JpaRepository<User, UUID> {
 
     @Query("SELECT u FROM User u WHERE u.isActive = true AND u.email = :email")
     fun findActiveByEmail(email: String): User?
-
-    @Query("SELECT u FROM User u LEFT JOIN FETCH u.paymentMethods WHERE u.id = :id")
-    fun findByIdWithPaymentMethods(id: UUID): User?
 }

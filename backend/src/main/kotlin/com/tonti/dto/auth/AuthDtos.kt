@@ -14,17 +14,23 @@ data class RegisterRequest(
     val email: String,
 
     @field:NotBlank(message = "Le mot de passe est requis")
-    @field:Size(min = 8, message = "Le mot de passe doit contenir au moins 8 caractères")
+    @field:Size(min = 8, max = 128, message = "Le mot de passe doit contenir entre 8 et 128 caractères")
     val password: String,
 
     @field:NotBlank(message = "Le prénom est requis")
+    @field:Size(max = 100, message = "Le prénom ne peut pas dépasser 100 caractères")
     val firstName: String,
 
     @field:NotBlank(message = "Le nom est requis")
+    @field:Size(max = 100, message = "Le nom ne peut pas dépasser 100 caractères")
     val lastName: String,
 
+    @field:Pattern(regexp = PHONE_PATTERN, message = "Numéro de téléphone invalide")
     val phone: String? = null
 )
+
+/** Format international E.164 tolérant les espaces (ex : +212 6 12 34 56 78). */
+const val PHONE_PATTERN = "^\\+?[0-9 ]{8,20}$"
 
 // ==========================================
 // Login
@@ -79,9 +85,17 @@ data class UserResponse(
 )
 
 data class UpdateProfileRequest(
+    @field:Size(min = 1, max = 100, message = "Le prénom doit contenir entre 1 et 100 caractères")
     val firstName: String? = null,
+    @field:Size(min = 1, max = 100, message = "Le nom doit contenir entre 1 et 100 caractères")
     val lastName: String? = null,
+    @field:Pattern(regexp = "^$|$PHONE_PATTERN", message = "Numéro de téléphone invalide")
     val phone: String? = null
+)
+
+data class DeleteAccountRequest(
+    @field:NotBlank(message = "Le mot de passe est requis pour confirmer la suppression")
+    val password: String
 )
 
 data class ChangePasswordRequest(
@@ -89,6 +103,6 @@ data class ChangePasswordRequest(
     val oldPassword: String,
 
     @field:NotBlank(message = "Le nouveau mot de passe est requis")
-    @field:Size(min = 8, message = "Le mot de passe doit contenir au moins 8 caractères")
+    @field:Size(min = 8, max = 128, message = "Le mot de passe doit contenir entre 8 et 128 caractères")
     val newPassword: String
 )

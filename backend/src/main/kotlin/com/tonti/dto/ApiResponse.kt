@@ -1,5 +1,6 @@
 package com.tonti.dto
 
+import org.springframework.data.domain.Page
 import java.time.Instant
 
 data class ApiResponse<T>(
@@ -26,4 +27,15 @@ data class PagedResponse<T>(
     val totalElements: Long,
     val totalPages: Int,
     val isLast: Boolean
-)
+) {
+    companion object {
+        fun <T : Any> of(page: Page<T>): PagedResponse<T> = PagedResponse(
+            content = page.content,
+            page = page.number,
+            size = page.size,
+            totalElements = page.totalElements,
+            totalPages = page.totalPages,
+            isLast = page.isLast
+        )
+    }
+}

@@ -43,19 +43,15 @@ enum class PaymentType {
     MOBILE_MONEY
 }
 
-enum class PaymentMethodType {
-    CARD,
-    APPLE_PAY,
-    GOOGLE_PAY,
-    SEPA_DEBIT,
-    BANK_TRANSFER
+/** Prestataire de paiement (PSP) ayant traité la transaction. */
+enum class PaymentProvider {
+    STRIPE
 }
 
-enum class WalletType {
-    APPLE_PAY,
-    GOOGLE_PAY,
-    SAMSUNG_PAY,
-    LINK
+/** Surface depuis laquelle le paiement a été initié (pilote la redirection de retour). */
+enum class CheckoutChannel {
+    WEB,
+    APP
 }
 
 enum class RefundStatus {

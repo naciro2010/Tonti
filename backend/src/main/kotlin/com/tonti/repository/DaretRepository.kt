@@ -29,7 +29,8 @@ interface DaretRepository : JpaRepository<Daret, UUID> {
     """)
     fun findByMemberId(userId: UUID): List<Daret>
 
-    @Query("SELECT d FROM Daret d LEFT JOIN FETCH d.membres LEFT JOIN FETCH d.rounds WHERE d.id = :id")
+    // Un seul JOIN FETCH de collection (Hibernate refuse plusieurs "bags") ; les rounds sont chargés par lot
+    @Query("SELECT DISTINCT d FROM Daret d LEFT JOIN FETCH d.membres WHERE d.id = :id")
     fun findByIdWithDetails(id: UUID): Daret?
 
     fun existsByCodeInvitation(codeInvitation: String): Boolean

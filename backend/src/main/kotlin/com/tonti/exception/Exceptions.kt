@@ -33,6 +33,11 @@ class PaymentException(
     cause: Throwable? = null
 ) : ApiException(HttpStatus.BAD_REQUEST, message, cause)
 
+/** Le paiement en ligne n'est pas configuré pour la devise demandée. */
+class PaymentUnavailableException(
+    message: String
+) : ApiException(HttpStatus.UNPROCESSABLE_ENTITY, message)
+
 class ValidationException(
     message: String,
     val errors: Map<String, String> = emptyMap()

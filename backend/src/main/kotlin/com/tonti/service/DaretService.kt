@@ -56,7 +56,7 @@ class DaretService(
             role = MembreRole.CREATEUR,
             position = 1
         )
-        membreRepository.save(membre)
+        savedDaret.membres.add(membreRepository.save(membre))
 
         logger.info { "Created Daret ${savedDaret.id} by user ${createur.id}" }
 
@@ -226,8 +226,11 @@ class DaretService(
         daret.etat = DaretStatus.VERROUILLEE
         daret.taille = membres.size
 
-        // Définir le roster (ordre des bénéficiaires)
+        // Définir le roster (ordre des bénéficiaires) : ordre imposé ou tirage au sort équitable
         val roster = request.roster?.let { orderIds ->
+            if (orderIds.size != membres.size || orderIds.toSet() != membres.map { it.user.id }.toSet()) {
+                throw BadRequestException("L'ordre de passage doit contenir chaque membre exactement une fois")
+            }
             membres.sortedBy { m -> orderIds.indexOf(m.user.id) }
         } ?: membres.shuffled(random)
 
@@ -289,6 +292,10 @@ class DaretService(
             throw BadRequestException("Ce round est déjà clos")
         }
 
+        if (roundRepository.findByDaretId(daretId).any { !it.estClos && it.numero < round.numero }) {
+            throw BadRequestException("Les rounds doivent être clôturés dans l'ordre")
+        }
+
         // Vérifier que tous les paiements sont effectués
         val paidCount = paymentRepository.countByRoundIdAndStatut(roundId, PaymentStatus.SUCCEEDED)
         val expectedCount = membreRepository.countActiveByDaretId(daretId) - 1 // -1 car le receveur ne paie pas
@@ -347,7 +354,7 @@ class DaretService(
         return code
     }
 
-    private fun checkIsAdmin(daret: Daret, userId: UUID) {
+    fun checkIsAdmin(daret: Daret, userId: UUID) {
         val membre = membreRepository.findByUserIdAndDaretId(userId, daret.id!!)
         if (membre == null || !membre.isAdmin()) {
             throw ForbiddenException("Vous n'avez pas les droits d'administration sur ce Daret")
@@ -391,7 +398,6 @@ class DaretService(
             userId = membre.user.id!!,
             firstName = membre.user.firstName,
             lastName = membre.user.lastName,
-            email = membre.user.email,
             role = membre.role,
             position = membre.position,
             isActive = membre.isActive,
@@ -401,6 +407,7 @@ class DaretService(
 
     fun toRoundResponse(round: Round): RoundResponse {
         val payments = paymentRepository.findByRoundId(round.id!!)
+        val paid = payments.filter { it.statut == PaymentStatus.SUCCEEDED }
         return RoundResponse(
             id = round.id!!,
             numero = round.numero,
@@ -410,7 +417,8 @@ class DaretService(
             estClos = round.estClos,
             montantTotal = round.montantTotal,
             paymentsCount = payments.size,
-            paidCount = payments.count { it.statut == PaymentStatus.SUCCEEDED }
+            paidCount = paid.size,
+            paidUserIds = paid.map { it.user.id!! }
         )
     }
 }

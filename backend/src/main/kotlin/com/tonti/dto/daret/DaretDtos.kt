@@ -15,13 +15,16 @@ data class CreateDaretRequest(
     @field:Size(max = 100, message = "Le nom ne peut pas dépasser 100 caractères")
     val nom: String,
 
+    @field:Size(max = 1000, message = "La description ne peut pas dépasser 1000 caractères")
     val description: String? = null,
 
     @field:NotNull(message = "La devise est requise")
     val devise: Currency = Currency.MAD,
 
     @field:NotNull(message = "Le montant mensuel est requis")
-    @field:DecimalMin(value = "1", message = "Le montant doit être supérieur à 0")
+    @field:DecimalMin(value = "10", message = "Le montant minimum est de 10")
+    @field:DecimalMax(value = "100000", message = "Le montant maximum est de 100 000")
+    @field:Digits(integer = 6, fraction = 2, message = "Montant invalide")
     val montantMensuel: BigDecimal,
 
     @field:NotNull(message = "La taille est requise")
@@ -41,9 +44,13 @@ data class CreateDaretRequest(
 // ==========================================
 
 data class UpdateDaretRequest(
+    @field:Size(min = 1, max = 100, message = "Le nom doit contenir entre 1 et 100 caractères")
     val nom: String? = null,
+    @field:Size(max = 1000, message = "La description ne peut pas dépasser 1000 caractères")
     val description: String? = null,
     val visibilite: Visibility? = null,
+    @field:Min(value = 0, message = "Le délai de grâce ne peut pas être négatif")
+    @field:Max(value = 30, message = "Le délai de grâce ne peut pas dépasser 30 jours")
     val delaiGraceJours: Int? = null
 )
 
@@ -98,7 +105,6 @@ data class MembreResponse(
     val userId: UUID,
     val firstName: String,
     val lastName: String,
-    val email: String,
     val role: MembreRole,
     val position: Int?,
     val isActive: Boolean,
@@ -129,7 +135,9 @@ data class RoundResponse(
     val estClos: Boolean,
     val montantTotal: BigDecimal,
     val paymentsCount: Int,
-    val paidCount: Int
+    val paidCount: Int,
+    /** Utilisateurs ayant réglé leur cotisation pour ce round. */
+    val paidUserIds: List<UUID>
 )
 
 data class StartDaretRequest(

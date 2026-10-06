@@ -1,6 +1,8 @@
 package com.tonti.entity
 
 import jakarta.persistence.*
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 import java.time.Instant
 import java.util.UUID
 
@@ -31,10 +33,16 @@ class AuditLog(
     @Column(name = "entity_id")
     var entityId: String? = null,
 
-    @Column(name = "old_data", columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "old_data")
     var oldData: String? = null,
 
-    @Column(name = "new_data", columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "new_data")
     var newData: String? = null,
 
     @Column(name = "ip_address")

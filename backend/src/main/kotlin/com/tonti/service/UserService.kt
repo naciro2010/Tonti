@@ -2,19 +2,27 @@ package com.tonti.service
 
 import com.tonti.dto.auth.*
 import com.tonti.entity.User
+import com.tonti.entity.DaretStatus
+import com.tonti.entity.MembreRole
+import com.tonti.event.UserDeletedEvent
 import com.tonti.event.UserLoggedInEvent
 import com.tonti.event.UserProfileUpdatedEvent
 import com.tonti.event.UserRegisteredEvent
+import com.tonti.exception.BadRequestException
 import com.tonti.exception.ConflictException
 import com.tonti.exception.NotFoundException
+import com.tonti.repository.MembreRepository
+import com.tonti.repository.NotificationRepository
+import com.tonti.repository.SessionRepository
 import com.tonti.repository.UserRepository
-import com.tonti.service.payment.StripeService
 import mu.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.security.SecureRandom
 import java.time.Instant
+import java.util.Base64
 import java.util.UUID
 
 private val logger = KotlinLogging.logger {}
@@ -22,14 +30,16 @@ private val logger = KotlinLogging.logger {}
 @Service
 class UserService(
     private val userRepository: UserRepository,
+    private val membreRepository: MembreRepository,
+    private val sessionRepository: SessionRepository,
+    private val notificationRepository: NotificationRepository,
     private val passwordEncoder: PasswordEncoder,
-    private val stripeService: StripeService,
     private val eventPublisher: ApplicationEventPublisher
 ) {
 
     @Transactional
     fun createUser(request: RegisterRequest): User {
-        if (userRepository.existsByEmail(request.email)) {
+        if (userRepository.existsByEmail(request.email.lowercase().trim())) {
             throw ConflictException("Un compte existe déjà avec cet email")
         }
 
@@ -43,14 +53,7 @@ class UserService(
 
         val savedUser = userRepository.save(user)
 
-        // Créer le client Stripe en arrière-plan
-        try {
-            stripeService.getOrCreateCustomer(savedUser)
-        } catch (e: Exception) {
-            logger.warn(e) { "Failed to create Stripe customer for user ${savedUser.id}, will retry later" }
-        }
-
-        logger.info { "Created user ${savedUser.id} with email ${savedUser.email}" }
+        logger.info { "Created user ${savedUser.id}" }
 
         eventPublisher.publishEvent(UserRegisteredEvent(
             userId = savedUser.id!!,
@@ -71,26 +74,13 @@ class UserService(
             .orElseThrow { NotFoundException("Utilisateur non trouvé") }
     }
 
-    fun findByIdWithPaymentMethods(id: UUID): User? {
-        return userRepository.findByIdWithPaymentMethods(id)
-    }
-
     @Transactional
     fun updateProfile(userId: UUID, request: UpdateProfileRequest): User {
         val user = findById(userId)
 
         request.firstName?.let { user.firstName = it.trim() }
         request.lastName?.let { user.lastName = it.trim() }
-        request.phone?.let { user.phone = it.trim() }
-
-        // Mettre à jour Stripe si nécessaire
-        user.stripeCustomerId?.let { customerId ->
-            try {
-                stripeService.updateCustomer(customerId, user)
-            } catch (e: Exception) {
-                logger.warn(e) { "Failed to update Stripe customer $customerId" }
-            }
-        }
+        request.phone?.let { user.phone = it.trim().ifEmpty { null } }
 
         val saved = userRepository.save(user)
 
@@ -108,13 +98,57 @@ class UserService(
         val user = findById(userId)
 
         if (!passwordEncoder.matches(oldPassword, user.passwordHash)) {
-            throw ConflictException("Mot de passe actuel incorrect")
+            throw BadRequestException("Mot de passe actuel incorrect")
         }
 
         user.passwordHash = passwordEncoder.encode(newPassword)
         userRepository.save(user)
+        // Toutes les sessions existantes sont invalidées après un changement de mot de passe
+        sessionRepository.deleteAllByUserId(userId)
 
         logger.info { "Password changed for user $userId" }
+    }
+
+    /**
+     * Suppression du compte à la demande de l'utilisateur.
+     *
+     * Le compte est anonymisé plutôt que supprimé physiquement : les paiements doivent être
+     * conservés (obligations comptables et lutte anti-blanchiment) mais ne sont plus rattachés
+     * à une personne identifiable. Impossible tant que l'utilisateur participe à un Daret en cours,
+     * afin de ne pas léser les autres membres.
+     */
+    @Transactional
+    fun deleteAccount(userId: UUID, password: String) {
+        val user = findById(userId)
+
+        if (!passwordEncoder.matches(password, user.passwordHash)) {
+            throw BadRequestException("Mot de passe incorrect")
+        }
+
+        val memberships = membreRepository.findActiveByUserId(userId)
+        if (memberships.any { it.daret.etat in ONGOING_STATUSES }) {
+            throw ConflictException(
+                "Vous participez à un Daret en cours. Vous pourrez supprimer votre compte une fois celui-ci terminé."
+            )
+        }
+
+        val now = Instant.now()
+        memberships.filter { it.daret.etat == DaretStatus.RECRUTEMENT }.forEach { membre ->
+            if (membre.role == MembreRole.CREATEUR) {
+                membre.daret.etat = DaretStatus.ANNULEE
+            }
+            membre.isActive = false
+            membre.leftAt = now
+        }
+
+        sessionRepository.deleteAllByUserId(userId)
+        notificationRepository.deleteAllByUserId(userId)
+
+        user.anonymize(passwordEncoder.encode(randomSecret()))
+        userRepository.save(user)
+
+        logger.info { "Account $userId deleted (anonymized)" }
+        eventPublisher.publishEvent(UserDeletedEvent(userId = userId))
     }
 
     @Transactional
@@ -128,6 +162,11 @@ class UserService(
         ))
     }
 
+    private fun randomSecret(): String {
+        val bytes = ByteArray(32).also { SecureRandom().nextBytes(it) }
+        return Base64.getEncoder().encodeToString(bytes)
+    }
+
     fun toUserResponse(user: User): UserResponse {
         return UserResponse(
             id = user.id!!,
@@ -139,5 +178,9 @@ class UserService(
             isVerified = user.isVerified,
             createdAt = user.createdAt
         )
+    }
+
+    private companion object {
+        val ONGOING_STATUSES = setOf(DaretStatus.VERROUILLEE, DaretStatus.ACTIVE)
     }
 }

@@ -64,6 +64,7 @@ class JwtAuthenticationFilter(
                path.startsWith("/api/v1/auth/register") ||
                path.startsWith("/api/v1/auth/refresh") ||
                path.startsWith("/api/webhooks/") ||
+               path.startsWith("/api/payments/return/") ||
                path.startsWith("/api/health") ||
                path.startsWith("/api-docs") ||
                path.startsWith("/swagger-ui") ||

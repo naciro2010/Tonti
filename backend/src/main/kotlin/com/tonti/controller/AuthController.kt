@@ -106,6 +106,16 @@ class AuthController(
         return ResponseEntity.ok(ApiResponse.success(userService.toUserResponse(user)))
     }
 
+    @DeleteMapping("/me")
+    @Operation(summary = "Supprimer définitivement son compte (données personnelles anonymisées)")
+    fun deleteAccount(
+        @AuthenticationPrincipal userPrincipal: UserPrincipal,
+        @Valid @RequestBody request: DeleteAccountRequest
+    ): ResponseEntity<ApiResponse<Unit>> {
+        userService.deleteAccount(userPrincipal.user.id!!, request.password)
+        return ResponseEntity.ok(ApiResponse.success(Unit, "Votre compte a été supprimé"))
+    }
+
     @PostMapping("/change-password")
     @Operation(summary = "Changer le mot de passe")
     fun changePassword(

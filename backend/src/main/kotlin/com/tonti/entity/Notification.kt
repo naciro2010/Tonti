@@ -1,6 +1,8 @@
 package com.tonti.entity
 
 import jakarta.persistence.*
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 import java.time.Instant
 
 @Entity
@@ -26,7 +28,10 @@ class Notification(
     @Column(nullable = false)
     var message: String,
 
-    @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column
     var data: String? = null,
 
     @Column(name = "is_read", nullable = false)

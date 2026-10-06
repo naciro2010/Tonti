@@ -1,5 +1,6 @@
 package com.tonti.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.tonti.entity.AuditLog
 import com.tonti.repository.AuditLogRepository
 import mu.KotlinLogging
@@ -10,7 +11,8 @@ private val logger = KotlinLogging.logger {}
 
 @Service
 class AuditService(
-    private val auditLogRepository: AuditLogRepository
+    private val auditLogRepository: AuditLogRepository,
+    private val objectMapper: ObjectMapper
 ) {
 
     fun log(
@@ -18,16 +20,16 @@ class AuditService(
         action: String,
         entity: String,
         entityId: String? = null,
-        oldData: String? = null,
-        newData: String? = null
+        oldData: Map<String, Any?>? = null,
+        newData: Map<String, Any?>? = null
     ): AuditLog {
         val auditLog = AuditLog(
             userId = userId,
             action = action,
             entity = entity,
             entityId = entityId,
-            oldData = oldData,
-            newData = newData
+            oldData = oldData?.let { objectMapper.writeValueAsString(it) },
+            newData = newData?.let { objectMapper.writeValueAsString(it) }
         )
 
         val saved = auditLogRepository.save(auditLog)
