@@ -100,6 +100,12 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    testLogging {
+        events("failed", "skipped")
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        showCauses = true
+        showStackTraces = false
+    }
 }
 
 tasks.bootJar {
