@@ -22,8 +22,6 @@ class StripeEvent(
     var type: String,
 
     @JdbcTypeCode(SqlTypes.JSON)
-
-    @JdbcTypeCode(SqlTypes.JSON)
     @Column(nullable = false)
     var data: String,
 

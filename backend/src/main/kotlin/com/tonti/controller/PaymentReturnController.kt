@@ -5,7 +5,6 @@ import com.tonti.repository.PaymentRepository
 import com.tonti.service.payment.CheckoutLinkService
 import io.swagger.v3.oas.annotations.Hidden
 import org.springframework.http.CacheControl
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -73,7 +72,7 @@ class PaymentReturnController(
         return ResponseEntity.ok()
             .contentType(MediaType.TEXT_HTML)
             .cacheControl(CacheControl.noStore())
-            .header(HttpHeaders.REFERRER_POLICY, "no-referrer")
+            .header("Referrer-Policy", "no-referrer")
             .body(html)
     }
 }

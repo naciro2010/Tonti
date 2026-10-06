@@ -34,12 +34,8 @@ class AuditLog(
     var entityId: String? = null,
 
     @JdbcTypeCode(SqlTypes.JSON)
-
-    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "old_data")
     var oldData: String? = null,
-
-    @JdbcTypeCode(SqlTypes.JSON)
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "new_data")

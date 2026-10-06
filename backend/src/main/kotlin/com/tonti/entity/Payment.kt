@@ -71,8 +71,6 @@ class Payment(
     var methode: PaymentType = PaymentType.CARD,
 
     @JdbcTypeCode(SqlTypes.JSON)
-
-    @JdbcTypeCode(SqlTypes.JSON)
     @Column
     var metadata: String? = null,
 

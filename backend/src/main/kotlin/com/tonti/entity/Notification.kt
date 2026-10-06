@@ -29,8 +29,6 @@ class Notification(
     var message: String,
 
     @JdbcTypeCode(SqlTypes.JSON)
-
-    @JdbcTypeCode(SqlTypes.JSON)
     @Column
     var data: String? = null,
 
