@@ -1,0 +1,22 @@
+Tonti simplifie la Daret (tontine) : un groupe de proches verse chaque mois la même cotisation et, à tour de rôle, chacun reçoit la cagnotte.
+
+ORGANISEZ EN QUELQUES MINUTES
+• Créez une Daret : montant mensuel, devise (MAD, EUR, USD) et nombre de membres
+• Invitez vos proches avec un code ou un QR code
+• Démarrez : l’ordre de passage est tiré au sort de façon équitable
+
+COTISEZ EN TOUTE SÉCURITÉ
+• Paiement par carte bancaire, Apple Pay ou Google Pay via Stripe
+• Authentification 3-D Secure, aucune donnée bancaire stockée par Tonti
+• Les paiements en double sont remboursés automatiquement
+
+SUIVEZ TOUT EN TEMPS RÉEL
+• Qui a cotisé ce mois-ci, qui est le prochain bénéficiaire
+• Calendrier complet des tours
+• Notifications à chaque étape
+
+RESPECT DE VOTRE VIE PRIVÉE
+• Aucune publicité, aucun traçage
+• Suppression du compte possible à tout moment depuis l’application
+
+Disponible en français et en arabe.

@@ -72,12 +72,7 @@ const describedBy = computed(() => {
     >
       {{ props.hint }}
     </p>
-    <p
-      v-if="props.error"
-      :id="`${props.id}-error`"
-      class="text-xs font-medium text-dangerSoft"
-      role="alert"
-    >
+    <p v-if="props.error" :id="`${props.id}-error`" class="text-xs font-medium text-dangerSoft" role="alert">
       {{ props.error }}
     </p>
   </div>

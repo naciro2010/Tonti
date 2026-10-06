@@ -1,0 +1,25 @@
+# Configuration de `deliver` (métadonnées App Store Connect).
+# Les textes sont dans fastlane/metadata ; les informations de revue sensibles viennent des secrets CI.
+
+app_identifier(ENV.fetch("APP_IDENTIFIER", "app.tonti.ios"))
+metadata_path("./fastlane/metadata")
+skip_screenshots(true) # captures à déposer dans fastlane/screenshots puis passer à false
+precheck_include_in_app_purchases(false)
+run_precheck_before_submit(true)
+
+
+app_review_information(
+  first_name: ENV.fetch("REVIEW_FIRST_NAME", ""),
+  last_name: ENV.fetch("REVIEW_LAST_NAME", ""),
+  phone_number: ENV.fetch("REVIEW_PHONE", ""),
+  email_address: ENV.fetch("REVIEW_EMAIL", ""),
+  demo_user: ENV.fetch("REVIEW_DEMO_USER", ""),
+  demo_password: ENV.fetch("REVIEW_DEMO_PASSWORD", ""),
+  notes: File.read(File.join(__dir__, "review_notes.txt"))
+)
+
+submission_information(
+  add_id_info_uses_idfa: false,
+  export_compliance_uses_encryption: false,
+  content_rights_contains_third_party_content: false
+)

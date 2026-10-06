@@ -1,75 +1,67 @@
-# Tonti · Daret statique
+# Tonti
 
-Application Vue 3 (TypeScript) pour organiser une cagnotte rotative (Daret) avec persistance locale et génération statique via Vite + vite-plugin-ssg.
+Application de gestion de **Darets** (tontines) : un groupe de proches cotise chaque mois le même
+montant et, à tour de rôle, chaque membre reçoit la cagnotte. Tonti gère les invitations, le tirage
+au sort de l'ordre de passage, le suivi des cotisations et leur **paiement en ligne via Stripe**.
 
-## Prérequis
-- Node.js 20+
-- npm 9+
+Disponible sur le web et sur **iOS** (Capacitor), en français et en arabe (RTL).
 
-## Installation
+## Architecture
+
+| Couche | Technologies | Dossier |
+| --- | --- | --- |
+| API | Kotlin 2, Spring Boot 3.3, PostgreSQL, Flyway, JWT, Stripe Checkout | `backend/` |
+| Web | Vue 3, TypeScript, Vite, Tailwind, vue-i18n | `src/` |
+| iOS | Capacitor 8 (Swift Package Manager), fastlane | `ios/` |
+
+Paiement : le client demande une session (`POST /api/v1/payments/checkout`), l'API calcule le montant
+à partir du Daret et renvoie l'URL de la page Stripe Checkout (carte, Apple Pay, Google Pay,
+3-D Secure). Le statut n'est mis à jour que par les webhooks signés de Stripe ; aucune donnée de
+carte ne transite par Tonti (PCI-DSS SAQ-A).
+
+## Démarrer en local
+
 ```bash
-npm install
+# API + PostgreSQL
+cd backend
+docker compose -f docker-compose.dev.yml up -d   # PostgreSQL
+./gradlew bootRun                                # http://localhost:8080 (Swagger : /swagger-ui.html)
+
+# Web
+cd ..
+npm ci
+npm run dev                                      # http://localhost:5173
 ```
+
+Sans clés Stripe (`STRIPE_ENABLED=false`, valeur par défaut en dev), tout fonctionne sauf le paiement
+en ligne. Variables : `.env.example` (web) et `backend/.env.example` (API).
 
 ## Scripts
-- `npm run dev` : serveur de développement Vite.
-- `npm run build` : build SSG + copie du fallback 404.
-- `npm run preview` : prévisualisation du build.
-- `npm run lint` : ESLint sur le dossier `src`.
-- `npm run lint:fix` : ESLint avec auto-fix.
-- `npm run typecheck` : vérification des types via `vue-tsc`.
-- `npm run test` : tests unitaires Vitest.
 
-## Structure
+| Commande | Rôle |
+| --- | --- |
+| `npm run dev` / `npm run build` | Serveur de dev / build web |
+| `npm run lint`, `npm run typecheck`, `npm run test:run`, `npm run format:check` | Qualité |
+| `npm run build:mobile` | Build web pour l'app native (exige des URLs https) |
+| `npm run cap:ios` | Build mobile, synchronisation et ouverture du projet Xcode |
+| `npm run assets:generate` | Icônes et splash iOS depuis `assets/` |
+| `cd backend && ./gradlew test` | Tests de l'API |
+
+## Structure du front
+
 ```
 src/
-  components/        Composants UI accessibles (Headless UI, Tailwind)
-  composables/       Stores/composables (autosave, devise, dates, Plausible…)
-  data/              Seeds JSON (demo Darets)
-  i18n/              Internationalisation FR/AR + RTL
-  pages/             Pages Vue (Home, Wizard, Dashboard, Join)
-  router/            Routes déclaratives Vite SSG
-  styles/            Tailwind + @layer base
-  utils/             Aides (roster RNG, ICS, maths)
+  services/     client HTTP (rafraîchissement de jeton), API typée, stockage Keychain, intégration native
+  composables/  session, notifications, devises, dates, RTL, toasts
+  pages/        accueil, auth, mes Darets, création, adhésion, tableau de bord, résultat de paiement,
+                notifications, compte (suppression), pages légales
+  components/   composants UI accessibles
+  i18n/         fr.json, ar.json
+  config/       informations légales de l'éditeur (à compléter)
 ```
 
-## Fonctionnalités clés
-- Wizard “Créer une Daret” (4 étapes) avec Zod + autosave (localStorage via VueUse).
-- Dashboard : suivi des paiements, badges statut, clôture conditionnée.
-- Conversion MAD ↔ EUR avec affichage combiné.
-- Export calendrier `.ics` et bannière d’invitation (lien + QR code).
-- Notifications locales (opt-in) pour les organisateurs.
-- i18n FR/AR avec inversion RTL automatique (`useRtl`).
-- Persistance locale + mocks (`darets.mock.json`) pour démo (aucun backend).
-- Plausible Analytics via hook router.
+## Documentation
 
-## Statique & déploiement
-- Build SSG (`npm run build`) → `dist/` prêt pour GitHub Pages.
-- Fallback SPA généré (`dist/404.html`).
-- Workflow GitHub Actions (`.github/workflows/deploy.yml`) : Node 20, build, déploiement sur Pages.
-
-## Accessibilité & mobile
-- Tailwind `@layer base` pour formulaires accessibles, focus visibles.
-- Headless UI (Modal) avec piège du focus.
-- Mise en page mobile-first (grilles adaptatives, stepper compact).
-
-## Internationalisation / RTL
-- `vue-i18n` avec fichiers `fr.json` et `ar.json` (UI + toasts + erreurs).
-- `useRtl` force `document.dir` + classes utilitaires Tailwind (`rtl:`).
-- Préférence de langue persistée (`tonti:locale`).
-
-## Tests & qualité
-- ESLint + Prettier.
-- `vue-tsc` pour la validation des types.
-- Vitest (`src/utils/__tests__`) pour la RNG du roster et les calculs financiers.
-
-## Limitations connues
-- Données stockées côté client (localStorage) : aucune synchronisation multi-appareil.
-- Notifications locales dépendantes du navigateur (HTTPS requis pour production).
-- Conversion MAD↔EUR statique (taux manuel).
-
-## Checklist Lighthouse (cible ≥ 90 mobile)
-- [x] Performances : bundle léger, pas de polices auto-hébergées inutiles.
-- [x] Accessibilité : contrastes, navigation clavier, aria labels.
-- [x] Best Practices : HTTPS requis, Plausible script léger.
-- [x] SEO : meta `description`, balises Open Graph.
+- [DEPLOY.md](DEPLOY.md) — déploiement de l'API, Stripe, site web, check-list de production
+- [docs/app-store.md](docs/app-store.md) — publication iOS : secrets, TestFlight, fiche App Store, revue Apple
+- [backend/README.md](backend/README.md) — API REST

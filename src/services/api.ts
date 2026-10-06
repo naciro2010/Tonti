@@ -1,505 +1,335 @@
 /**
- * API Service - Client HTTP pour communiquer avec le backend
+ * Client typé de l'API Tonti (/api/v1).
  */
+import { request } from './http';
+import { tokenStore } from './storage';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1'
+export { ApiError, setUnauthorizedHandler } from './http';
 
-// Types de réponse API
-export interface ApiResponse<T> {
-  success: boolean
-  data?: T
-  message?: string
-  timestamp: string
-}
+// ============================================
+// Types
+// ============================================
+
+export type Currency = 'MAD' | 'EUR' | 'USD';
+export type DaretStatus = 'RECRUTEMENT' | 'VERROUILLEE' | 'ACTIVE' | 'TERMINEE' | 'ANNULEE';
+export type Visibility = 'PRIVEE' | 'NON_LISTEE' | 'PUBLIQUE';
+export type MembreRole = 'CREATEUR' | 'ADMIN' | 'MEMBRE';
+export type PaymentStatus =
+  | 'PENDING'
+  | 'PROCESSING'
+  | 'REQUIRES_ACTION'
+  | 'SUCCEEDED'
+  | 'FAILED'
+  | 'CANCELLED'
+  | 'REFUNDED'
+  | 'PARTIALLY_REFUNDED';
+export type CheckoutChannel = 'WEB' | 'APP';
+export type Locale = 'fr' | 'ar' | 'en';
 
 export interface PagedResponse<T> {
-  content: T[]
-  page: number
-  size: number
-  totalElements: number
-  totalPages: number
-  isLast: boolean
-}
-
-// Erreur API personnalisée
-export class ApiError extends Error {
-  constructor(
-    public status: number,
-    public statusText: string,
-    message: string,
-    public errors?: Record<string, string>
-  ) {
-    super(message)
-    this.name = 'ApiError'
-  }
-}
-
-// Gestionnaire de tokens
-const tokenManager = {
-  getAccessToken: (): string | null => localStorage.getItem('tonti:accessToken'),
-  getRefreshToken: (): string | null => localStorage.getItem('tonti:refreshToken'),
-
-  setTokens: (accessToken: string, refreshToken: string) => {
-    localStorage.setItem('tonti:accessToken', accessToken)
-    localStorage.setItem('tonti:refreshToken', refreshToken)
-  },
-
-  clearTokens: () => {
-    localStorage.removeItem('tonti:accessToken')
-    localStorage.removeItem('tonti:refreshToken')
-    localStorage.removeItem('tonti:user')
-  },
-
-  getUser: () => {
-    const user = localStorage.getItem('tonti:user')
-    return user ? JSON.parse(user) : null
-  },
-
-  setUser: (user: any) => {
-    localStorage.setItem('tonti:user', JSON.stringify(user))
-  }
-}
-
-// Fonction pour rafraîchir le token
-async function refreshAccessToken(): Promise<boolean> {
-  const refreshToken = tokenManager.getRefreshToken()
-  if (!refreshToken) return false
-
-  try {
-    const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refreshToken })
-    })
-
-    if (response.ok) {
-      const data: ApiResponse<{ accessToken: string; refreshToken: string }> = await response.json()
-      if (data.success && data.data) {
-        tokenManager.setTokens(data.data.accessToken, data.data.refreshToken)
-        return true
-      }
-    }
-  } catch (error) {
-    console.error('Token refresh failed:', error)
-  }
-
-  tokenManager.clearTokens()
-  return false
-}
-
-// Client HTTP principal
-async function request<T>(
-  endpoint: string,
-  options: RequestInit = {},
-  retry = true
-): Promise<T> {
-  const url = `${API_BASE_URL}${endpoint}`
-  const accessToken = tokenManager.getAccessToken()
-
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-    ...options.headers
-  }
-
-  if (accessToken) {
-    ;(headers as Record<string, string>)['Authorization'] = `Bearer ${accessToken}`
-  }
-
-  const config: RequestInit = {
-    ...options,
-    headers
-  }
-
-  try {
-    const response = await fetch(url, config)
-
-    // Si 401 et qu'on peut réessayer, tenter de refresh le token
-    if (response.status === 401 && retry) {
-      const refreshed = await refreshAccessToken()
-      if (refreshed) {
-        return request<T>(endpoint, options, false)
-      }
-      // Rediriger vers login si refresh échoue
-      window.location.href = '/login'
-      throw new ApiError(401, 'Unauthorized', 'Session expirée')
-    }
-
-    // Parser la réponse
-    const data = await response.json().catch(() => ({}))
-
-    if (!response.ok) {
-      throw new ApiError(
-        response.status,
-        response.statusText,
-        data.message || 'Une erreur est survenue',
-        data.errors
-      )
-    }
-
-    return data as T
-  } catch (error) {
-    if (error instanceof ApiError) throw error
-    throw new ApiError(0, 'Network Error', 'Impossible de contacter le serveur')
-  }
-}
-
-// ============================================
-// API Authentication
-// ============================================
-
-export interface LoginRequest {
-  email: string
-  password: string
-}
-
-export interface RegisterRequest {
-  email: string
-  password: string
-  firstName: string
-  lastName: string
-  phone?: string
-}
-
-export interface AuthResponse {
-  accessToken: string
-  refreshToken: string
-  tokenType: string
-  expiresIn: number
-  user: UserResponse
+  content: T[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  isLast: boolean;
 }
 
 export interface UserResponse {
-  id: string
-  email: string
-  firstName: string
-  lastName: string
-  phone?: string
-  avatarUrl?: string
-  isVerified: boolean
-  createdAt: string
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone?: string;
+  avatarUrl?: string;
+  isVerified: boolean;
+  createdAt: string;
+}
+
+export interface AuthResponse {
+  accessToken: string;
+  refreshToken: string;
+  tokenType: string;
+  expiresIn: number;
+  user: UserResponse;
+}
+
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  phone?: string;
+}
+
+export interface CreateDaretRequest {
+  nom: string;
+  description?: string;
+  devise: Currency;
+  montantMensuel: number;
+  taille: number;
+  visibilite: Visibility;
+  delaiGraceJours: number;
+}
+
+export interface DaretResponse {
+  id: string;
+  nom: string;
+  description?: string;
+  devise: Currency;
+  montantMensuel: number;
+  taille: number;
+  etat: DaretStatus;
+  visibilite: Visibility;
+  codeInvitation: string;
+  delaiGraceJours: number;
+  dateDebut?: string;
+  dateFin?: string;
+  createurId: string;
+  membresCount: number;
+  currentRound?: number;
+  createdAt: string;
+}
+
+export interface MembreResponse {
+  id: string;
+  userId: string;
+  firstName: string;
+  lastName: string;
+  role: MembreRole;
+  position?: number;
+  isActive: boolean;
+  joinedAt: string;
+}
+
+export interface RoundResponse {
+  id: string;
+  numero: number;
+  receveur: MembreResponse;
+  dateDebut: string;
+  dateFin: string;
+  estClos: boolean;
+  montantTotal: number;
+  paymentsCount: number;
+  paidCount: number;
+  paidUserIds: string[];
+}
+
+export interface DaretDetailResponse {
+  id: string;
+  nom: string;
+  description?: string;
+  devise: Currency;
+  montantMensuel: number;
+  taille: number;
+  etat: DaretStatus;
+  visibilite: Visibility;
+  codeInvitation: string;
+  delaiGraceJours: number;
+  dateDebut?: string;
+  dateFin?: string;
+  createur: MembreResponse;
+  membres: MembreResponse[];
+  rounds: RoundResponse[];
+  createdAt: string;
+}
+
+export interface CheckoutResponse {
+  paymentId: string;
+  provider: 'STRIPE';
+  status: PaymentStatus;
+  amount: number;
+  currency: Currency;
+  redirectUrl: string;
+}
+
+export interface PaymentResponse {
+  id: string;
+  daretId: string;
+  roundId: string;
+  roundNumero: number;
+  userId: string;
+  userName: string;
+  amount: number;
+  currency: Currency;
+  status: PaymentStatus;
+  provider: 'STRIPE';
+  method: string;
+  failureReason?: string;
+  paidAt?: string;
+  createdAt: string;
+}
+
+export interface PaymentConfigResponse {
+  onlinePaymentCurrencies: Currency[];
+  provider?: 'STRIPE';
+}
+
+export interface NotificationResponse {
+  id: string;
+  type: string;
+  title: string;
+  message: string;
+  data?: string;
+  isRead: boolean;
+  readAt?: string;
+  createdAt: string;
+}
+
+// ============================================
+// Authentification & compte
+// ============================================
+
+function storeSession(auth: AuthResponse): void {
+  tokenStore.set('accessToken', auth.accessToken);
+  tokenStore.set('refreshToken', auth.refreshToken);
+  tokenStore.set('user', JSON.stringify(auth.user));
 }
 
 export const authApi = {
-  async register(data: RegisterRequest): Promise<ApiResponse<AuthResponse>> {
-    const response = await request<ApiResponse<AuthResponse>>('/auth/register', {
+  async register(data: RegisterRequest): Promise<UserResponse> {
+    const { data: auth } = await request<AuthResponse>('/auth/register', {
       method: 'POST',
-      body: JSON.stringify(data)
-    })
-    if (response.success && response.data) {
-      tokenManager.setTokens(response.data.accessToken, response.data.refreshToken)
-      tokenManager.setUser(response.data.user)
-    }
-    return response
+      body: data,
+      anonymous: true,
+    });
+    storeSession(auth);
+    return auth.user;
   },
 
-  async login(data: LoginRequest): Promise<ApiResponse<AuthResponse>> {
-    const response = await request<ApiResponse<AuthResponse>>('/auth/login', {
+  async login(email: string, password: string): Promise<UserResponse> {
+    const { data: auth } = await request<AuthResponse>('/auth/login', {
       method: 'POST',
-      body: JSON.stringify(data)
-    })
-    if (response.success && response.data) {
-      tokenManager.setTokens(response.data.accessToken, response.data.refreshToken)
-      tokenManager.setUser(response.data.user)
-    }
-    return response
+      body: { email, password },
+      anonymous: true,
+    });
+    storeSession(auth);
+    return auth.user;
   },
 
   async logout(): Promise<void> {
     try {
-      await request('/auth/logout', { method: 'POST' })
+      await request<void>('/auth/logout', { method: 'POST' });
     } finally {
-      tokenManager.clearTokens()
+      tokenStore.clear();
     }
   },
 
-  async getMe(): Promise<ApiResponse<UserResponse>> {
-    return request<ApiResponse<UserResponse>>('/auth/me')
+  async me(): Promise<UserResponse> {
+    const { data } = await request<UserResponse>('/auth/me');
+    tokenStore.set('user', JSON.stringify(data));
+    return data;
   },
 
-  async updateProfile(data: { firstName?: string; lastName?: string; phone?: string }): Promise<ApiResponse<UserResponse>> {
-    const response = await request<ApiResponse<UserResponse>>('/auth/me', {
-      method: 'PUT',
-      body: JSON.stringify(data)
-    })
-    if (response.success && response.data) {
-      tokenManager.setUser(response.data)
+  async updateProfile(data: {
+    firstName?: string;
+    lastName?: string;
+    phone?: string;
+  }): Promise<UserResponse> {
+    const { data: user } = await request<UserResponse>('/auth/me', { method: 'PUT', body: data });
+    tokenStore.set('user', JSON.stringify(user));
+    return user;
+  },
+
+  async changePassword(oldPassword: string, newPassword: string): Promise<void> {
+    await request<void>('/auth/change-password', { method: 'POST', body: { oldPassword, newPassword } });
+    // Le backend révoque toutes les sessions après un changement de mot de passe
+    tokenStore.clear();
+  },
+
+  async deleteAccount(password: string): Promise<void> {
+    await request<void>('/auth/me', { method: 'DELETE', body: { password } });
+    tokenStore.clear();
+  },
+
+  storedUser(): UserResponse | null {
+    const raw = tokenStore.get('user');
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw) as UserResponse;
+    } catch {
+      return null;
     }
-    return response
   },
 
-  async changePassword(oldPassword: string, newPassword: string): Promise<ApiResponse<void>> {
-    return request<ApiResponse<void>>('/auth/change-password', {
-      method: 'POST',
-      body: JSON.stringify({ oldPassword, newPassword })
-    })
+  hasSession(): boolean {
+    return tokenStore.get('accessToken') !== null;
   },
 
-  isAuthenticated: () => !!tokenManager.getAccessToken(),
-  getUser: () => tokenManager.getUser(),
-  clearAuth: () => tokenManager.clearTokens()
-}
+  clearSession(): void {
+    tokenStore.clear();
+  },
+};
 
 // ============================================
-// API Darets
+// Darets
 // ============================================
-
-export interface CreateDaretRequest {
-  nom: string
-  description?: string
-  devise: 'MAD' | 'EUR' | 'USD'
-  montantMensuel: number
-  taille: number
-  visibilite?: 'PRIVEE' | 'NON_LISTEE' | 'PUBLIQUE'
-  delaiGraceJours?: number
-}
-
-export interface DaretResponse {
-  id: string
-  nom: string
-  description?: string
-  devise: 'MAD' | 'EUR' | 'USD'
-  montantMensuel: number
-  taille: number
-  etat: 'RECRUTEMENT' | 'VERROUILLEE' | 'ACTIVE' | 'TERMINEE' | 'ANNULEE'
-  visibilite: 'PRIVEE' | 'NON_LISTEE' | 'PUBLIQUE'
-  codeInvitation: string
-  delaiGraceJours: number
-  dateDebut?: string
-  dateFin?: string
-  createurId: string
-  membresCount: number
-  currentRound?: number
-  createdAt: string
-}
-
-export interface DaretDetailResponse extends Omit<DaretResponse, 'createurId' | 'membresCount' | 'currentRound'> {
-  createur: MembreResponse
-  membres: MembreResponse[]
-  rounds: RoundResponse[]
-}
-
-export interface MembreResponse {
-  id: string
-  userId: string
-  firstName: string
-  lastName: string
-  email: string
-  role: 'CREATEUR' | 'ADMIN' | 'MEMBRE'
-  position?: number
-  isActive: boolean
-  joinedAt: string
-}
-
-export interface RoundResponse {
-  id: string
-  numero: number
-  receveur: MembreResponse
-  dateDebut: string
-  dateFin: string
-  estClos: boolean
-  montantTotal: number
-  paymentsCount: number
-  paidCount: number
-}
 
 export const daretApi = {
-  async create(data: CreateDaretRequest): Promise<ApiResponse<DaretResponse>> {
-    return request<ApiResponse<DaretResponse>>('/darets', {
-      method: 'POST',
-      body: JSON.stringify(data)
-    })
-  },
+  create: (data: CreateDaretRequest) =>
+    request<DaretResponse>('/darets', { method: 'POST', body: data }).then((r) => r.data),
 
-  async list(): Promise<ApiResponse<DaretResponse[]>> {
-    return request<ApiResponse<DaretResponse[]>>('/darets')
-  },
+  list: () => request<DaretResponse[]>('/darets').then((r) => r.data),
 
-  async getById(id: string): Promise<ApiResponse<DaretDetailResponse>> {
-    return request<ApiResponse<DaretDetailResponse>>(`/darets/${id}`)
-  },
+  get: (id: string) => request<DaretDetailResponse>(`/darets/${encodeURIComponent(id)}`).then((r) => r.data),
 
-  async getByCode(code: string): Promise<ApiResponse<DaretResponse>> {
-    return request<ApiResponse<DaretResponse>>(`/darets/code/${code}`)
-  },
+  preview: (code: string) =>
+    request<DaretResponse>(`/darets/code/${encodeURIComponent(code)}`, { anonymous: true }).then(
+      (r) => r.data,
+    ),
 
-  async update(id: string, data: Partial<CreateDaretRequest>): Promise<ApiResponse<DaretResponse>> {
-    return request<ApiResponse<DaretResponse>>(`/darets/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(data)
-    })
-  },
+  join: (codeInvitation: string) =>
+    request<MembreResponse>('/darets/join', { method: 'POST', body: { codeInvitation } }).then((r) => r.data),
 
-  async join(codeInvitation: string): Promise<ApiResponse<MembreResponse>> {
-    return request<ApiResponse<MembreResponse>>('/darets/join', {
-      method: 'POST',
-      body: JSON.stringify({ codeInvitation })
-    })
-  },
+  leave: (id: string) => request<void>(`/darets/${encodeURIComponent(id)}/leave`, { method: 'DELETE' }),
 
-  async leave(id: string): Promise<ApiResponse<void>> {
-    return request<ApiResponse<void>>(`/darets/${id}/leave`, {
-      method: 'DELETE'
-    })
-  },
+  start: (id: string, data: { dateDebut?: string; roster?: string[] } = {}) =>
+    request<DaretResponse>(`/darets/${encodeURIComponent(id)}/start`, { method: 'POST', body: data }).then(
+      (r) => r.data,
+    ),
 
-  async start(id: string, data?: { dateDebut?: string; roster?: string[] }): Promise<ApiResponse<DaretResponse>> {
-    return request<ApiResponse<DaretResponse>>(`/darets/${id}/start`, {
-      method: 'POST',
-      body: JSON.stringify(data || {})
-    })
-  },
-
-  async closeRound(daretId: string, roundId: string): Promise<ApiResponse<RoundResponse>> {
-    return request<ApiResponse<RoundResponse>>(`/darets/${daretId}/rounds/${roundId}/close`, {
-      method: 'POST'
-    })
-  },
-
-  async getPublic(page = 0, size = 20): Promise<ApiResponse<PagedResponse<DaretResponse>>> {
-    return request<ApiResponse<PagedResponse<DaretResponse>>>(`/darets/public?page=${page}&size=${size}`)
-  }
-}
+  closeRound: (daretId: string, roundId: string) =>
+    request<RoundResponse>(
+      `/darets/${encodeURIComponent(daretId)}/rounds/${encodeURIComponent(roundId)}/close`,
+      {
+        method: 'POST',
+      },
+    ).then((r) => r.data),
+};
 
 // ============================================
-// API Payments
+// Paiements
 // ============================================
-
-export interface CreatePaymentIntentRequest {
-  amount: number
-  currency: 'MAD' | 'EUR' | 'USD'
-  daretId: string
-  roundId: string
-  description?: string
-  paymentMethodId?: string
-  returnUrl?: string
-}
-
-export interface PaymentIntentResponse {
-  paymentIntentId: string
-  clientSecret: string
-  status: string
-  amount: number
-  currency: 'MAD' | 'EUR' | 'USD'
-}
-
-export interface PaymentMethodResponse {
-  id: string
-  type: string
-  brand?: string
-  last4?: string
-  expMonth?: number
-  expYear?: number
-  walletType?: string
-  isDefault: boolean
-}
-
-export interface PaymentResponse {
-  id: string
-  daretId: string
-  roundId: string
-  amount: number
-  currency: 'MAD' | 'EUR' | 'USD'
-  status: 'PENDING' | 'PROCESSING' | 'REQUIRES_ACTION' | 'SUCCEEDED' | 'FAILED' | 'CANCELLED' | 'REFUNDED'
-  method: 'CARD' | 'APPLE_PAY' | 'GOOGLE_PAY' | 'BANK_TRANSFER' | 'MOBILE_MONEY'
-  paidAt?: string
-  createdAt: string
-}
-
-export interface WalletConfigResponse {
-  stripePublishableKey: string
-  merchantId: string
-  merchantName: string
-  countryCode: string
-  supportedNetworks: string[]
-  applePayEnabled: boolean
-  applePayMerchantId?: string
-  googlePayEnabled: boolean
-  googlePayEnvironment: string
-}
 
 export const paymentApi = {
-  async createPaymentIntent(data: CreatePaymentIntentRequest): Promise<ApiResponse<PaymentIntentResponse>> {
-    return request<ApiResponse<PaymentIntentResponse>>('/payments/intent', {
-      method: 'POST',
-      body: JSON.stringify(data)
-    })
-  },
+  config: () => request<PaymentConfigResponse>('/payments/config', { anonymous: true }).then((r) => r.data),
 
-  async confirmPayment(paymentIntentId: string, paymentMethodId: string): Promise<ApiResponse<PaymentResponse>> {
-    return request<ApiResponse<PaymentResponse>>('/payments/confirm', {
-      method: 'POST',
-      body: JSON.stringify({ paymentIntentId, paymentMethodId })
-    })
-  },
+  checkout: (data: { daretId: string; roundId: string; channel: CheckoutChannel; locale: Locale }) =>
+    request<CheckoutResponse>('/payments/checkout', { method: 'POST', body: data }).then((r) => r.data),
 
-  async getPayment(id: string): Promise<ApiResponse<PaymentResponse>> {
-    return request<ApiResponse<PaymentResponse>>(`/payments/${id}`)
-  },
+  get: (id: string) => request<PaymentResponse>(`/payments/${encodeURIComponent(id)}`).then((r) => r.data),
 
-  async getMyPayments(page = 0, size = 20): Promise<ApiResponse<PagedResponse<PaymentResponse>>> {
-    return request<ApiResponse<PagedResponse<PaymentResponse>>>(`/payments?page=${page}&size=${size}`)
-  },
+  mine: (page = 0, size = 20) =>
+    request<PagedResponse<PaymentResponse>>(`/payments?page=${page}&size=${size}`).then((r) => r.data),
 
-  async getRoundPayments(daretId: string, roundId: string): Promise<ApiResponse<PaymentResponse[]>> {
-    return request<ApiResponse<PaymentResponse[]>>(`/payments/daret/${daretId}/round/${roundId}`)
-  },
+  cancel: (id: string) =>
+    request<PaymentResponse>(`/payments/${encodeURIComponent(id)}`, { method: 'DELETE' }).then((r) => r.data),
+};
 
-  async cancelPayment(id: string): Promise<ApiResponse<PaymentResponse>> {
-    return request<ApiResponse<PaymentResponse>>(`/payments/${id}`, {
-      method: 'DELETE'
-    })
-  },
+// ============================================
+// Notifications
+// ============================================
 
-  // Setup Intent pour ajouter une méthode de paiement
-  async createSetupIntent(): Promise<ApiResponse<{ setupIntentId: string; clientSecret: string; status: string }>> {
-    return request<ApiResponse<{ setupIntentId: string; clientSecret: string; status: string }>>('/payments/setup-intent', {
-      method: 'POST'
-    })
-  },
+export const notificationApi = {
+  list: (page = 0, size = 30) =>
+    request<PagedResponse<NotificationResponse>>(`/notifications?page=${page}&size=${size}`).then(
+      (r) => r.data,
+    ),
 
-  // Payment Methods
-  async attachPaymentMethod(paymentMethodId: string): Promise<ApiResponse<PaymentMethodResponse>> {
-    return request<ApiResponse<PaymentMethodResponse>>('/payments/methods', {
-      method: 'POST',
-      body: JSON.stringify({ paymentMethodId })
-    })
-  },
+  unreadCount: () => request<{ count: number }>('/notifications/unread/count').then((r) => r.data.count),
 
-  async listPaymentMethods(): Promise<ApiResponse<PaymentMethodResponse[]>> {
-    return request<ApiResponse<PaymentMethodResponse[]>>('/payments/methods')
-  },
+  markAsRead: (id: string) =>
+    request<NotificationResponse>(`/notifications/${encodeURIComponent(id)}/read`, { method: 'PUT' }),
 
-  async removePaymentMethod(paymentMethodId: string): Promise<ApiResponse<void>> {
-    return request<ApiResponse<void>>(`/payments/methods/${paymentMethodId}`, {
-      method: 'DELETE'
-    })
-  },
-
-  async setDefaultPaymentMethod(paymentMethodId: string): Promise<ApiResponse<void>> {
-    return request<ApiResponse<void>>(`/payments/methods/${paymentMethodId}/default`, {
-      method: 'PUT'
-    })
-  },
-
-  // Refunds
-  async createRefund(paymentId: string, amount?: number, reason?: string): Promise<ApiResponse<any>> {
-    return request<ApiResponse<any>>('/payments/refunds', {
-      method: 'POST',
-      body: JSON.stringify({ paymentId, amount, reason })
-    })
-  },
-
-  // Wallet Config (Apple Pay / Google Pay)
-  async getWalletConfig(): Promise<ApiResponse<WalletConfigResponse>> {
-    return request<ApiResponse<WalletConfigResponse>>('/payments/wallet-config')
-  }
-}
-
-// Export par défaut
-export default {
-  auth: authApi,
-  darets: daretApi,
-  payments: paymentApi,
-  isAuthenticated: authApi.isAuthenticated,
-  getUser: authApi.getUser
-}
+  markAllAsRead: () => request<void>('/notifications/read-all', { method: 'PUT' }),
+};

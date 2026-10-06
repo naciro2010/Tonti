@@ -21,9 +21,9 @@ module.exports = {
         dangerSoft: '#F87171',
       },
       fontFamily: {
-        sans: ['Inter', ...defaultTheme.fontFamily.sans],
+        sans: ['"Inter Variable"', 'Inter', ...defaultTheme.fontFamily.sans],
         arabic: ['"Noto Kufi Arabic"', ...defaultTheme.fontFamily.sans],
-        display: ['Inter', ...defaultTheme.fontFamily.sans],
+        display: ['"Inter Variable"', 'Inter', ...defaultTheme.fontFamily.sans],
       },
       screens: {
         xs: '420px',
@@ -34,10 +34,8 @@ module.exports = {
         card: '0 14px 45px -25px rgba(0, 0, 0, 0.8)',
       },
       backgroundImage: {
-        'hero-radial':
-          'radial-gradient(60% 60% at 50% 0%, rgba(255,179,0,0.18) 0%, rgba(255,179,0,0) 70%)',
-        'grid-fade':
-          'linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0) 100%)',
+        'hero-radial': 'radial-gradient(60% 60% at 50% 0%, rgba(255,179,0,0.18) 0%, rgba(255,179,0,0) 70%)',
+        'grid-fade': 'linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0) 100%)',
       },
       keyframes: {
         'fade-in-up': {

@@ -6,11 +6,7 @@ const props = defineProps<{
 </script>
 
 <template>
-  <ol
-    class="flex flex-wrap items-center gap-x-2 gap-y-3 text-sm"
-    aria-label="Progression"
-    role="list"
-  >
+  <ol class="flex flex-wrap items-center gap-x-2 gap-y-3 text-sm" aria-label="Progression" role="list">
     <li
       v-for="(step, index) in props.steps"
       :key="step"
@@ -23,7 +19,7 @@ const props = defineProps<{
           index < props.current
             ? 'border-primary bg-primary text-background shadow-glow'
             : index === props.current
-              ? 'border-primary text-primary animate-pulse-ring'
+              ? 'animate-pulse-ring border-primary text-primary'
               : 'border-white/15 text-white/50',
         ]"
       >
@@ -45,11 +41,7 @@ const props = defineProps<{
       <span
         class="font-medium transition-colors"
         :class="
-          index === props.current
-            ? 'text-white'
-            : index < props.current
-              ? 'text-white/70'
-              : 'text-white/50'
+          index === props.current ? 'text-white' : index < props.current ? 'text-white/70' : 'text-white/50'
         "
       >
         {{ step }}

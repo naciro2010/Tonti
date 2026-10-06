@@ -1,179 +1,96 @@
-# Déploiement sur Railway
-
-Guide de déploiement de Tonti (Frontend + Backend) sur Railway.
-
-## Prérequis
-
-- Compte [Railway](https://railway.app)
-- Compte [Stripe](https://stripe.com)
-- Ce repository connecté à Railway
-
-## Architecture
+# Déploiement
 
 ```
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│   Frontend      │────▶│    Backend      │────▶│   PostgreSQL    │
-│   (Vue.js)      │     │  (Spring Boot)  │     │   (Railway)     │
-└─────────────────┘     └─────────────────┘     └─────────────────┘
-                               │
-                               ▼
-                        ┌─────────────────┐
-                        │     Stripe      │
-                        │  (Paiements)    │
-                        └─────────────────┘
+ App iOS (Capacitor) ─┐
+                      ├──▶  API Spring Boot  ──▶  PostgreSQL
+ Site web (Vue)  ─────┘          │   ▲
+                                 │   │ webhooks signés
+                                 ▼   │
+                           Stripe Checkout (carte, Apple Pay, Google Pay, 3-D Secure)
 ```
 
-## Étape 1: Créer le projet Railway
+## 1. API (backend)
 
-1. Aller sur [railway.app](https://railway.app)
-2. Cliquer sur "New Project"
-3. Sélectionner "Deploy from GitHub repo"
-4. Connecter votre compte GitHub et sélectionner ce repository
+L'API est une application Spring Boot conteneurisée (`backend/Dockerfile`), déployable sur Railway,
+Fly.io, Render, Scaleway, AWS… Exemple Railway :
 
-## Étape 2: Déployer la base de données
+1. *New Project* → *Deploy from GitHub repo* → service **backend** (Root Directory `backend`,
+   builder Dockerfile, health check `/api/health` — déjà dans `backend/railway.json`).
+2. Ajouter un service **PostgreSQL**.
+3. Variables du service backend :
 
-1. Dans votre projet Railway, cliquer sur "+ New"
-2. Sélectionner "Database" → "PostgreSQL"
-3. Railway crée automatiquement la variable `DATABASE_URL`
+| Variable | Exemple | Rôle |
+| --- | --- | --- |
+| `SPRING_PROFILES_ACTIVE` | `prod` | Profil production |
+| `DATABASE_URL` | `jdbc:postgresql://${{Postgres.PGHOST}}:${{Postgres.PGPORT}}/${{Postgres.PGDATABASE}}` | URL **JDBC** (pas l'URL `postgresql://` brute) |
+| `DATABASE_USERNAME` / `DATABASE_PASSWORD` | `${{Postgres.PGUSER}}` / `${{Postgres.PGPASSWORD}}` | Identifiants |
+| `JWT_SECRET` | `openssl rand -base64 64` | Obligatoire, ≥ 256 bits |
+| `API_BASE_URL` | `https://api.tonti.app` | URL publique de l'API (retours de paiement) |
+| `WEB_BASE_URL` | `https://tonti.app` | URL publique du site web |
+| `ALLOWED_ORIGINS` | `https://tonti.app,capacitor://localhost` | CORS : site web + application iOS |
+| `STRIPE_SECRET_KEY` | `sk_live_…` | Clé secrète Stripe |
+| `STRIPE_WEBHOOK_SECRET` | `whsec_…` | Secret de signature du webhook |
+| `API_DOCS_ENABLED` | `false` | Swagger UI désactivé en production par défaut |
 
-## Étape 3: Déployer le Backend
+Les migrations Flyway s'appliquent au démarrage. Supervision : `GET /api/health`,
+`GET /actuator/health` (probes `liveness` / `readiness`).
 
-1. Cliquer sur "+ New" → "GitHub Repo"
-2. Sélectionner ce repo
-3. Dans les settings du service:
-   - **Root Directory**: `backend`
-   - **Build Command**: `./gradlew bootJar -x test`
-   - **Start Command**: `java -jar build/libs/tonti-backend.jar`
+## 2. Stripe
 
-4. Configurer les **Variables d'environnement**:
+1. Créer le compte Stripe au nom de la société (France) et activer les paiements.
+2. *Developers → API keys* : récupérer `sk_live_…` (et `sk_test_…` pour la recette).
+3. *Developers → Webhooks → Add endpoint* :
+   - URL : `https://api.tonti.app/api/webhooks/stripe`
+   - Événements : `checkout.session.completed`, `checkout.session.async_payment_succeeded`,
+     `checkout.session.async_payment_failed`, `checkout.session.expired`, `charge.refunded`
+   - Copier le *Signing secret* dans `STRIPE_WEBHOOK_SECRET`.
+4. *Settings → Payment methods* : activer Cartes, Apple Pay et Google Pay. Avec Stripe Checkout,
+   aucune vérification de domaine Apple Pay n'est nécessaire (page hébergée par Stripe).
+5. Devises : MAD, EUR et USD sont encaissées et converties vers la devise de versement du compte.
 
-```env
-# Base de données (automatique si PostgreSQL est dans le projet)
-DATABASE_URL=${{Postgres.DATABASE_URL}}
+En local : `stripe listen --forward-to localhost:8080/api/webhooks/stripe` puis `STRIPE_ENABLED=true`.
 
-# Profil Spring
-SPRING_PROFILES_ACTIVE=prod
+### Reversement des fonds au bénéficiaire — à trancher avant la mise en production
 
-# JWT (générer une clé sécurisée)
-JWT_SECRET=votre-cle-secrete-256-bits-minimum
+Les cotisations sont aujourd'hui encaissées sur le compte Stripe de la société ; la clôture d'un tour
+calcule la cagnotte due au bénéficiaire mais **ne déclenche pas de virement**. Encaisser des fonds
+pour le compte de tiers relève en France de la réglementation des services de paiement (ACPR) :
 
-# Stripe
-STRIPE_SECRET_KEY=sk_live_...
-STRIPE_PUBLISHABLE_KEY=pk_live_...
-STRIPE_WEBHOOK_SECRET=whsec_...
+- **Recommandé** : **Stripe Connect** (comptes *Express*) — chaque membre fait vérifier son identité
+  et son IBAN par Stripe, les cotisations sont transférées au bénéficiaire à la clôture du tour
+  (*separate charges and transfers* avec `transfer_group` = round). Stripe porte l'agrément ; Tonti
+  reste plateforme technique.
+- Alternative : reversement manuel par virement, à faire valider par un juriste (statut d'agent de
+  services de paiement ou exemption).
 
-# CORS (URL du frontend)
-ALLOWED_ORIGINS=https://votre-frontend.railway.app
-```
+L'abstraction `PaymentGateway` (`backend/src/main/kotlin/com/tonti/service/payment`) permet d'ajouter
+cette étape sans toucher au parcours de paiement.
 
-5. Dans "Settings" → "Networking", générer un domaine public
+## 3. Site web
 
-## Étape 4: Déployer le Frontend
+Build statique (`npm run build` → `dist/`) à servir derrière n'importe quel CDN avec repli SPA
+sur `index.html` (Railway : `npx serve dist -s`, déjà configuré dans `railway.json`).
 
-1. Cliquer sur "+ New" → "GitHub Repo"
-2. Sélectionner ce repo (racine `/`)
-3. Dans les settings du service:
-   - **Root Directory**: `/` (racine)
-   - **Build Command**: `npm run build`
-   - **Start Command**: `npx serve dist -s -l $PORT`
+| Variable de build | Exemple |
+| --- | --- |
+| `VITE_API_URL` | `https://api.tonti.app/api/v1` |
+| `VITE_PUBLIC_WEB_URL` | `https://tonti.app` |
+| `VITE_BASE_URL` | `/` (ou `/Tonti/` pour GitHub Pages) |
 
-4. Configurer les **Variables d'environnement**:
+Le workflow GitHub Pages lit `VITE_API_URL` et `VITE_PUBLIC_WEB_URL` dans les *Variables* du dépôt.
+Les pages `/confidentialite`, `/conditions` et `/support` doivent être accessibles publiquement :
+leurs URLs sont déclarées dans la fiche App Store. Compléter `src/config/legal.ts` avec les
+informations réelles de la société.
 
-```env
-# URL du backend
-VITE_API_URL=https://votre-backend.railway.app/api/v1
+## 4. Application iOS
 
-# Stripe (clé publique)
-VITE_STRIPE_PUBLISHABLE_KEY=pk_live_...
+Voir [docs/app-store.md](docs/app-store.md).
 
-# Base URL
-VITE_BASE_URL=/
-```
+## Check-list de mise en production
 
-5. Dans "Settings" → "Networking", générer un domaine public
-
-## Étape 5: Configurer Stripe Webhook
-
-1. Aller sur [dashboard.stripe.com/webhooks](https://dashboard.stripe.com/webhooks)
-2. Cliquer sur "Add endpoint"
-3. URL: `https://votre-backend.railway.app/api/webhooks/stripe`
-4. Événements à sélectionner:
-   - `payment_intent.succeeded`
-   - `payment_intent.payment_failed`
-   - `payment_intent.canceled`
-   - `payment_method.attached`
-   - `payment_method.detached`
-   - `charge.refunded`
-5. Copier le "Signing secret" et l'ajouter comme `STRIPE_WEBHOOK_SECRET`
-
-## Étape 6: Configurer Apple Pay (Production)
-
-1. Sur [Stripe Dashboard](https://dashboard.stripe.com/settings/payments/apple_pay)
-2. Ajouter votre domaine frontend
-3. Télécharger le fichier de vérification
-4. L'ajouter à `public/.well-known/apple-developer-merchantid-domain-association`
-
-## Variables d'environnement récapitulatif
-
-### Backend
-
-| Variable | Description | Exemple |
-|----------|-------------|---------|
-| `DATABASE_URL` | URL PostgreSQL | `postgresql://...` |
-| `SPRING_PROFILES_ACTIVE` | Profil Spring | `prod` |
-| `JWT_SECRET` | Clé secrète JWT (256+ bits) | `votre-cle-super-secrete` |
-| `STRIPE_SECRET_KEY` | Clé secrète Stripe | `sk_live_...` |
-| `STRIPE_PUBLISHABLE_KEY` | Clé publique Stripe | `pk_live_...` |
-| `STRIPE_WEBHOOK_SECRET` | Secret webhook Stripe | `whsec_...` |
-| `ALLOWED_ORIGINS` | URLs CORS autorisées | `https://tonti.railway.app` |
-
-### Frontend
-
-| Variable | Description | Exemple |
-|----------|-------------|---------|
-| `VITE_API_URL` | URL de l'API backend | `https://api.tonti.railway.app/api/v1` |
-| `VITE_STRIPE_PUBLISHABLE_KEY` | Clé publique Stripe | `pk_live_...` |
-| `VITE_BASE_URL` | Base URL de l'app | `/` |
-
-## Commandes utiles
-
-```bash
-# Voir les logs du backend
-railway logs -s backend
-
-# Voir les logs du frontend
-railway logs -s frontend
-
-# Redéployer
-railway up
-
-# Ouvrir la console PostgreSQL
-railway connect postgres
-```
-
-## Monitoring
-
-- **Health check backend**: `https://votre-backend.railway.app/api/health`
-- **Swagger UI**: `https://votre-backend.railway.app/swagger-ui.html`
-- **Metrics**: `https://votre-backend.railway.app/actuator/metrics`
-
-## Troubleshooting
-
-### Le backend ne démarre pas
-- Vérifier les logs: `railway logs`
-- Vérifier que `DATABASE_URL` est configuré
-- Vérifier que le port `$PORT` est utilisé
-
-### Erreurs CORS
-- Vérifier que `ALLOWED_ORIGINS` contient l'URL du frontend
-- Format: `https://domain1.railway.app,https://domain2.railway.app`
-
-### Paiements échouent
-- Vérifier les clés Stripe (test vs live)
-- Vérifier le webhook secret
-- Consulter les logs Stripe Dashboard
-
-### Apple Pay ne fonctionne pas
-- Vérifier la vérification de domaine
-- Tester sur Safari avec un appareil Apple
-- Vérifier que le site est en HTTPS
+- [ ] `JWT_SECRET` aléatoire, base PostgreSQL sauvegardée
+- [ ] Clés Stripe *live* et webhook configurés, paiement de bout en bout testé
+- [ ] Modalités de reversement validées (Stripe Connect recommandé)
+- [ ] `src/config/legal.ts` complété, CGU et politique de confidentialité relues par un juriste
+- [ ] Icône définitive et captures d'écran App Store
+- [ ] Compte de démonstration pour la revue Apple

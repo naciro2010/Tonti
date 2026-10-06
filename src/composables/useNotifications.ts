@@ -1,52 +1,42 @@
-import { ref, readonly } from 'vue'
+import { readonly, ref } from 'vue';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1'
-const unreadCount = ref(0)
-const polling = ref<ReturnType<typeof setInterval> | null>(null)
+import { notificationApi } from '@/services/api';
 
-async function fetchCount() {
-  const token = localStorage.getItem('tonti:accessToken')
-  if (!token) return
+const unreadCount = ref(0);
+let timer: ReturnType<typeof setInterval> | null = null;
 
+async function refresh() {
   try {
-    const res = await fetch(`${API_BASE_URL}/notifications/unread/count`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    if (res.ok) {
-      const data = await res.json()
-      if (data.success && data.data) {
-        unreadCount.value = data.data.count ?? 0
-      }
-    }
+    unreadCount.value = await notificationApi.unreadCount();
   } catch {
-    // silently fail
+    // Silencieux : le compteur n'est qu'indicatif
   }
 }
 
+function onVisibilityChange() {
+  if (document.visibilityState === 'visible') void refresh();
+}
+
 export function useNotifications() {
-  function startPolling(intervalMs = 30000) {
-    if (polling.value) return
-    fetchCount()
-    polling.value = setInterval(fetchCount, intervalMs)
+  function startPolling(intervalMs = 60_000) {
+    if (timer) return;
+    void refresh();
+    timer = setInterval(() => {
+      if (document.visibilityState === 'visible') void refresh();
+    }, intervalMs);
+    document.addEventListener('visibilitychange', onVisibilityChange);
   }
 
   function stopPolling() {
-    if (polling.value) {
-      clearInterval(polling.value)
-      polling.value = null
-    }
+    if (timer) clearInterval(timer);
+    timer = null;
+    document.removeEventListener('visibilitychange', onVisibilityChange);
   }
 
   function reset() {
-    unreadCount.value = 0
-    stopPolling()
+    unreadCount.value = 0;
+    stopPolling();
   }
 
-  return {
-    unreadCount: readonly(unreadCount),
-    startPolling,
-    stopPolling,
-    reset,
-    refresh: fetchCount,
-  }
+  return { unreadCount: readonly(unreadCount), startPolling, stopPolling, reset, refresh };
 }

@@ -1,298 +1,220 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue';
+import { computed, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-import { useStorage } from '@vueuse/core';
 
 import BaseButton from '@/components/BaseButton.vue';
 import BaseInput from '@/components/BaseInput.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
-import RosterEditor from '@/components/RosterEditor.vue';
 import Stepper from '@/components/Stepper.vue';
-import Toast from '@/components/Toast.vue';
-import { useDaretStore, daretCreationSchema } from '@/composables/useDaretStore';
-import { useZodForm } from '@/composables/useZodForm';
+import { formatCurrency } from '@/composables/useCurrency';
+import { useToast } from '@/composables/useToast';
+import { daretApi, type Currency, type Visibility } from '@/services/api';
+import { errorMessage, fieldErrors } from '@/utils/errors';
 
 const { t } = useI18n();
 const router = useRouter();
-const store = useDaretStore();
+const toast = useToast();
 
-const defaultForm = {
+const form = reactive({
   nom: '',
   description: '',
-  devise: 'MAD',
-  montantMensuel: 100,
-  taille: 10,
-  createurId: 'organisateur-demo',
-  membres: [],
-  roster: [],
-  visibilite: 'privee',
-  dateDebut: '',
-  regles: {
-    delaiGraceJours: 3,
-    rappelLocal: true,
-  },
-};
+  devise: 'MAD' as Currency,
+  montantMensuel: 500 as number | string,
+  taille: 6 as number | string,
+  delaiGraceJours: 3 as number | string,
+  visibilite: 'PRIVEE' as Visibility,
+});
 
-const storage = useStorage('tonti:wizard', defaultForm, undefined, { mergeDefaults: true });
-const seedStorage = useStorage('tonti:wizard-seed', new Date().getFullYear().toString());
+const step = ref(0);
+const errors = ref<Record<string, string>>({});
+const submitting = ref(false);
 
-const { state, validate, submit, reset } = useZodForm(daretCreationSchema, storage.value ?? defaultForm);
+const steps = computed(() => [
+  t('create.steps.info'),
+  t('create.steps.contribution'),
+  t('create.steps.summary'),
+]);
+const amount = computed(() => Number(form.montantMensuel));
+const size = computed(() => Number(form.taille));
+const pot = computed(() => amount.value * (size.value - 1));
 
-watch(
-  () => state.values,
-  (value) => {
-    storage.value = structuredClone(value);
-  },
-  { deep: true },
-);
+const currencyOptions = computed(() => [
+  { value: 'MAD', label: t('currency.MAD') },
+  { value: 'EUR', label: t('currency.EUR') },
+  { value: 'USD', label: t('currency.USD') },
+]);
+const visibilityOptions = computed(() => [
+  { value: 'PRIVEE', label: t('create.visibility.PRIVEE') },
+  { value: 'NON_LISTEE', label: t('create.visibility.NON_LISTEE') },
+  { value: 'PUBLIQUE', label: t('create.visibility.PUBLIQUE') },
+]);
 
-watch(
-  () => state.values.membres,
-  (members) => {
-    state.values.roster = members.map((member) => member.id);
-  },
-  { deep: true },
-);
-
-const steps = computed(() => [t('wizard.step1'), t('wizard.step2'), t('wizard.step3'), t('wizard.step4')]);
-const currentStep = ref(0);
-
-const toast = reactive({ show: false, message: '', type: 'success' as 'success' | 'error' | 'info' });
-
-function nextStep() {
-  if (currentStep.value < steps.value.length - 1) {
-    currentStep.value += 1;
+function validateStep(index: number) {
+  const e: Record<string, string> = {};
+  if (index === 0) {
+    if (form.nom.trim().length < 3) e.nom = t('create.errors.name');
+    if (form.description.length > 1000) e.description = t('create.errors.description');
   }
+  if (index === 1) {
+    if (!Number.isFinite(amount.value) || amount.value < 10 || amount.value > 100000)
+      e.montantMensuel = t('create.errors.amount');
+    if (!Number.isInteger(size.value) || size.value < 2 || size.value > 50)
+      e.taille = t('create.errors.size');
+    const grace = Number(form.delaiGraceJours);
+    if (!Number.isInteger(grace) || grace < 0 || grace > 30) e.delaiGraceJours = t('create.errors.grace');
+  }
+  errors.value = e;
+  return Object.keys(e).length === 0;
 }
 
-function previousStep() {
-  if (currentStep.value > 0) {
-    currentStep.value -= 1;
-  }
+function next() {
+  if (validateStep(step.value)) step.value += 1;
 }
 
-async function createDaret() {
-  const ok = validate();
-  if (!ok) {
-    toast.show = true;
-    toast.message = t('wizard.validation');
-    toast.type = 'error';
-    setTimeout(() => (toast.show = false), 2500);
-    return;
-  }
-
-  const success = await submit(async (values) => {
-    const normalized = {
-      ...values,
-      montantMensuel: Number(values.montantMensuel),
-      taille: Number(values.taille),
-      regles: {
-        ...values.regles,
-        delaiGraceJours: Number(values.regles.delaiGraceJours),
-      },
-      dateDebut: values.dateDebut || undefined,
-    };
-    const daret = store.createDaret(normalized);
-    toast.show = true;
-    toast.message = t('wizard.success');
-    toast.type = 'success';
-    storage.value = structuredClone(defaultForm);
-    reset(defaultForm);
-    seedStorage.value = new Date().getFullYear().toString();
-    await router.push(`/daret/${daret.id}`);
-  });
-
-  if (!success) {
-    toast.show = true;
-    toast.message = t('wizard.error');
-    toast.type = 'error';
+async function submit() {
+  if (!validateStep(0) || !validateStep(1)) return;
+  submitting.value = true;
+  try {
+    const daret = await daretApi.create({
+      nom: form.nom.trim(),
+      description: form.description.trim() || undefined,
+      devise: form.devise,
+      montantMensuel: amount.value,
+      taille: size.value,
+      visibilite: form.visibilite,
+      delaiGraceJours: Number(form.delaiGraceJours),
+    });
+    toast.success(t('create.success'));
+    await router.replace(`/daret/${daret.id}`);
+  } catch (error) {
+    errors.value = fieldErrors(error);
+    toast.error(errorMessage(error, t('common.error')));
+  } finally {
+    submitting.value = false;
   }
 }
 </script>
 
 <template>
-  <div class="mx-auto max-w-4xl space-y-8">
-    <header class="space-y-2">
-      <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">{{ t('wizard.summary.title') }}</h1>
-      <p class="text-sm text-white/60">{{ t('wizard.review') }}</p>
+  <div class="mx-auto max-w-2xl space-y-6">
+    <header>
+      <h1 class="text-2xl font-bold sm:text-3xl">{{ t('create.title') }}</h1>
+      <p class="mt-1 text-sm text-white/60">{{ t('create.subtitle') }}</p>
     </header>
 
-    <div class="card-interactive">
-      <Stepper :steps="steps" :current="currentStep" />
-      <p class="mt-4 inline-flex items-center gap-2 text-xs text-white/50">
-        <svg class="h-3.5 w-3.5 text-primary" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-        </svg>
-        {{ t('wizard.autosave') }}
-      </p>
-    </div>
+    <Stepper :steps="steps" :current="step" />
 
-    <form class="space-y-6" @submit.prevent="createDaret">
-      <Transition
-        enter-active-class="transition duration-300 ease-out"
-        enter-from-class="opacity-0 translate-y-2"
-        enter-to-class="opacity-100 translate-y-0"
-        mode="out-in"
-      >
-        <section v-if="currentStep === 0" key="step-0" class="card space-y-5">
-          <div>
-            <h2 class="text-xl font-semibold">{{ t('wizard.step1') }}</h2>
-            <p class="mt-1 text-sm text-white/60">Nom, montant, devise et dates clés de votre Daret.</p>
-          </div>
-          <BaseInput id="nom" v-model="state.values.nom" :label="t('form.name')" :error="state.errors.nom" required placeholder="Ex. Daret famille Casa" />
-          <BaseInput id="description" v-model="state.values.description" :label="t('form.description')" placeholder="Quelques mots pour présenter cette Daret" />
-          <div class="grid gap-4 sm:grid-cols-2">
-            <BaseInput
-              id="montant"
-              v-model.number="state.values.montantMensuel"
-              type="number"
-              :label="t('form.amount')"
-              min="10"
-              :error="state.errors.montantMensuel"
-            />
-            <BaseInput
-              id="taille"
-              v-model.number="state.values.taille"
-              type="number"
-              :label="t('form.size')"
-              min="2"
-              max="50"
-              :error="state.errors.taille"
-            />
-            <BaseSelect
-              id="devise"
-              v-model="state.values.devise"
-              :label="t('form.currency')"
-              :options="[
-                { label: 'MAD (DH)', value: 'MAD' },
-                { label: 'EUR (€)', value: 'EUR' },
-              ]"
-            />
-            <BaseInput
-              id="dateDebut"
-              v-model="state.values.dateDebut"
-              type="date"
-              :label="t('form.startDate')"
-              :error="state.errors.dateDebut"
-            />
-          </div>
-          <BaseSelect
-            id="visibilite"
-            v-model="state.values.visibilite"
-            :label="t('form.visibility')"
-            :options="[
-              { label: t('form.visibilityOptions.privee'), value: 'privee' },
-              { label: t('form.visibilityOptions.non-listee'), value: 'non-listee' },
-              { label: t('form.visibilityOptions.publique'), value: 'publique' },
-            ]"
+    <form class="card space-y-5" novalidate @submit.prevent="step < 2 ? next() : submit()">
+      <template v-if="step === 0">
+        <BaseInput
+          id="nom"
+          v-model="form.nom"
+          :label="t('create.fields.name')"
+          :placeholder="t('create.fields.namePlaceholder')"
+          :error="errors.nom"
+          maxlength="100"
+          required
+        />
+        <div class="space-y-1.5">
+          <label for="description">{{ t('create.fields.description') }} ({{ t('common.optional') }})</label>
+          <textarea
+            id="description"
+            v-model="form.description"
+            rows="3"
+            maxlength="1000"
+            :aria-invalid="errors.description ? 'true' : undefined"
           />
-        </section>
+          <p v-if="errors.description" class="text-xs text-dangerSoft" role="alert">
+            {{ errors.description }}
+          </p>
+        </div>
+      </template>
 
-        <section v-else-if="currentStep === 1" key="step-1" class="space-y-4">
-          <div class="card space-y-1.5">
-            <h2 class="text-xl font-semibold">{{ t('wizard.step2') }}</h2>
-            <p class="text-sm text-white/60">Ajoutez les membres et réglez l'ordre de tirage.</p>
-          </div>
-          <RosterEditor v-model="state.values.membres" :seed="seedStorage" @update:seed="(seed) => (seedStorage.value = seed)" />
-          <p v-if="!state.values.membres.length" class="text-sm text-white/60">{{ t('wizard.emptyRoster') }}</p>
-          <p v-if="state.errors.roster" class="text-sm text-dangerSoft">{{ state.errors.roster }}</p>
-        </section>
-
-        <section v-else-if="currentStep === 2" key="step-2" class="card space-y-6">
-          <div>
-            <h2 class="text-xl font-semibold">{{ t('wizard.step3') }}</h2>
-            <p class="mt-1 text-sm text-white/60">Délai de grâce et rappels de paiement.</p>
-          </div>
+      <template v-else-if="step === 1">
+        <div class="grid gap-4 sm:grid-cols-2">
           <BaseInput
-            id="delai"
-            v-model.number="state.values.regles.delaiGraceJours"
+            id="montant"
+            v-model="form.montantMensuel"
+            :label="t('create.fields.amount')"
             type="number"
-            :label="t('form.gracePeriod')"
+            inputmode="decimal"
+            min="10"
+            step="10"
+            :error="errors.montantMensuel"
+            required
+          />
+          <BaseSelect
+            id="devise"
+            v-model="form.devise"
+            :label="t('create.fields.currency')"
+            :options="currencyOptions"
+          />
+        </div>
+        <BaseInput
+          id="taille"
+          v-model="form.taille"
+          :label="t('create.fields.size')"
+          :hint="t('create.fields.sizeHint')"
+          type="number"
+          inputmode="numeric"
+          min="2"
+          max="50"
+          :error="errors.taille"
+          required
+        />
+        <div class="grid gap-4 sm:grid-cols-2">
+          <BaseInput
+            id="grace"
+            v-model="form.delaiGraceJours"
+            :label="t('create.fields.grace')"
+            :hint="t('create.fields.graceHint')"
+            type="number"
+            inputmode="numeric"
             min="0"
             max="30"
-            hint="Nombre de jours tolérés après l'échéance avant qu'un paiement soit noté en retard."
+            :error="errors.delaiGraceJours"
           />
-          <label
-            class="flex cursor-pointer items-start gap-3 rounded-xl border border-white/10 bg-surface/50 p-4 transition-colors hover:border-primary/30 hover:bg-surface/70"
-            :class="state.values.regles.rappelLocal ? 'border-primary/40 bg-primary/5' : ''"
-          >
-            <input
-              v-model="state.values.regles.rappelLocal"
-              type="checkbox"
-              class="mt-0.5 h-4 w-4 flex-shrink-0 rounded border-white/20 bg-surface text-primary focus:ring-2 focus:ring-primary/40"
-            />
-            <div>
-              <span class="block text-sm font-semibold text-white">{{ t('form.localReminders') }}</span>
-              <span class="mt-0.5 block text-xs text-white/60">
-                Reçoit des notifications navigateur le jour de l'échéance (avec votre accord).
-              </span>
-            </div>
-          </label>
-        </section>
+          <BaseSelect
+            id="visibilite"
+            v-model="form.visibilite"
+            :label="t('create.fields.visibility')"
+            :options="visibilityOptions"
+          />
+        </div>
+      </template>
 
-        <section v-else-if="currentStep === 3" key="step-3" class="card space-y-5">
-          <div>
-            <h2 class="text-xl font-semibold">{{ t('wizard.step4') }}</h2>
-            <p class="mt-1 text-sm text-white/60">Vérifiez les informations avant de créer votre Daret.</p>
+      <template v-else>
+        <dl class="grid gap-3 sm:grid-cols-2">
+          <div class="rounded-xl bg-white/5 p-4">
+            <dt class="section-title">{{ t('create.fields.name') }}</dt>
+            <dd class="mt-1 font-semibold">{{ form.nom }}</dd>
           </div>
-          <dl class="grid gap-3 sm:grid-cols-2">
-            <div class="rounded-xl border border-white/10 bg-surface/40 p-4">
-              <dt class="text-xs font-semibold uppercase tracking-wider text-white/50">{{ t('form.name') }}</dt>
-              <dd class="mt-1 truncate font-semibold text-white">{{ state.values.nom || '—' }}</dd>
-            </div>
-            <div class="rounded-xl border border-white/10 bg-surface/40 p-4">
-              <dt class="text-xs font-semibold uppercase tracking-wider text-white/50">{{ t('form.amount') }}</dt>
-              <dd class="mt-1 font-semibold text-primary">
-                {{ state.values.montantMensuel }} {{ state.values.devise }}
-              </dd>
-            </div>
-            <div class="rounded-xl border border-white/10 bg-surface/40 p-4">
-              <dt class="text-xs font-semibold uppercase tracking-wider text-white/50">{{ t('form.size') }}</dt>
-              <dd class="mt-1 font-semibold text-white">{{ state.values.taille }} membres</dd>
-            </div>
-            <div class="rounded-xl border border-white/10 bg-surface/40 p-4">
-              <dt class="text-xs font-semibold uppercase tracking-wider text-white/50">{{ t('form.startDate') }}</dt>
-              <dd class="mt-1 font-semibold text-white">{{ state.values.dateDebut || '—' }}</dd>
-            </div>
-            <div class="rounded-xl border border-white/10 bg-surface/40 p-4">
-              <dt class="text-xs font-semibold uppercase tracking-wider text-white/50">{{ t('form.visibility') }}</dt>
-              <dd class="mt-1 font-semibold capitalize text-white">{{ state.values.visibilite }}</dd>
-            </div>
-            <div class="rounded-xl border border-white/10 bg-surface/40 p-4">
-              <dt class="text-xs font-semibold uppercase tracking-wider text-white/50">Roster</dt>
-              <dd class="mt-1 font-semibold text-white">{{ state.values.membres.length }} membres</dd>
-            </div>
-          </dl>
-        </section>
-      </Transition>
+          <div class="rounded-xl bg-white/5 p-4">
+            <dt class="section-title">{{ t('create.fields.amount') }}</dt>
+            <dd class="mt-1 font-semibold">
+              {{ formatCurrency(amount, form.devise) }} / {{ t('common.month') }}
+            </dd>
+          </div>
+          <div class="rounded-xl bg-white/5 p-4">
+            <dt class="section-title">{{ t('create.fields.size') }}</dt>
+            <dd class="mt-1 font-semibold">{{ t('create.summary.duration', { count: size }, size) }}</dd>
+          </div>
+          <div class="rounded-xl bg-primary/10 p-4 ring-1 ring-inset ring-primary/30">
+            <dt class="section-title">{{ t('create.summary.pot') }}</dt>
+            <dd class="mt-1 text-xl font-bold text-primary">{{ formatCurrency(pot, form.devise) }}</dd>
+          </div>
+        </dl>
+        <p class="text-sm text-white/60">{{ t('create.summary.next') }}</p>
+      </template>
 
-      <div class="flex flex-col-reverse items-stretch justify-between gap-3 sm:flex-row sm:items-center">
-        <BaseButton type="button" variant="ghost" @click="previousStep" :disabled="currentStep === 0">
-          <svg class="h-4 w-4 rtl:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
-          </svg>
-          {{ t('actions.previous') }}
-        </BaseButton>
-        <BaseButton
-          v-if="currentStep < steps.length - 1"
-          type="button"
-          @click="nextStep"
-        >
-          {{ t('actions.next') }}
-          <svg class="h-4 w-4 rtl:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
-          </svg>
-        </BaseButton>
-        <BaseButton v-else type="submit" size="lg">
-          <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-          </svg>
-          {{ t('actions.create') }}
+      <div class="flex justify-between gap-3 pt-2">
+        <BaseButton v-if="step > 0" variant="secondary" @click="step -= 1">{{ t('common.back') }}</BaseButton>
+        <span v-else />
+        <BaseButton type="submit" :loading="submitting">
+          {{ step < 2 ? t('common.next') : t('create.submit') }}
         </BaseButton>
       </div>
     </form>
-
-    <Toast :show="toast.show" :message="toast.message" :type="toast.type" />
   </div>
 </template>

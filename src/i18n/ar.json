@@ -1,251 +1,314 @@
 {
   "app": {
-    "name": "تونتي",
-    "tagline": "حَلْقة ادخار دوّارة، ثابتة وسهلة الوصول",
+    "name": "Tonti",
     "language": "اللغة"
-  },
-  "landing": {
-    "hero": {
-      "title": "أدِر حلقات الادّخار الدوّارة بسهولة",
-      "subtitle": "نظّم، تابع وشارك الدارِت بدون خادم: 100٪ محلي، آمن ومتعدد اللغات.",
-      "cta_primary": "إنشاء دارِت",
-      "cta_secondary": "اعرف المزيد"
-    },
-    "features": {
-      "title": "لماذا تختار تونتي؟",
-      "subtitle": "حل عصري لإدارة حلقات الادّخار الدوّارة",
-      "feature1_title": "آمن 100٪ ومحلي",
-      "feature1_desc": "بياناتك تبقى على جهازك. لا خادم، لا تسريب. مشفّر بالكامل.",
-      "feature2_title": "متعدد اللغات وشامل",
-      "feature2_desc": "واجهة بالعربية والفرنسية مع دعم كامل لـ RTL. متاح للجميع.",
-      "feature3_title": "بسيط وفعّال",
-      "feature3_desc": "أنشئ دارِتك في 3 خطوات. تتبّع المساهمات والدورات تلقائيًا.",
-      "feature4_title": "مدفوعات متكاملة",
-      "feature4_desc": "Stripe، PayPal، عملات رقمية، محفظة إلكترونية، تحويلات بنكية. روابط وأكواد QR تلقائية.",
-      "feature5_title": "إدارة الصلاحيات",
-      "feature5_desc": "أدوار وصلاحيات: منشئ، عضو، مراقب. تحكم كامل في دارِتك.",
-      "feature6_title": "مفتوح المصدر",
-      "feature6_desc": "كود شفّاف وقابل للمراجعة. بدون رسوم مخفية. حرية تامة."
-    },
-    "payments": {
-      "title": "طرق دفع مرنة",
-      "subtitle": "اقبل واستقبل المدفوعات كما تريد",
-      "method1_title": "بطاقات بنكية",
-      "method1_desc": "تكامل Stripe لقبول Visa، Mastercard، إلخ.",
-      "method2_title": "PayPal",
-      "method2_desc": "روابط PayPal.me تلقائية لدفعات سريعة.",
-      "method3_title": "عملات رقمية",
-      "method3_desc": "Bitcoin، Ethereum، USDT مع أكواد QR تلقائية.",
-      "method4_title": "محفظة إلكترونية",
-      "method4_desc": "CashPlus، Wafacash والخدمات المغربية الشعبية.",
-      "method5_title": "تحويل بنكي",
-      "method5_desc": "IBAN وRIB للتحويلات التقليدية.",
-      "method6_title": "نقدي",
-      "method6_desc": "دفعات مباشرة عند اللقاء الشخصي."
-    },
-    "security": {
-      "title": "الأمان والتحكم في الوصول",
-      "subtitle": "احمِ دارِتك بنظام صلاحيات دقيق",
-      "role1_title": "منشئ",
-      "role1_desc": "تحكم كامل: تعديل، إغلاق الدورات، إدارة الأعضاء والمدفوعات.",
-      "role2_title": "عضو",
-      "role2_desc": "مشاركة نشطة: مشاهدة الدارِت، تحديد المدفوعات، تلقي الإشعارات.",
-      "role3_title": "مراقب",
-      "role3_desc": "وصول للقراءة فقط: متابعة التقدم دون تدخل."
-    },
-    "howItWorks": {
-      "title": "كيف يعمل؟",
-      "subtitle": "أنشئ وأدِر دارِتك في 3 خطوات بسيطة",
-      "step1_title": "أنشئ دارِتك",
-      "step1_desc": "حدّد الاسم، المبلغ الشهري، عدد المشاركين والقواعد.",
-      "step2_title": "ادعُ الأعضاء",
-      "step2_desc": "شارك رابط الدعوة أو رمز QR مع المشاركين.",
-      "step3_title": "تابع المساهمات",
-      "step3_desc": "أدِر المدفوعات، أغلِق الدورات وصدِّر البيانات."
-    },
-    "stats": {
-      "stat1_value": "100٪",
-      "stat1_label": "آمن",
-      "stat2_value": "0€",
-      "stat2_label": "بدون رسوم",
-      "stat3_value": "2",
-      "stat3_label": "لغات",
-      "stat4_value": "مفتوح",
-      "stat4_label": "المصدر"
-    },
-    "cta": {
-      "title": "هل أنت جاهز للبدء؟",
-      "subtitle": "أنشئ دارِتك الأولى مجانًا في أقل من دقيقتين.",
-      "button": "إنشاء دارِتي"
-    },
-    "demo": {
-      "title": "دارِت تجريبية",
-      "viewDashboard": "عرض لوحة المعلومات",
-      "members": "أعضاء"
-    },
-    "footer": {
-      "description": "تطبيق لإدارة حلقات الادّخار الدوّارة (دارِت) ثابت 100٪، آمن ومتعدد اللغات.",
-      "links_title": "روابط",
-      "resources_title": "موارد",
-      "legal_title": "قانوني",
-      "home": "الرئيسية",
-      "about": "حول",
-      "contact": "تواصل",
-      "documentation": "التوثيق",
-      "github": "GitHub",
-      "license": "ترخيص MIT",
-      "privacy": "الخصوصية",
-      "terms": "الشروط",
-      "madeWith": "صُنع بـ",
-      "by": "بواسطة"
-    }
   },
   "nav": {
     "home": "الرئيسية",
+    "myDarets": "دارتي",
     "create": "إنشاء",
-    "join": "الانضمام"
+    "join": "انضمام",
+    "account": "حسابي",
+    "notifications": "الإشعارات",
+    "skipToContent": "الانتقال إلى المحتوى",
+    "mainNav": "التنقل الرئيسي",
+    "openMenu": "فتح القائمة",
+    "closeMenu": "إغلاق القائمة"
   },
-  "actions": {
-    "create": "إنشاء دارِت",
-    "join": "الانضمام",
-    "next": "التالي",
-    "previous": "السابق",
+  "common": {
+    "back": "رجوع",
+    "next": "متابعة",
+    "cancel": "إلغاء",
+    "close": "إغلاق",
     "save": "حفظ",
-    "closeRound": "إغلاق الدورة",
-    "markPaid": "تم الدفع",
-    "markLate": "متأخر",
-    "markPending": "إعادة التعيين",
-    "randomize": "ترتيب عشوائي",
-    "addMember": "إضافة عضو",
-    "copyLink": "نسخ الرابط",
-    "downloadIcs": "تصدير التقويم (.ics)",
-    "toggleCurrency": "تبديل العملة",
-    "remove": "حذف"
+    "retry": "إعادة المحاولة",
+    "share": "مشاركة",
+    "copied": "تم النسخ!",
+    "optional": "اختياري",
+    "month": "شهر",
+    "you": "أنت",
+    "error": "حدث خطأ، يرجى المحاولة مرة أخرى."
   },
-  "statuses": {
-    "a_payer": "في الانتظار",
-    "paye": "مدفوع",
-    "retard": "متأخر"
+  "validation": {
+    "required": "هذا الحقل مطلوب",
+    "email": "بريد إلكتروني غير صالح",
+    "phone": "رقم هاتف غير صالح (مثال: ‎+212 6 12 34 56 78)",
+    "passwordLength": "8 أحرف على الأقل",
+    "passwordMismatch": "كلمتا المرور غير متطابقتين"
   },
-  "form": {
-    "name": "اسم الدارت",
-    "description": "وصف (اختياري)",
-    "amount": "المبلغ الشهري",
-    "size": "عدد المشاركين",
-    "currency": "العملة",
-    "startDate": "تاريخ البدء",
-    "visibility": "الظهور",
-    "visibilityOptions": {
-      "privee": "خاصة",
-      "non-listee": "غير مدرجة",
-      "publique": "عامة"
+  "auth": {
+    "login": "تسجيل الدخول",
+    "logout": "تسجيل الخروج",
+    "register": "إنشاء حسابي",
+    "loginTitle": "مرحبًا بعودتك",
+    "loginSubtitle": "سجّل الدخول للوصول إلى دارتك.",
+    "registerTitle": "إنشاء حساب",
+    "registerSubtitle": "بعض المعلومات للانضمام إلى دارت أو تنظيمها.",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "passwordHint": "8 أحرف على الأقل",
+    "firstName": "الاسم الشخصي",
+    "lastName": "الاسم العائلي",
+    "phone": "الهاتف",
+    "phoneHint": "بالصيغة الدولية، مثال: ‎+212 6 12 34 56 78",
+    "noAccount": "ليس لديك حساب؟",
+    "createAccount": "إنشاء حساب",
+    "hasAccount": "لديك حساب؟",
+    "loginSuccess": "تم تسجيل الدخول بنجاح",
+    "registerSuccess": "مرحبًا بك في Tonti!",
+    "invalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+    "acceptTerms": "أوافق على {terms} و{privacy}.",
+    "termsRequired": "يجب الموافقة على الشروط للمتابعة"
+  },
+  "landing": {
+    "badge": "دارت مع العائلة أو الأصدقاء أو الزملاء",
+    "title": "الدارت أصبحت أخيرًا",
+    "titleHighlight": "بسيطة ومطمئنة",
+    "subtitle": "أنشئ دارتك، وادعُ أقاربك، ودع القرعة تحدد ترتيب الأدوار، وادفع مساهماتك عبر الإنترنت بكل أمان.",
+    "ctaPrimary": "إنشاء دارت",
+    "ctaSecondary": "لدي رمز دعوة",
+    "features": {
+      "organize": {
+        "title": "تنظيم تلقائي",
+        "text": "ترتيب أدوار عادل وجدول زمني وتذكيرات: لا حاجة لجداول مشتركة بعد الآن."
+      },
+      "pay": {
+        "title": "دفع آمن",
+        "text": "بطاقة بنكية أو Apple Pay أو Google Pay عبر Stripe مع المصادقة 3-D Secure."
+      },
+      "track": {
+        "title": "متابعة فورية",
+        "text": "يرى الجميع من ساهم ومتى تُسلَّم الحصيلة، بكل شفافية."
+      }
     },
-    "gracePeriod": "مهلة سماح (أيام)",
-    "localReminders": "تفعيل التذكيرات",
-    "memberName": "الاسم",
-    "memberContact": "التواصل",
-    "invitationCode": "رمز الدعوة"
+    "howTitle": "كيف تعمل؟",
+    "steps": {
+      "create": "أنشئ الدارت: المبلغ الشهري والعملة وعدد الأعضاء.",
+      "invite": "شارك رمز الدعوة أو الرابط.",
+      "start": "ابدأ: يُحدَّد ترتيب الأدوار بالقرعة.",
+      "pay": "كل شهر، يساهم الأعضاء عبر الإنترنت ويتسلّم المستفيد الحصيلة."
+    },
+    "securityTitle": "بياناتك وأموالك في أمان",
+    "securityText": "لا يخزن Tonti أي بيانات بنكية: تتم معالجة المدفوعات من طرف Stripe، مزود خدمات دفع معتمد. لا تُباع بياناتك الشخصية أبدًا ويمكنك حذف حسابك في أي وقت."
   },
-  "wizard": {
-    "step1": "المعلومات",
-    "step2": "الأعضاء",
-    "step3": "القواعد",
-    "step4": "مراجعة",
-    "autosave": "حفظ تلقائي مفعّل",
-    "review": "راجع البيانات قبل التأكيد",
-    "emptyRoster": "أضف أعضاء لإعداد الترتيب.",
-    "success": "تم إنشاء الدارت!",
-    "error": "تعذّر إنشاء الدارت.",
-    "validation": "يرجى تصحيح الأخطاء.",
+  "darets": {
+    "title": "دارتي",
+    "greeting": "مرحبًا {name} 👋",
+    "loadError": "تعذر تحميل الدارت.",
+    "emptyTitle": "لا توجد دارت حاليًا",
+    "emptyText": "أنشئ أول دارت لك أو انضم إلى دارت أحد أقاربك برمز الدعوة.",
+    "sections": {
+      "active": "جارية",
+      "recruiting": "في طور التسجيل",
+      "done": "منتهية"
+    },
+    "members": "{count}/{size} أعضاء",
+    "organizer": "المنظِّم"
+  },
+  "daretStatus": {
+    "RECRUTEMENT": "التسجيل مفتوح",
+    "VERROUILLEE": "مغلقة",
+    "ACTIVE": "جارية",
+    "TERMINEE": "منتهية",
+    "ANNULEE": "ملغاة"
+  },
+  "paymentStatus": {
+    "DUE": "مستحق",
+    "PENDING": "قيد الانتظار",
+    "PROCESSING": "قيد المعالجة",
+    "REQUIRES_ACTION": "إجراء مطلوب",
+    "SUCCEEDED": "مدفوع",
+    "FAILED": "فشل",
+    "CANCELLED": "ملغى",
+    "REFUNDED": "مسترجع",
+    "PARTIALLY_REFUNDED": "مسترجع جزئيًا"
+  },
+  "roles": {
+    "CREATEUR": "المنظِّم",
+    "ADMIN": "مسؤول",
+    "MEMBRE": "عضو"
+  },
+  "currency": {
+    "MAD": "الدرهم المغربي (MAD)",
+    "EUR": "اليورو (EUR)",
+    "USD": "الدولار الأمريكي (USD)"
+  },
+  "create": {
+    "title": "إنشاء دارت",
+    "subtitle": "ثلاث خطوات، ويمكن لأقاربك الانضمام إليك.",
+    "steps": {
+      "info": "المعلومات",
+      "contribution": "المساهمة",
+      "summary": "الملخص"
+    },
+    "fields": {
+      "name": "اسم الدارت",
+      "namePlaceholder": "مثال: دارت العائلة",
+      "description": "الوصف",
+      "amount": "المساهمة الشهرية",
+      "currency": "العملة",
+      "size": "عدد الأعضاء",
+      "sizeHint": "بما فيهم أنت. تستمر الدارت بعدد أشهر يساوي عدد الأعضاء.",
+      "grace": "مهلة السماح (أيام)",
+      "graceHint": "المهلة المسموح بها بعد آخر أجل للمساهمة.",
+      "visibility": "الظهور"
+    },
+    "visibility": {
+      "PRIVEE": "خاصة (بالدعوة)",
+      "NON_LISTEE": "غير مدرجة (بالرابط فقط)",
+      "PUBLIQUE": "عامة"
+    },
+    "errors": {
+      "name": "يجب أن يتكون الاسم من 3 أحرف على الأقل",
+      "description": "1000 حرف كحد أقصى",
+      "amount": "يجب أن يكون المبلغ بين 10 و100000",
+      "size": "بين 2 و50 عضوًا",
+      "grace": "بين 0 و30 يومًا"
+    },
     "summary": {
-      "title": "مُلخّص",
-      "details": "تفاصيل الدارت"
+      "duration": "{count} عضو · {count} شهر | {count} أعضاء · {count} أشهر",
+      "pot": "الحصيلة التي ستتسلمها في دورك",
+      "next": "بعد إنشاء الدارت، شارك رمز الدعوة ثم ابدأها عندما ينضم الجميع."
     },
-    "seed": "بذرة عشوائية"
-  },
-  "dashboard": {
-    "round": "دورة {current}/{total}",
-    "daysRemaining": "متبقي {count} يومًا",
-    "daysRemainingLabel": "الأيام المتبقية",
-    "today": "اليوم الأخير",
-    "receiver": "المستفيد",
-    "total": "الإجمالي المستحق",
-    "history": "سجل الدورات",
-    "roster": "الترتيب",
-    "payments": "المدفوعات",
-    "noHistory": "لا يوجد سجل بعد",
-    "late": "متأخرون",
-    "statusUpdated": "تم تحديث الحالة",
-    "roundClosed": "تم إغلاق الدورة"
-  },
-  "invite": {
-    "title": "دعوة الأعضاء",
-    "share": "شارك الرابط أو رمز QR للانضمام",
-    "copied": "تم نسخ الرابط!",
-    "qrAlt": "رمز QR للدعوة"
+    "submit": "إنشاء الدارت",
+    "success": "تم إنشاء الدارت! ادعُ أقاربك الآن."
   },
   "join": {
     "title": "الانضمام إلى دارت",
-    "subtitle": "أدخل الرمز الذي شاركه المنظم",
-    "success": "مرحبًا! تم انضمامك بنجاح.",
-    "error": "رمز غير صالح أو التحقّق مغلق."
+    "subtitle": "أدخل الرمز الذي تلقيته من المنظِّم.",
+    "code": "رمز الدعوة",
+    "codeHint": "6 رموز، مثال: K7M2QX",
+    "search": "بحث",
+    "invalidCode": "يتكون الرمز من 6 أحرف أو أرقام",
+    "notFound": "لا توجد دارت بهذا الرمز",
+    "join": "الانضمام إلى هذه الدارت",
+    "loginToJoin": "سجّل الدخول للانضمام",
+    "closed": "هذه الدارت لم تعد تقبل أعضاء جددًا.",
+    "success": "انضممت إلى «{name}»"
   },
-  "notifications": {
-    "enable": "تفعيل الإشعارات المحلية",
-    "enabled": "تم تفعيل الإشعارات",
-    "denied": "تم حظر الإشعارات من المتصفح"
+  "invite": {
+    "title": "ادعُ أقاربك",
+    "subtitle": "شارك هذا الرمز أو الرابط للانضمام إلى الدارت في لحظة.",
+    "code": "رمز الدعوة",
+    "copyLink": "نسخ الرابط",
+    "shareTitle": "انضم إلى دارتي على Tonti",
+    "shareText": "انضم إلى دارتي على Tonti بالرمز {code}:"
+  },
+  "dashboard": {
+    "roundOf": "الدور {current} من {total}",
+    "daysLeft": "يتبقى يوم واحد | يتبقى {count} أيام",
+    "dueToday": "اليوم الأخير",
+    "beneficiary": "المستفيد",
+    "pot": "الحصيلة",
+    "contributionsCollected": "المساهمات المستلمة",
+    "members": "الأعضاء",
+    "tabs": {
+      "round": "هذا الشهر",
+      "schedule": "الجدول",
+      "members": "الأعضاء"
+    },
+    "payTitle": "مساهمتك",
+    "payText": "{amount} يجب أداؤها قبل {date}.",
+    "payButton": "ادفع {amount}",
+    "paidTitle": "تم أداء المساهمة ✓",
+    "paidText": "شكرًا! سيتم إشعارك عند إغلاق الدور.",
+    "youReceiveTitle": "إنه دورك 🎉",
+    "youReceiveText": "ستتسلم {amount} بعد أداء جميع المساهمات.",
+    "closeRound": "إغلاق الدور",
+    "closeRoundHint": "متاح عند أداء جميع المساهمات.",
+    "roundClosed": "تم إغلاق الدور",
+    "calendar": "إضافة إلى التقويم",
+    "waitingTitle": "في انتظار الأعضاء",
+    "waitingAdmin": "ابدأ الدارت عندما ينضم جميع الأعضاء: سيُحدَّد ترتيب الأدوار بالقرعة.",
+    "waitingMember": "سيبدأ المنظِّم الدارت عندما ينضم جميع الأعضاء.",
+    "start": "بدء الدارت",
+    "started": "بدأت الدارت!",
+    "startConfirmTitle": "بدء الدارت؟",
+    "startConfirmText": "ستبدأ الدارت بـ {count} أعضاء. سيُحدَّد ترتيب الأدوار بالقرعة ولن يمكن تعديله.",
+    "leave": "مغادرة الدارت",
+    "left": "غادرت الدارت",
+    "leaveConfirmTitle": "مغادرة الدارت؟",
+    "leaveConfirmText": "يمكنك الانضمام مجددًا بالرمز ما دامت الدارت لم تبدأ.",
+    "completedTitle": "انتهت الدارت",
+    "completedText": "تم إغلاق جميع الأدوار. شكرًا لجميع الأعضاء!",
+    "notFoundTitle": "الدارت غير موجودة",
+    "notFoundText": "هذه الدارت غير موجودة أو لست عضوًا فيها."
   },
   "payment": {
-    "selectMethod": "اختر طريقة الدفع",
-    "saveMethod": "حفظ الطريقة",
-    "amountToPay": "المبلغ المطلوب",
-    "copied": "تم نسخ المعلومات!",
-    "copyInfo": "نسخ المعلومات",
-    "openLink": "فتح الرابط",
-    "methods": {
-      "cash": "نقدي",
-      "mobile_money": "محفظة إلكترونية",
-      "bank_transfer": "تحويل بنكي",
-      "paypal": "PayPal",
-      "stripe": "بطاقة بنكية (Stripe)",
-      "crypto": "عملة رقمية"
-    },
-    "stripeLink": "رابط دفع Stripe",
-    "stripeLinkPlaceholder": "https://buy.stripe.com/...",
-    "stripeHint": "أنشئ رابط دفع من لوحة تحكم Stripe",
-    "paypalEmail": "بريد PayPal الإلكتروني",
-    "paypalEmailPlaceholder": "your.email@example.com",
-    "paypalHint": "البريد المرتبط بحساب PayPal",
-    "cryptoNetwork": "الشبكة",
-    "cryptoAddress": "العنوان",
-    "cryptoAddressPlaceholder": "عنوان محفظتك",
-    "cryptoHint": "عنوان محفظتك الرقمية",
-    "phoneNumber": "رقم الهاتف",
-    "phoneNumberPlaceholder": "+212 6XX XXX XXX",
-    "mobileMoneyHint": "لـ CashPlus، Wafacash، إلخ.",
-    "accountName": "اسم الحساب",
-    "accountNamePlaceholder": "اسمك الكامل",
-    "iban": "IBAN",
-    "ibanPlaceholder": "MA64 011 ...",
-    "bankTransferHint": "معلومات التحويل البنكي",
-    "cashHint": "الدفع نقدًا شخصيًا",
-    "cashInfo": "الدفع نقدًا عند اللقاء"
+    "unavailable": "الدفع عبر الإنترنت غير متاح بعد لهذه العملة.",
+    "securedBy": "دفع آمن عبر Stripe",
+    "startError": "تعذر بدء عملية الدفع.",
+    "result": {
+      "successTitle": "تم تأكيد الدفع",
+      "successText": "تم تسجيل مساهمتك. شكرًا!",
+      "pendingTitle": "جارٍ التأكيد…",
+      "pendingText": "ننتظر تأكيد بنكك.",
+      "failedTitle": "تم رفض الدفع",
+      "failedText": "لم يتم خصم أي مبلغ. يمكنك المحاولة مجددًا من صفحة الدارت.",
+      "cancelledTitle": "تم إلغاء الدفع",
+      "cancelledText": "لم يتم خصم أي مبلغ.",
+      "slowTitle": "التأكيد يستغرق وقتًا أطول من المتوقع",
+      "slowText": "سيتم تحديث دفعتك تلقائيًا وسيتم إشعارك.",
+      "unknownTitle": "الدفعة غير موجودة",
+      "backToDaret": "العودة إلى الدارت"
+    }
   },
-  "auth": {
-    "loginRequired": "تسجيل الدخول مطلوب",
-    "loginRequiredDesc": "يجب عليك تسجيل الدخول للوصول إلى هذا القسم",
-    "accessDenied": "الوصول مرفوض",
-    "accessDeniedDesc": "ليس لديك الصلاحيات اللازمة لهذا الإجراء",
-    "yourRole": "دورك",
-    "roles": {
-      "createur": "منشئ",
-      "membre": "عضو",
-      "viewer": "مراقب"
-    },
-    "login": "تسجيل الدخول",
-    "logout": "تسجيل الخروج",
-    "enterName": "أدخل اسمك",
-    "selectRole": "اختر دورك",
-    "joinAs": "الانضمام كـ"
+  "notifications": {
+    "title": "الإشعارات",
+    "empty": "لا توجد إشعارات حاليًا.",
+    "markAll": "تحديد الكل كمقروء"
+  },
+  "account": {
+    "title": "حسابي",
+    "profile": "الملف الشخصي",
+    "profileSaved": "تم تحديث الملف الشخصي",
+    "security": "كلمة المرور",
+    "currentPassword": "كلمة المرور الحالية",
+    "newPassword": "كلمة المرور الجديدة",
+    "changePassword": "تغيير كلمة المرور",
+    "passwordNotice": "سيتم تسجيل خروجك من جميع أجهزتك.",
+    "passwordChanged": "تم تغيير كلمة المرور، يرجى تسجيل الدخول مجددًا",
+    "deleteTitle": "حذف حسابي",
+    "deleteText": "سيتم حذف بياناتك الشخصية نهائيًا. غير ممكن أثناء دارت جارية.",
+    "deleteConfirm": "هذا الإجراء نهائي. أدخل كلمة المرور للتأكيد.",
+    "deleteButton": "حذف نهائي",
+    "deleted": "تم حذف حسابك"
+  },
+  "legal": {
+    "title": "معلومات قانونية",
+    "terms": "شروط الاستخدام",
+    "privacy": "سياسة الخصوصية",
+    "support": "المساعدة والتواصل",
+    "lastUpdated": "آخر تحديث: {date}",
+    "frenchOnly": "هذه الوثيقة متاحة باللغة الفرنسية."
+  },
+  "support": {
+    "subtitle": "سؤال حول دارتك أو عملية دفع؟",
+    "contactTitle": "راسلنا",
+    "contactText": "يرد فريقنا خلال 48 ساعة عمل.",
+    "faqTitle": "الأسئلة الشائعة",
+    "faq": {
+      "pay": {
+        "q": "كيف أدفع مساهمتي؟",
+        "a": "افتح الدارت ثم اضغط «ادفع». ستنتقل إلى صفحة Stripe الآمنة (بطاقة أو Apple Pay أو Google Pay)."
+      },
+      "security": {
+        "q": "هل تُخزَّن بياناتي البنكية؟",
+        "a": "لا. تُدخل البطاقة لدى Stripe، مزود خدمات دفع معتمد؛ ولا يطّلع Tonti على رقم بطاقتك أبدًا."
+      },
+      "order": {
+        "q": "كيف يُحدَّد ترتيب الأدوار؟",
+        "a": "بالقرعة عند بدء الدارت، ما لم يتفق الأعضاء على ترتيب آخر."
+      },
+      "late": {
+        "q": "ماذا يحدث في حالة التأخر؟",
+        "a": "تُطبَّق مهلة سماح يحددها المنظِّم. لا يُغلق الدور إلا بعد أداء جميع المساهمات."
+      },
+      "delete": {
+        "q": "كيف أحذف حسابي؟",
+        "a": "من حسابي ← حذف حسابي، بعد انتهاء دارتك الجارية."
+      }
+    }
   }
 }

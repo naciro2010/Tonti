@@ -1,251 +1,314 @@
 {
   "app": {
     "name": "Tonti",
-    "tagline": "La cagnotte rotative statique et inclusive",
     "language": "Langue"
-  },
-  "landing": {
-    "hero": {
-      "title": "Gérez vos cagnottes rotatives en toute simplicité",
-      "subtitle": "Organisez, suivez et partagez vos Darets sans serveur : 100% local, sécurisé et multilingue.",
-      "cta_primary": "Créer une Daret",
-      "cta_secondary": "En savoir plus"
-    },
-    "features": {
-      "title": "Pourquoi choisir Tonti ?",
-      "subtitle": "Une solution moderne pour gérer vos cagnottes rotatives",
-      "feature1_title": "100% Sécurisé & Local",
-      "feature1_desc": "Vos données restent sur votre appareil. Aucun serveur, aucune fuite possible. Totalement chiffré.",
-      "feature2_title": "Multilingue & Inclusif",
-      "feature2_desc": "Interface en Français et العربية avec support RTL complet. Accessible à tous.",
-      "feature3_title": "Simple & Efficace",
-      "feature3_desc": "Créez votre Daret en 3 étapes. Suivez les contributions et rounds automatiquement.",
-      "feature4_title": "Paiements Intégrés",
-      "feature4_desc": "Stripe, PayPal, Crypto, Mobile Money, virements bancaires. QR codes et liens automatiques.",
-      "feature5_title": "Gestion des Accès",
-      "feature5_desc": "Rôles et permissions : créateur, membre, observateur. Contrôle total de votre Daret.",
-      "feature6_title": "Open Source",
-      "feature6_desc": "Code transparent et auditable. Pas de frais cachés. Liberté totale."
-    },
-    "payments": {
-      "title": "Méthodes de paiement flexibles",
-      "subtitle": "Acceptez et recevez des paiements comme vous le souhaitez",
-      "method1_title": "Cartes Bancaires",
-      "method1_desc": "Intégration Stripe pour accepter Visa, Mastercard, etc.",
-      "method2_title": "PayPal",
-      "method2_desc": "Liens PayPal.me automatiques pour des paiements rapides.",
-      "method3_title": "Cryptomonnaies",
-      "method3_desc": "Bitcoin, Ethereum, USDT avec QR codes générés automatiquement.",
-      "method4_title": "Mobile Money",
-      "method4_desc": "CashPlus, Wafacash et autres services marocains populaires.",
-      "method5_title": "Virement Bancaire",
-      "method5_desc": "IBAN et RIB pour les transferts traditionnels.",
-      "method6_title": "Espèces",
-      "method6_desc": "Paiements en main propre pour les rencontres physiques."
-    },
-    "security": {
-      "title": "Sécurité et Contrôle d'Accès",
-      "subtitle": "Protégez votre Daret avec un système de permissions granulaire",
-      "role1_title": "Créateur",
-      "role1_desc": "Contrôle total : modifier, clôturer rounds, gérer membres et paiements.",
-      "role2_title": "Membre",
-      "role2_desc": "Participer activement : voir la Daret, marquer ses paiements, recevoir notifications.",
-      "role3_title": "Observateur",
-      "role3_desc": "Accès en lecture seule : suivre la progression sans intervenir."
-    },
-    "howItWorks": {
-      "title": "Comment ça marche ?",
-      "subtitle": "Créez et gérez votre Daret en 3 étapes simples",
-      "step1_title": "Créez votre Daret",
-      "step1_desc": "Définissez le nom, le montant mensuel, le nombre de participants et les règles.",
-      "step2_title": "Invitez les membres",
-      "step2_desc": "Partagez le lien d'invitation ou le QR code avec vos participants.",
-      "step3_title": "Suivez les contributions",
-      "step3_desc": "Gérez les paiements, clôturez les rounds et exportez les données."
-    },
-    "stats": {
-      "stat1_value": "100%",
-      "stat1_label": "Sécurisé",
-      "stat2_value": "0€",
-      "stat2_label": "Aucun frais",
-      "stat3_value": "2",
-      "stat3_label": "Langues",
-      "stat4_value": "Open",
-      "stat4_label": "Source"
-    },
-    "cta": {
-      "title": "Prêt à commencer ?",
-      "subtitle": "Créez votre première Daret gratuitement en moins de 2 minutes.",
-      "button": "Créer ma Daret"
-    },
-    "demo": {
-      "title": "Darets de démonstration",
-      "viewDashboard": "Voir le tableau de bord",
-      "members": "membres"
-    },
-    "footer": {
-      "description": "Application de gestion de cagnottes rotatives (Daret) 100% statique, sécurisée et multilingue.",
-      "links_title": "Liens",
-      "resources_title": "Ressources",
-      "legal_title": "Légal",
-      "home": "Accueil",
-      "about": "À propos",
-      "contact": "Contact",
-      "documentation": "Documentation",
-      "github": "GitHub",
-      "license": "Licence MIT",
-      "privacy": "Confidentialité",
-      "terms": "Conditions",
-      "madeWith": "Fait avec",
-      "by": "par"
-    }
   },
   "nav": {
     "home": "Accueil",
+    "myDarets": "Mes Darets",
     "create": "Créer",
-    "join": "Rejoindre"
-  },
-  "actions": {
-    "create": "Créer une Daret",
     "join": "Rejoindre",
-    "next": "Suivant",
-    "previous": "Précédent",
+    "account": "Compte",
+    "notifications": "Notifications",
+    "skipToContent": "Aller au contenu",
+    "mainNav": "Navigation principale",
+    "openMenu": "Ouvrir le menu",
+    "closeMenu": "Fermer le menu"
+  },
+  "common": {
+    "back": "Retour",
+    "next": "Continuer",
+    "cancel": "Annuler",
+    "close": "Fermer",
     "save": "Enregistrer",
-    "closeRound": "Clore le round",
-    "markPaid": "Marquer payé",
-    "markLate": "Marquer retard",
-    "markPending": "Remettre à payer",
-    "randomize": "Randomiser",
-    "addMember": "Ajouter un membre",
-    "copyLink": "Copier le lien",
-    "downloadIcs": "Exporter calendrier (.ics)",
-    "toggleCurrency": "Alterner la devise",
-    "remove": "Supprimer"
+    "retry": "Réessayer",
+    "share": "Partager",
+    "copied": "Copié !",
+    "optional": "facultatif",
+    "month": "mois",
+    "you": "vous",
+    "error": "Une erreur est survenue, veuillez réessayer."
   },
-  "statuses": {
-    "a_payer": "À payer",
-    "paye": "Payé",
-    "retard": "Retard"
+  "validation": {
+    "required": "Ce champ est requis",
+    "email": "Adresse e-mail invalide",
+    "phone": "Numéro de téléphone invalide (ex : +33 6 12 34 56 78)",
+    "passwordLength": "8 caractères minimum",
+    "passwordMismatch": "Les mots de passe ne correspondent pas"
   },
-  "form": {
-    "name": "Nom de la Daret",
-    "description": "Description (optionnel)",
-    "amount": "Montant mensuel",
-    "size": "Nombre de participants",
-    "currency": "Devise",
-    "startDate": "Date de début",
-    "visibility": "Visibilité",
-    "visibilityOptions": {
-      "privee": "Privée",
-      "non-listee": "Non listée",
-      "publique": "Publique"
+  "auth": {
+    "login": "Se connecter",
+    "logout": "Se déconnecter",
+    "register": "Créer mon compte",
+    "loginTitle": "Bon retour parmi nous",
+    "loginSubtitle": "Connectez-vous pour retrouver vos Darets.",
+    "registerTitle": "Créer un compte",
+    "registerSubtitle": "Quelques informations pour rejoindre ou organiser un Daret.",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "passwordHint": "8 caractères minimum",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "phone": "Téléphone",
+    "phoneHint": "Au format international, ex : +212 6 12 34 56 78",
+    "noAccount": "Pas encore de compte ?",
+    "createAccount": "Créer un compte",
+    "hasAccount": "Déjà un compte ?",
+    "loginSuccess": "Connexion réussie",
+    "registerSuccess": "Bienvenue sur Tonti !",
+    "invalidCredentials": "E-mail ou mot de passe incorrect",
+    "acceptTerms": "J’accepte les {terms} et la {privacy}.",
+    "termsRequired": "Vous devez accepter les conditions pour continuer"
+  },
+  "landing": {
+    "badge": "Darets en famille, entre amis ou collègues",
+    "title": "La Daret, enfin",
+    "titleHighlight": "simple et sereine",
+    "subtitle": "Créez votre Daret, invitez vos proches, laissez le tirage au sort fixer l’ordre de passage et réglez vos cotisations en ligne en toute sécurité.",
+    "ctaPrimary": "Créer une Daret",
+    "ctaSecondary": "J’ai un code d’invitation",
+    "features": {
+      "organize": {
+        "title": "Organisation automatique",
+        "text": "Ordre de passage équitable, calendrier des tours et rappels : plus besoin de tableau partagé."
+      },
+      "pay": {
+        "title": "Paiement sécurisé",
+        "text": "Carte bancaire, Apple Pay ou Google Pay via Stripe, avec authentification 3-D Secure."
+      },
+      "track": {
+        "title": "Suivi en temps réel",
+        "text": "Chacun voit qui a cotisé et quand la cagnotte est remise, en toute transparence."
+      }
     },
-    "gracePeriod": "Délai de grâce (jours)",
-    "localReminders": "Rappels locaux",
-    "memberName": "Nom",
-    "memberContact": "Contact",
-    "invitationCode": "Code d'invitation"
+    "howTitle": "Comment ça marche ?",
+    "steps": {
+      "create": "Créez la Daret : montant mensuel, devise et nombre de membres.",
+      "invite": "Partagez le code ou le lien d’invitation.",
+      "start": "Démarrez : l’ordre de passage est tiré au sort.",
+      "pay": "Chaque mois, les membres cotisent en ligne et le bénéficiaire reçoit la cagnotte."
+    },
+    "securityTitle": "Vos données et votre argent protégés",
+    "securityText": "Aucune donnée bancaire n’est stockée par Tonti : les paiements sont traités par Stripe, prestataire agréé. Vos données personnelles ne sont jamais revendues et vous pouvez supprimer votre compte à tout moment."
   },
-  "wizard": {
-    "step1": "Informations",
-    "step2": "Membres",
-    "step3": "Règles",
-    "step4": "Récapitulatif",
-    "autosave": "Sauvegarde automatique activée",
-    "review": "Vérifiez les informations avant de valider",
-    "emptyRoster": "Ajoutez des membres pour construire le roster.",
-    "success": "Daret créée !",
-    "error": "Impossible de créer la Daret.",
-    "validation": "Veuillez corriger les erreurs.",
+  "darets": {
+    "title": "Mes Darets",
+    "greeting": "Bonjour {name} 👋",
+    "loadError": "Impossible de charger vos Darets.",
+    "emptyTitle": "Aucune Daret pour le moment",
+    "emptyText": "Créez votre première Daret ou rejoignez celle d’un proche grâce à son code d’invitation.",
+    "sections": {
+      "active": "En cours",
+      "recruiting": "En recrutement",
+      "done": "Terminées"
+    },
+    "members": "{count}/{size} membres",
+    "organizer": "Organisateur"
+  },
+  "daretStatus": {
+    "RECRUTEMENT": "Recrutement",
+    "VERROUILLEE": "Verrouillée",
+    "ACTIVE": "En cours",
+    "TERMINEE": "Terminée",
+    "ANNULEE": "Annulée"
+  },
+  "paymentStatus": {
+    "DUE": "À payer",
+    "PENDING": "En attente",
+    "PROCESSING": "En cours",
+    "REQUIRES_ACTION": "Action requise",
+    "SUCCEEDED": "Payé",
+    "FAILED": "Échoué",
+    "CANCELLED": "Annulé",
+    "REFUNDED": "Remboursé",
+    "PARTIALLY_REFUNDED": "Remboursé en partie"
+  },
+  "roles": {
+    "CREATEUR": "Organisateur",
+    "ADMIN": "Administrateur",
+    "MEMBRE": "Membre"
+  },
+  "currency": {
+    "MAD": "Dirham marocain (MAD)",
+    "EUR": "Euro (EUR)",
+    "USD": "Dollar américain (USD)"
+  },
+  "create": {
+    "title": "Créer une Daret",
+    "subtitle": "Trois étapes, et vos proches pourront vous rejoindre.",
+    "steps": {
+      "info": "Informations",
+      "contribution": "Cotisation",
+      "summary": "Récapitulatif"
+    },
+    "fields": {
+      "name": "Nom de la Daret",
+      "namePlaceholder": "Ex : Daret de la famille",
+      "description": "Description",
+      "amount": "Cotisation mensuelle",
+      "currency": "Devise",
+      "size": "Nombre de membres",
+      "sizeHint": "Vous compris. La Daret dure autant de mois que de membres.",
+      "grace": "Délai de grâce (jours)",
+      "graceHint": "Tolérance après la date limite de cotisation.",
+      "visibility": "Visibilité"
+    },
+    "visibility": {
+      "PRIVEE": "Privée (sur invitation)",
+      "NON_LISTEE": "Non listée (lien uniquement)",
+      "PUBLIQUE": "Publique"
+    },
+    "errors": {
+      "name": "Le nom doit contenir au moins 3 caractères",
+      "description": "1000 caractères maximum",
+      "amount": "Le montant doit être compris entre 10 et 100 000",
+      "size": "Entre 2 et 50 membres",
+      "grace": "Entre 0 et 30 jours"
+    },
     "summary": {
-      "title": "Récapitulatif",
-      "details": "Détails de la Daret"
+      "duration": "{count} membre · {count} mois | {count} membres · {count} mois",
+      "pot": "Cagnotte reçue à votre tour",
+      "next": "Une fois la Daret créée, partagez le code d’invitation puis démarrez-la lorsque tout le monde l’a rejointe."
     },
-    "seed": "Graine aléatoire"
-  },
-  "dashboard": {
-    "round": "Round {current}/{total}",
-    "daysRemaining": "{count} jours restants",
-    "daysRemainingLabel": "Jours restants",
-    "today": "Dernier jour",
-    "receiver": "Receveur",
-    "total": "Total à encaisser",
-    "history": "Historique des rounds",
-    "roster": "Roster",
-    "payments": "Paiements",
-    "noHistory": "Pas encore d'historique",
-    "late": "Retards",
-    "statusUpdated": "Statut mis à jour",
-    "roundClosed": "Round clôturé"
-  },
-  "invite": {
-    "title": "Inviter des membres",
-    "share": "Partagez ce lien ou le QR code pour inviter",
-    "copied": "Lien copié !",
-    "qrAlt": "QR code d'invitation"
+    "submit": "Créer la Daret",
+    "success": "Daret créée ! Invitez maintenant vos proches."
   },
   "join": {
     "title": "Rejoindre une Daret",
-    "subtitle": "Saisissez le code partagé par l'organisateur",
-    "success": "Bienvenue ! Vous avez rejoint la Daret.",
-    "error": "Code invalide ou inscriptions fermées."
+    "subtitle": "Saisissez le code reçu de l’organisateur.",
+    "code": "Code d’invitation",
+    "codeHint": "6 caractères, ex : K7M2QX",
+    "search": "Rechercher",
+    "invalidCode": "Le code contient 6 lettres ou chiffres",
+    "notFound": "Aucune Daret ne correspond à ce code",
+    "join": "Rejoindre cette Daret",
+    "loginToJoin": "Se connecter pour rejoindre",
+    "closed": "Cette Daret n’accepte plus de nouveaux membres.",
+    "success": "Vous avez rejoint « {name} »"
   },
-  "notifications": {
-    "enable": "Activer les notifications locales",
-    "enabled": "Notifications activées",
-    "denied": "Notifications bloquées par le navigateur"
+  "invite": {
+    "title": "Invitez vos proches",
+    "subtitle": "Partagez ce code ou le lien : ils rejoindront la Daret en un instant.",
+    "code": "Code d’invitation",
+    "copyLink": "Copier le lien",
+    "shareTitle": "Rejoins ma Daret sur Tonti",
+    "shareText": "Rejoins ma Daret sur Tonti avec le code {code} :"
+  },
+  "dashboard": {
+    "roundOf": "Tour {current} sur {total}",
+    "daysLeft": "{count} jour restant | {count} jours restants",
+    "dueToday": "Dernier jour",
+    "beneficiary": "Bénéficiaire",
+    "pot": "Cagnotte",
+    "contributionsCollected": "Cotisations reçues",
+    "members": "Membres",
+    "tabs": {
+      "round": "Ce mois-ci",
+      "schedule": "Calendrier",
+      "members": "Membres"
+    },
+    "payTitle": "Votre cotisation",
+    "payText": "{amount} à régler avant le {date}.",
+    "payButton": "Payer {amount}",
+    "paidTitle": "Cotisation réglée ✓",
+    "paidText": "Merci ! Vous serez notifié lors de la clôture du tour.",
+    "youReceiveTitle": "C’est votre tour 🎉",
+    "youReceiveText": "Vous recevrez {amount} une fois toutes les cotisations réglées.",
+    "closeRound": "Clôturer le tour",
+    "closeRoundHint": "Disponible lorsque toutes les cotisations sont réglées.",
+    "roundClosed": "Tour clôturé",
+    "calendar": "Ajouter au calendrier",
+    "waitingTitle": "En attente des membres",
+    "waitingAdmin": "Démarrez la Daret lorsque tous les membres l’ont rejointe : l’ordre de passage sera tiré au sort.",
+    "waitingMember": "L’organisateur démarrera la Daret lorsque tous les membres l’auront rejointe.",
+    "start": "Démarrer la Daret",
+    "started": "La Daret a démarré !",
+    "startConfirmTitle": "Démarrer la Daret ?",
+    "startConfirmText": "La Daret démarrera avec {count} membres. L’ordre de passage sera tiré au sort et ne pourra plus être modifié.",
+    "leave": "Quitter la Daret",
+    "left": "Vous avez quitté la Daret",
+    "leaveConfirmTitle": "Quitter la Daret ?",
+    "leaveConfirmText": "Vous pourrez la rejoindre à nouveau avec le code tant qu’elle n’a pas démarré.",
+    "completedTitle": "Daret terminée",
+    "completedText": "Tous les tours ont été clôturés. Merci à tous les membres !",
+    "notFoundTitle": "Daret introuvable",
+    "notFoundText": "Cette Daret n’existe pas ou vous n’en êtes pas membre."
   },
   "payment": {
-    "selectMethod": "Sélectionnez une méthode de paiement",
-    "saveMethod": "Enregistrer la méthode",
-    "amountToPay": "Montant à payer",
-    "copied": "Informations copiées !",
-    "copyInfo": "Copier les informations",
-    "openLink": "Ouvrir le lien",
-    "methods": {
-      "cash": "Espèces",
-      "mobile_money": "Mobile Money",
-      "bank_transfer": "Virement bancaire",
-      "paypal": "PayPal",
-      "stripe": "Carte bancaire (Stripe)",
-      "crypto": "Cryptomonnaie"
-    },
-    "stripeLink": "Lien de paiement Stripe",
-    "stripeLinkPlaceholder": "https://buy.stripe.com/...",
-    "stripeHint": "Créez un lien de paiement sur Stripe Dashboard",
-    "paypalEmail": "Email PayPal",
-    "paypalEmailPlaceholder": "votre.email@example.com",
-    "paypalHint": "Email associé à votre compte PayPal",
-    "cryptoNetwork": "Réseau",
-    "cryptoAddress": "Adresse",
-    "cryptoAddressPlaceholder": "Votre adresse wallet",
-    "cryptoHint": "Adresse de votre portefeuille crypto",
-    "phoneNumber": "Numéro de téléphone",
-    "phoneNumberPlaceholder": "+212 6XX XXX XXX",
-    "mobileMoneyHint": "Pour CashPlus, Wafacash, etc.",
-    "accountName": "Nom du compte",
-    "accountNamePlaceholder": "Votre nom complet",
-    "iban": "IBAN",
-    "ibanPlaceholder": "MA64 011 ...",
-    "bankTransferHint": "Informations pour virement bancaire",
-    "cashHint": "Les paiements se font en espèces en personne",
-    "cashInfo": "Paiement en espèces lors des rencontres"
+    "unavailable": "Le paiement en ligne n’est pas encore disponible pour cette devise.",
+    "securedBy": "Paiement sécurisé par Stripe",
+    "startError": "Impossible de démarrer le paiement.",
+    "result": {
+      "successTitle": "Paiement confirmé",
+      "successText": "Votre cotisation est enregistrée. Merci !",
+      "pendingTitle": "Confirmation en cours…",
+      "pendingText": "Nous attendons la confirmation de votre banque.",
+      "failedTitle": "Paiement refusé",
+      "failedText": "Aucun montant n’a été débité. Vous pouvez réessayer depuis la Daret.",
+      "cancelledTitle": "Paiement annulé",
+      "cancelledText": "Aucun montant n’a été débité.",
+      "slowTitle": "Confirmation plus longue que prévu",
+      "slowText": "Votre paiement sera mis à jour automatiquement ; vous serez notifié.",
+      "unknownTitle": "Paiement introuvable",
+      "backToDaret": "Retour à la Daret"
+    }
   },
-  "auth": {
-    "loginRequired": "Connexion requise",
-    "loginRequiredDesc": "Vous devez vous connecter pour accéder à cette section",
-    "accessDenied": "Accès refusé",
-    "accessDeniedDesc": "Vous n'avez pas les permissions nécessaires pour cette action",
-    "yourRole": "Votre rôle",
-    "roles": {
-      "createur": "Créateur",
-      "membre": "Membre",
-      "viewer": "Observateur"
-    },
-    "login": "Se connecter",
-    "logout": "Se déconnecter",
-    "enterName": "Entrez votre nom",
-    "selectRole": "Sélectionnez votre rôle",
-    "joinAs": "Rejoindre en tant que"
+  "notifications": {
+    "title": "Notifications",
+    "empty": "Aucune notification pour le moment.",
+    "markAll": "Tout marquer comme lu"
+  },
+  "account": {
+    "title": "Mon compte",
+    "profile": "Profil",
+    "profileSaved": "Profil mis à jour",
+    "security": "Mot de passe",
+    "currentPassword": "Mot de passe actuel",
+    "newPassword": "Nouveau mot de passe",
+    "changePassword": "Changer le mot de passe",
+    "passwordNotice": "Vous serez déconnecté de tous vos appareils.",
+    "passwordChanged": "Mot de passe modifié, veuillez vous reconnecter",
+    "deleteTitle": "Supprimer mon compte",
+    "deleteText": "Vos données personnelles seront définitivement effacées. Impossible pendant une Daret en cours.",
+    "deleteConfirm": "Cette action est irréversible. Saisissez votre mot de passe pour confirmer.",
+    "deleteButton": "Supprimer définitivement",
+    "deleted": "Votre compte a été supprimé"
+  },
+  "legal": {
+    "title": "Informations légales",
+    "terms": "Conditions d’utilisation",
+    "privacy": "Politique de confidentialité",
+    "support": "Aide & contact",
+    "lastUpdated": "Dernière mise à jour : {date}",
+    "frenchOnly": "Ce document est disponible en français."
+  },
+  "support": {
+    "subtitle": "Une question sur votre Daret ou un paiement ?",
+    "contactTitle": "Nous écrire",
+    "contactText": "Notre équipe vous répond sous 48 h ouvrées.",
+    "faqTitle": "Questions fréquentes",
+    "faq": {
+      "pay": {
+        "q": "Comment payer ma cotisation ?",
+        "a": "Ouvrez la Daret puis touchez « Payer ». Vous êtes redirigé vers la page sécurisée de Stripe (carte, Apple Pay ou Google Pay)."
+      },
+      "security": {
+        "q": "Mes données bancaires sont-elles stockées ?",
+        "a": "Non. La carte est saisie chez Stripe, prestataire de paiement agréé ; Tonti ne voit jamais votre numéro de carte."
+      },
+      "order": {
+        "q": "Comment est fixé l’ordre de passage ?",
+        "a": "Il est tiré au sort au démarrage de la Daret, sauf ordre convenu entre les membres."
+      },
+      "late": {
+        "q": "Que se passe-t-il en cas de retard ?",
+        "a": "Un délai de grâce fixé par l’organisateur s’applique. Le tour n’est clôturé que lorsque toutes les cotisations sont réglées."
+      },
+      "delete": {
+        "q": "Comment supprimer mon compte ?",
+        "a": "Depuis Compte → Supprimer mon compte, une fois vos Darets en cours terminées."
+      }
+    }
   }
 }

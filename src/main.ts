@@ -1,30 +1,44 @@
-import { ViteSSG } from 'vite-ssg';
+import { createApp } from 'vue';
 
 import App from './App.vue';
+import { useAuthStore } from './composables/useAuthStore';
 import { createI18nInstance } from './i18n';
-import routes from './router';
-import { usePlausible } from './composables/usePlausible';
+import { createAppRouter } from './router';
+import { enableWebAnalytics } from './services/analytics';
+import { setUnauthorizedHandler } from './services/api';
+import { setupNativeShell } from './services/platform';
+import { tokenStore } from './services/storage';
 
+import '@fontsource-variable/inter';
+import '@fontsource/noto-kufi-arabic/400.css';
+import '@fontsource/noto-kufi-arabic/600.css';
 import './styles/tailwind.css';
 
-export const createApp = ViteSSG(App, { routes, base: import.meta.env.BASE_URL }, ({ app, router, isClient }) => {
+async function bootstrap() {
+  // Les jetons doivent être chargés (Keychain sur iOS) avant le premier rendu et la première requête
+  await tokenStore.init();
+
+  const app = createApp(App);
   const { i18n } = createI18nInstance();
+  const router = createAppRouter();
+
+  setUnauthorizedHandler(() => {
+    useAuthStore().invalidate();
+    const current = router.currentRoute.value;
+    if (current.meta.requiresAuth) {
+      void router.replace({ name: 'login', query: { redirect: current.fullPath } });
+    }
+  });
+
   app.use(i18n);
+  app.use(router);
 
-  if (isClient) {
-    usePlausible(router);
+  enableWebAnalytics(router);
 
-    // Navigation guard for auth
-    router.beforeEach((to, _from, next) => {
-      const isAuthenticated = !!localStorage.getItem('tonti:accessToken');
+  await router.isReady();
+  app.mount('#app');
 
-      if (to.meta.requiresAuth && !isAuthenticated) {
-        next({ path: '/login', query: { redirect: to.fullPath } });
-      } else if (to.meta.guest && isAuthenticated) {
-        next('/mes-darets');
-      } else {
-        next();
-      }
-    });
-  }
-});
+  await setupNativeShell(router);
+}
+
+void bootstrap();

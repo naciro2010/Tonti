@@ -1,13 +1,13 @@
 # Tonti Backend
 
-Backend de paiement production-ready avec **Kotlin**, **Spring Boot 3**, **Stripe**, **Apple Pay** et **Google Pay**.
+API de Tonti (gestion de Darets) : **Kotlin**, **Spring Boot 3**, **PostgreSQL** et paiements **Stripe Checkout** (carte, Apple Pay, Google Pay).
 
 ## Stack Technique
 
 - **Kotlin 2.0** + **Spring Boot 3.3**
 - **PostgreSQL** + **Flyway** migrations
 - **Spring Security** + **JWT** authentication
-- **Stripe SDK** avec support **Apple Pay** & **Google Pay**
+- **Stripe Checkout** (page hébergée) derrière une abstraction `PaymentGateway`
 - **Docker** & **Docker Compose**
 - **OpenAPI/Swagger** documentation
 
@@ -53,50 +53,35 @@ docker-compose up -d postgres
 
 | Méthode | Endpoint | Description |
 |---------|----------|-------------|
-| POST | `/api/v1/auth/register` | Inscription |
-| POST | `/api/v1/auth/login` | Connexion |
-| POST | `/api/v1/auth/refresh` | Rafraîchir le token |
-| GET | `/api/v1/darets` | Lister mes Darets |
-| POST | `/api/v1/darets` | Créer un Daret |
-| POST | `/api/v1/darets/join` | Rejoindre un Daret |
-| POST | `/api/v1/payments/intent` | Créer un paiement |
-| GET | `/api/v1/payments/wallet-config` | Config Apple/Google Pay |
-| POST | `/api/webhooks/stripe` | Webhook Stripe |
+| POST | `/api/v1/auth/register` · `/login` · `/refresh` · `/logout` | Authentification (JWT + refresh token) |
+| GET/PUT/DELETE | `/api/v1/auth/me` | Profil, mise à jour, suppression du compte (mot de passe requis) |
+| POST | `/api/v1/auth/change-password` | Changement de mot de passe (révoque les sessions) |
+| GET/POST | `/api/v1/darets` | Lister mes Darets / créer |
+| GET | `/api/v1/darets/{id}` | Détail (membres, rounds, payeurs) |
+| GET | `/api/v1/darets/code/{code}` | Aperçu public par code d'invitation |
+| POST | `/api/v1/darets/join` | Rejoindre |
+| POST | `/api/v1/darets/{id}/start` | Démarrer (tirage au sort de l'ordre) |
+| POST | `/api/v1/darets/{id}/rounds/{roundId}/close` | Clôturer un round |
+| POST | `/api/v1/payments/checkout` | Démarrer le paiement de sa cotisation → URL Stripe Checkout |
+| GET | `/api/v1/payments/{id}` · `/api/v1/payments` | Statut d'un paiement / historique |
+| GET | `/api/v1/payments/config` | Devises payables en ligne |
+| POST | `/api/v1/payments/refunds` | Remboursement (administrateur du Daret) |
+| GET/PUT | `/api/v1/notifications/**` | Notifications |
+| POST | `/api/webhooks/stripe` | Webhook Stripe (signature vérifiée) |
+| GET/POST | `/api/payments/return/{id}` | Retour navigateur après paiement (web ou deep link app) |
 
 **Documentation complète**: `http://localhost:8080/swagger-ui.html`
 
-## Configuration Stripe
+## Paiements
 
-### 1. Clés API
+1. Le client appelle `POST /api/v1/payments/checkout` avec `daretId`, `roundId` et `channel` (`WEB`/`APP`).
+2. L'API vérifie les droits (membre, round ouvert, pas bénéficiaire, pas déjà payé), crée le paiement
+   avec le montant **du Daret** (jamais celui du client) et une session Stripe Checkout.
+3. Après paiement, Stripe redirige vers `/api/payments/return/{id}`, qui renvoie vers le site ou l'app.
+4. Le webhook `checkout.session.completed` marque le paiement réussi (idempotent ; un double paiement
+   est remboursé automatiquement).
 
-Récupérez vos clés sur [dashboard.stripe.com/apikeys](https://dashboard.stripe.com/apikeys):
-
-```env
-STRIPE_SECRET_KEY=sk_test_...
-STRIPE_PUBLISHABLE_KEY=pk_test_...
-```
-
-### 2. Webhook
-
-```bash
-# En développement avec Stripe CLI
-stripe listen --forward-to localhost:8080/api/webhooks/stripe
-
-# Copiez le webhook secret
-STRIPE_WEBHOOK_SECRET=whsec_...
-```
-
-### 3. Apple Pay
-
-1. Enregistrez votre domaine sur [Stripe Dashboard](https://dashboard.stripe.com/settings/payments/apple_pay)
-2. Téléchargez le fichier de vérification
-3. Placez-le à `/.well-known/apple-developer-merchantid-domain-association`
-
-### 4. Google Pay
-
-Google Pay fonctionne automatiquement avec Stripe en mode TEST. Pour la production:
-1. [Enregistrez-vous sur Google Pay](https://pay.google.com/business/console/)
-2. Configurez votre `GOOGLE_PAY_MERCHANT_ID`
+Configuration Stripe et webhook : voir [../DEPLOY.md](../DEPLOY.md).
 
 ## Architecture
 
@@ -110,7 +95,7 @@ src/main/kotlin/com/tonti/
 ├── repository/      # Repositories JPA
 ├── security/        # JWT & Spring Security
 └── service/         # Logique métier
-    └── payment/     # Services Stripe
+    └── payment/     # PaymentGateway, Stripe Checkout, webhooks
 ```
 
 ## Modèle de Données
@@ -119,7 +104,7 @@ src/main/kotlin/com/tonti/
 User ──┬── Session
        ├── Membre ──── Daret ──── Round
        ├── Payment ──── Refund
-       └── PaymentMethod
+       └── Notification
 ```
 
 ## Tests
@@ -172,16 +157,15 @@ spec:
 ## Monitoring
 
 - **Health Check**: `GET /api/health`
-- **Actuator**: `/actuator/health`, `/actuator/metrics`
-- **Prometheus**: `/actuator/prometheus`
+- **Actuator**: `/actuator/health` (probes liveness/readiness), `/actuator/info`
 
 ## Sécurité
 
 - Mots de passe hashés avec BCrypt (12 rounds)
 - JWT avec expiration configurable
-- Rate limiting recommandé (à implémenter avec Redis)
-- CORS configuré
-- Helmet-like headers via Spring Security
+- Limitation de débit sur les endpoints d'authentification
+- CORS restreint (web + `capacitor://localhost`), en-têtes de sécurité (HSTS, nosniff, frame deny)
+- Aucune donnée de carte stockée (Stripe Checkout)
 
 ## License
 

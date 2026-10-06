@@ -1,0 +1,9 @@
+Tonti lets a group of relatives or friends run a "Daret" (rotating savings group / tontine): every member pays the same monthly contribution and each month one member receives the pot.
+
+How to test with the demo account:
+1. Log in with the demo credentials provided above.
+2. Open the Daret "Daret démo" (already started): tap "Payer" to open the Stripe-hosted payment page (Stripe TEST mode: use card 4242 4242 4242 4242, any future date, any CVC).
+3. After payment, the app returns to the result screen through the tonti:// deep link.
+4. Account deletion: Compte → Supprimer mon compte.
+
+Payments: contributions are real-money transfers between members of a private group for a real-world financial arrangement; they are not digital goods or services consumed in the app, so they are processed by Stripe (licensed payment service provider) and not via In-App Purchase (App Review Guidelines 3.1.3(e) / 3.1.5).

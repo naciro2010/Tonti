@@ -1,0 +1,1 @@
+Première version de Tonti : création de Daret, invitations, tirage au sort de l’ordre de passage et paiement sécurisé des cotisations.

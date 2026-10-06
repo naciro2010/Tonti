@@ -1,28 +1,23 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest';
 
-import { formatCurrency } from '../useCurrency'
+import { formatCurrency } from '../useCurrency';
 
-describe('useCurrency', () => {
-  describe('formatCurrency', () => {
-    it('formats MAD amounts with Moroccan locale', () => {
-      const result = formatCurrency(500, 'MAD')
-      expect(result).toContain('500')
-      expect(result).toContain('MAD')
-    })
+describe('formatCurrency', () => {
+  it('formats MAD amounts', () => {
+    const result = formatCurrency(500, 'MAD');
+    expect(result).toContain('500');
+    expect(result).toMatch(/MAD|DH/);
+  });
 
-    it('formats EUR amounts with French locale', () => {
-      const result = formatCurrency(100, 'EUR')
-      expect(result).toContain('100')
-    })
+  it('formats EUR amounts', () => {
+    expect(formatCurrency(100, 'EUR')).toContain('€');
+  });
 
-    it('formats decimal amounts correctly', () => {
-      const result = formatCurrency(99.99, 'MAD')
-      expect(result).toContain('99')
-    })
+  it('formats USD amounts', () => {
+    expect(formatCurrency(12.5, 'USD')).toBe('$12.50');
+  });
 
-    it('formats zero amount', () => {
-      const result = formatCurrency(0, 'MAD')
-      expect(result).toContain('0')
-    })
-  })
-})
+  it('keeps at most two decimals', () => {
+    expect(formatCurrency(99.999, 'EUR')).toContain('100');
+  });
+});

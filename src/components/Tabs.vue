@@ -13,19 +13,19 @@ const model = defineModel<string>({ required: true });
   >
     <button
       v-for="tab in props.tabs"
-      :key="tab.id"
       :id="`tab-${tab.id}`"
+      :key="tab.id"
       role="tab"
       type="button"
       :aria-selected="model === tab.id"
       :tabindex="model === tab.id ? 0 : -1"
-      @click="model = tab.id"
-      class="relative flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all duration-200"
+      class="relative flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl px-2.5 py-2 text-sm font-semibold transition-all duration-200 sm:px-4"
       :class="
         model === tab.id
           ? 'bg-primary text-background shadow-glow'
           : 'text-white/70 hover:bg-white/5 hover:text-white'
       "
+      @click="model = tab.id"
     >
       <span>{{ tab.label }}</span>
       <span

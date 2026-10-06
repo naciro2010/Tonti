@@ -38,7 +38,7 @@ jobs:
           restore-keys: ${{ runner.os }}-gradle-
 
       - name: Run tests
-        run: ./gradlew test --no-daemon
+        run: ./gradlew test --no-daemon --stacktrace
 
       - name: Upload test results
         if: always()
@@ -47,8 +47,8 @@ jobs:
           name: backend-test-results
           path: backend/build/reports/tests/
 
-  frontend-tests:
-    name: Frontend Tests
+  frontend:
+    name: Frontend (lint, types, tests, build)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -63,8 +63,25 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run tests
-        run: npx vitest run
+      - name: Lint
+        run: npm run lint
 
-      - name: Build
-        run: npx vite build
+      - name: Format
+        run: npm run format:check
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm run test:run
+
+      - name: Build (web)
+        run: npm run build
+
+      - name: Build (mobile) & sync iOS project
+        env:
+          VITE_API_URL: https://api.example.invalid/api/v1
+          VITE_PUBLIC_WEB_URL: https://app.example.invalid
+        run: |
+          npm run build:mobile
+          npx cap sync ios

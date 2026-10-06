@@ -1,85 +1,79 @@
-import { ref, computed, readonly } from 'vue'
-import { authApi, type UserResponse } from '@/services/api'
+import { computed, readonly, ref } from 'vue';
 
-const user = ref<UserResponse | null>(null)
-const loading = ref(false)
-const initialized = ref(false)
+import { authApi, type RegisterRequest, type UserResponse } from '@/services/api';
 
-// Initialize from localStorage on load
-function initFromStorage() {
-  if (initialized.value) return
-  const stored = authApi.getUser()
-  if (stored) user.value = stored
-  initialized.value = true
+const user = ref<UserResponse | null>(null);
+let hydrated = false;
+
+function hydrate() {
+  if (hydrated) return;
+  user.value = authApi.hasSession() ? authApi.storedUser() : null;
+  hydrated = true;
 }
 
+/** Session de l'utilisateur connecté (état partagé dans toute l'application). */
 export function useAuthStore() {
-  initFromStorage()
+  hydrate();
 
-  const isAuthenticated = computed(() => !!user.value && authApi.isAuthenticated())
-  const fullName = computed(() => user.value ? `${user.value.firstName} ${user.value.lastName}` : '')
-  const initials = computed(() => {
-    if (!user.value) return ''
-    return `${user.value.firstName[0]}${user.value.lastName[0]}`.toUpperCase()
-  })
+  const isAuthenticated = computed(() => user.value !== null);
+  const fullName = computed(() => (user.value ? `${user.value.firstName} ${user.value.lastName}` : ''));
+  const initials = computed(() =>
+    user.value ? `${user.value.firstName.charAt(0)}${user.value.lastName.charAt(0)}`.toUpperCase() : '',
+  );
 
   async function login(email: string, password: string) {
-    loading.value = true
-    try {
-      const response = await authApi.login({ email, password })
-      if (response.success && response.data) {
-        user.value = response.data.user
-      }
-      return response
-    } finally {
-      loading.value = false
-    }
+    user.value = await authApi.login(email, password);
   }
 
-  async function register(data: { email: string; password: string; firstName: string; lastName: string; phone?: string }) {
-    loading.value = true
-    try {
-      const response = await authApi.register(data)
-      if (response.success && response.data) {
-        user.value = response.data.user
-      }
-      return response
-    } finally {
-      loading.value = false
-    }
+  async function register(data: RegisterRequest) {
+    user.value = await authApi.register(data);
   }
 
   async function logout() {
     try {
-      await authApi.logout()
+      await authApi.logout();
     } finally {
-      user.value = null
+      user.value = null;
     }
   }
 
-  async function fetchProfile() {
-    if (!authApi.isAuthenticated()) return
-    try {
-      const response = await authApi.getMe()
-      if (response.success && response.data) {
-        user.value = response.data
-      }
-    } catch {
-      // Token invalid, clear
-      user.value = null
-      authApi.clearAuth()
-    }
+  async function refreshProfile() {
+    if (!authApi.hasSession()) return;
+    user.value = await authApi.me();
+  }
+
+  async function updateProfile(data: { firstName?: string; lastName?: string; phone?: string }) {
+    user.value = await authApi.updateProfile(data);
+  }
+
+  async function changePassword(oldPassword: string, newPassword: string) {
+    await authApi.changePassword(oldPassword, newPassword);
+    user.value = null;
+  }
+
+  async function deleteAccount(password: string) {
+    await authApi.deleteAccount(password);
+    user.value = null;
+  }
+
+  /** Session expirée côté serveur : on oublie l'utilisateur localement. */
+  function invalidate() {
+    authApi.clearSession();
+    user.value = null;
   }
 
   return {
     user: readonly(user),
-    loading: readonly(loading),
     isAuthenticated,
     fullName,
     initials,
     login,
     register,
     logout,
-    fetchProfile,
-  }
+    refreshProfile,
+    updateProfile,
+    changePassword,
+    deleteAccount,
+    invalidate,
+  };
 }

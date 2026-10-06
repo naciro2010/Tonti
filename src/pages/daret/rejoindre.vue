@@ -1,96 +1,118 @@
 <script setup lang="ts">
-import { reactive } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
-import { nanoid } from 'nanoid';
 
 import BaseButton from '@/components/BaseButton.vue';
 import BaseInput from '@/components/BaseInput.vue';
-import Toast from '@/components/Toast.vue';
-import { useDaretStore } from '@/composables/useDaretStore';
+import StatusBadge from '@/components/StatusBadge.vue';
+import { useAuthStore } from '@/composables/useAuthStore';
+import { formatCurrency } from '@/composables/useCurrency';
+import { useToast } from '@/composables/useToast';
+import { ApiError, daretApi, type DaretResponse } from '@/services/api';
+import { errorMessage } from '@/utils/errors';
 
 const { t } = useI18n();
-const store = useDaretStore();
 const route = useRoute();
 const router = useRouter();
+const auth = useAuthStore();
+const toast = useToast();
 
-const form = reactive({
-  code: (route.query.code as string) || '',
-  nom: '',
-  contact: '',
-});
+const code = ref(typeof route.query.code === 'string' ? route.query.code.toUpperCase() : '');
+const preview = ref<DaretResponse | null>(null);
+const error = ref('');
+const searching = ref(false);
+const joining = ref(false);
 
-const toast = reactive({ show: false, message: '', type: 'success' as 'success' | 'error' | 'info' });
-
-function showToast(message: string, type: 'success' | 'error') {
-  toast.show = true;
-  toast.message = message;
-  toast.type = type;
-  setTimeout(() => (toast.show = false), 2500);
-}
-
-function join() {
-  if (!form.code.trim() || !form.nom.trim()) {
-    showToast(t('wizard.validation'), 'error');
+async function search() {
+  const value = code.value.trim().toUpperCase();
+  if (!/^[A-Z0-9]{6}$/.test(value)) {
+    error.value = t('join.invalidCode');
     return;
   }
-  const membre = {
-    id: nanoid(6),
-    nom: form.nom.trim(),
-    contact: form.contact.trim() || undefined,
-  };
-  const daret = store.joinDaretByCode(form.code.trim(), membre);
-  if (daret) {
-    showToast(t('join.success'), 'success');
-    router.push(`/daret/${daret.id}`);
-  } else {
-    showToast(t('join.error'), 'error');
+  error.value = '';
+  searching.value = true;
+  try {
+    preview.value = await daretApi.preview(value);
+  } catch (e) {
+    preview.value = null;
+    error.value =
+      e instanceof ApiError && e.status === 404 ? t('join.notFound') : errorMessage(e, t('common.error'));
+  } finally {
+    searching.value = false;
   }
 }
+
+async function join() {
+  if (!preview.value) return;
+  if (!auth.isAuthenticated.value) {
+    await router.push({
+      name: 'login',
+      query: { redirect: `/daret/rejoindre?code=${preview.value.codeInvitation}` },
+    });
+    return;
+  }
+  joining.value = true;
+  try {
+    await daretApi.join(preview.value.codeInvitation);
+    toast.success(t('join.success', { name: preview.value.nom }));
+    await router.replace(`/daret/${preview.value.id}`);
+  } catch (e) {
+    toast.error(errorMessage(e, t('common.error')));
+  } finally {
+    joining.value = false;
+  }
+}
+
+onMounted(() => {
+  if (code.value) void search();
+});
 </script>
 
 <template>
-  <section class="mx-auto max-w-xl space-y-8 animate-fade-in-up">
-    <header class="space-y-3 text-center">
-      <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/15 text-primary ring-1 ring-inset ring-primary/30">
-        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
-        </svg>
-      </div>
-      <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">{{ t('join.title') }}</h1>
-      <p class="text-sm text-white/70">{{ t('join.subtitle') }}</p>
+  <div class="mx-auto max-w-md space-y-6">
+    <header class="text-center">
+      <h1 class="text-2xl font-bold sm:text-3xl">{{ t('join.title') }}</h1>
+      <p class="mt-1 text-sm text-white/60">{{ t('join.subtitle') }}</p>
     </header>
-    <form class="card space-y-5" @submit.prevent="join">
+
+    <form class="card space-y-4" novalidate @submit.prevent="search">
       <BaseInput
         id="code"
-        v-model="form.code"
-        :label="t('form.invitationCode')"
-        hint="Le code d'invitation vous a été partagé par l'organisateur."
-        placeholder="ABC-123"
-        required
+        v-model="code"
+        :label="t('join.code')"
+        :hint="t('join.codeHint')"
+        :error="error"
+        maxlength="6"
         autocapitalize="characters"
+        autocomplete="off"
+        class="text-center font-mono text-xl uppercase tracking-[0.3em]"
       />
-      <BaseInput
-        id="nom"
-        v-model="form.nom"
-        :label="t('form.memberName')"
-        placeholder="Votre nom complet"
-        required
-      />
-      <BaseInput
-        id="contact"
-        v-model="form.contact"
-        :label="t('form.memberContact')"
-        placeholder="Email ou téléphone (optionnel)"
-        hint="Facilite les rappels si l'organisateur les active."
-      />
-      <BaseButton type="submit" block size="lg">
-        {{ t('actions.join') }}
-        <svg class="h-4 w-4 rtl:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-          <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
-        </svg>
-      </BaseButton>
+      <BaseButton type="submit" block variant="secondary" :loading="searching">{{
+        t('join.search')
+      }}</BaseButton>
     </form>
-    <Toast :show="toast.show" :message="toast.message" :type="toast.type" />
-  </section>
+
+    <section v-if="preview" class="card space-y-4">
+      <div class="flex items-start justify-between gap-3">
+        <h2 class="text-xl">{{ preview.nom }}</h2>
+        <StatusBadge kind="daret" :status="preview.etat" />
+      </div>
+      <p v-if="preview.description" class="text-sm text-white/70">{{ preview.description }}</p>
+      <dl class="grid grid-cols-2 gap-3 text-sm">
+        <div class="rounded-xl bg-white/5 p-3">
+          <dt class="text-white/50">{{ t('create.fields.amount') }}</dt>
+          <dd class="font-semibold">{{ formatCurrency(preview.montantMensuel, preview.devise) }}</dd>
+        </div>
+        <div class="rounded-xl bg-white/5 p-3">
+          <dt class="text-white/50">{{ t('dashboard.members') }}</dt>
+          <dd class="font-semibold">{{ preview.membresCount }} / {{ preview.taille }}</dd>
+        </div>
+      </dl>
+      <BaseButton v-if="preview.etat === 'RECRUTEMENT'" block :loading="joining" @click="join">
+        {{ auth.isAuthenticated.value ? t('join.join') : t('join.loginToJoin') }}
+      </BaseButton>
+      <p v-else class="text-center text-sm text-white/60">{{ t('join.closed') }}</p>
+    </section>
+  </div>
 </template>

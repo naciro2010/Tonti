@@ -38,10 +38,8 @@ const classes = computed(() => {
       'bg-primary text-background shadow-glow hover:bg-primaryHover hover:shadow-glow-lg hover:-translate-y-0.5 focus-visible:ring-primary',
     secondary:
       'bg-white/10 text-white border border-white/10 hover:bg-white/15 hover:border-white/20 focus-visible:ring-white/50',
-    ghost:
-      'bg-transparent text-primary hover:bg-primary/10 focus-visible:ring-primary/60',
-    danger:
-      'bg-danger text-white hover:bg-danger/90 hover:-translate-y-0.5 focus-visible:ring-danger',
+    ghost: 'bg-transparent text-primary hover:bg-primary/10 focus-visible:ring-primary/60',
+    danger: 'bg-danger text-white hover:bg-danger/90 hover:-translate-y-0.5 focus-visible:ring-danger',
   }[props.variant];
 
   return [base, size, variant, props.block ? 'w-full' : ''].join(' ');
@@ -55,13 +53,7 @@ const classes = computed(() => {
     :aria-busy="props.loading"
     :class="classes"
   >
-    <svg
-      v-if="props.loading"
-      class="h-4 w-4 animate-spin"
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden="true"
-    >
+    <svg v-if="props.loading" class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-opacity="0.25" stroke-width="3" />
       <path d="M22 12a10 10 0 0 0-10-10" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
     </svg>

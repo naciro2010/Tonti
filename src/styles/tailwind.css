@@ -10,6 +10,7 @@
 
   html {
     @apply bg-background text-white antialiased;
+    -webkit-tap-highlight-color: transparent;
     scroll-padding-top: var(--scroll-padding);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -93,7 +94,7 @@
 
 @layer components {
   .card {
-    @apply rounded-2xl border border-white/10 bg-surface/60 p-6 shadow-card backdrop-blur-sm supports-backdrop:bg-surface/40 transition-colors duration-200;
+    @apply rounded-2xl border border-white/10 bg-surface/60 p-6 shadow-card backdrop-blur-sm transition-colors duration-200 supports-backdrop:bg-surface/40;
   }
 
   .card-interactive {
@@ -102,6 +103,23 @@
 
   .container-responsive {
     @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Zones sûres iOS (encoche, Dynamic Island, indicateur d'accueil) */
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .menu-item {
+    @apply block w-full px-4 py-2.5 text-left text-sm font-medium text-white/80 no-underline transition-colors hover:bg-white/5 hover:text-white rtl:text-right;
+  }
+
+  .section-title {
+    @apply text-xs font-semibold uppercase tracking-wider text-white/50;
   }
 
   .gradient-text {

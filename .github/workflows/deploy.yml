@@ -19,6 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       VITE_BASE_URL: /Tonti/
+      VITE_API_URL: ${{ vars.VITE_API_URL }}
+      VITE_PUBLIC_WEB_URL: ${{ vars.VITE_PUBLIC_WEB_URL }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -35,7 +37,7 @@ jobs:
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
-      - name: Build (SSG)
+      - name: Build
         run: npm run build
 
       - name: Upload artifact

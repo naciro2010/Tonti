@@ -1,0 +1,106 @@
+name: iOS release
+
+# Build signé + envoi sur TestFlight / App Store Connect.
+# Déclenchement manuel (choix de la lane) ou automatique sur un tag vX.Y.Z (TestFlight).
+on:
+  workflow_dispatch:
+    inputs:
+      lane:
+        description: 'Lane fastlane'
+        type: choice
+        options: [beta, release, metadata]
+        default: beta
+      submit_for_review:
+        description: 'Soumettre à la revue Apple (lane release)'
+        type: boolean
+        default: false
+  push:
+    tags: ['v*.*.*']
+
+concurrency:
+  group: ios-release
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  ios:
+    name: Build & upload (${{ inputs.lane || 'beta' }})
+    runs-on: macos-15
+    timeout-minutes: 60
+    environment: app-store
+    env:
+      APP_IDENTIFIER: ${{ vars.APP_IDENTIFIER || 'app.tonti.ios' }}
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      ASC_KEY_P8_BASE64: ${{ secrets.ASC_KEY_P8_BASE64 }}
+      IOS_DIST_CERT_PASSWORD: ${{ secrets.IOS_DIST_CERT_PASSWORD }}
+      REVIEW_FIRST_NAME: ${{ secrets.REVIEW_FIRST_NAME }}
+      REVIEW_LAST_NAME: ${{ secrets.REVIEW_LAST_NAME }}
+      REVIEW_PHONE: ${{ secrets.REVIEW_PHONE }}
+      REVIEW_EMAIL: ${{ secrets.REVIEW_EMAIL }}
+      REVIEW_DEMO_USER: ${{ secrets.REVIEW_DEMO_USER }}
+      REVIEW_DEMO_PASSWORD: ${{ secrets.REVIEW_DEMO_PASSWORD }}
+      SUBMIT_FOR_REVIEW: ${{ inputs.submit_for_review && 'true' || 'false' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install JS dependencies
+        run: npm ci
+
+      - name: Build web bundle (mobile)
+        env:
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+          VITE_PUBLIC_WEB_URL: ${{ vars.VITE_PUBLIC_WEB_URL }}
+        run: npm run build:mobile
+
+      - name: Sync Capacitor iOS project
+        run: npx cap sync ios
+
+      - name: Setup Ruby & fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+          working-directory: ios
+
+      - name: Decode distribution certificate
+        if: inputs.lane != 'metadata'
+        env:
+          IOS_DIST_CERT_P12_BASE64: ${{ secrets.IOS_DIST_CERT_P12_BASE64 }}
+        run: |
+          echo "$IOS_DIST_CERT_P12_BASE64" | base64 --decode > "$RUNNER_TEMP/dist_cert.p12"
+          echo "IOS_DIST_CERT_PATH=$RUNNER_TEMP/dist_cert.p12" >> "$GITHUB_ENV"
+
+      - name: fastlane ${{ inputs.lane || 'beta' }}
+        working-directory: ios
+        run: bundle exec fastlane ios ${{ inputs.lane || 'beta' }}
+
+      - name: Upload IPA
+        if: always() && inputs.lane != 'metadata'
+        uses: actions/upload-artifact@v4
+        with:
+          name: tonti-ios
+          path: |
+            ios/build/*.ipa
+            ios/build/*.dSYM.zip
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Remove certificate
+        if: always()
+        run: rm -f "$RUNNER_TEMP/dist_cert.p12"

@@ -1,147 +1,175 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
-import { useAuthStore } from '@/composables/useAuthStore'
-import { useToast } from '@/composables/useToast'
-import BaseInput from '@/components/BaseInput.vue'
-import BaseButton from '@/components/BaseButton.vue'
+import { reactive, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { useRoute, useRouter } from 'vue-router';
 
-const { t } = useI18n()
-const router = useRouter()
-const auth = useAuthStore()
-const toast = useToast()
+import BaseButton from '@/components/BaseButton.vue';
+import BaseInput from '@/components/BaseInput.vue';
+import { useAuthStore } from '@/composables/useAuthStore';
+import { useToast } from '@/composables/useToast';
+import { EMAIL_PATTERN, PHONE_PATTERN, errorMessage, fieldErrors } from '@/utils/errors';
 
-const form = ref({
+const { t } = useI18n();
+const route = useRoute();
+const router = useRouter();
+const auth = useAuthStore();
+const toast = useToast();
+
+const form = reactive({
   firstName: '',
   lastName: '',
   email: '',
+  phone: '',
   password: '',
   confirmPassword: '',
-  phone: '',
-})
-const errors = ref<Record<string, string>>({})
-const submitting = ref(false)
+  acceptTerms: false,
+});
+const errors = ref<Record<string, string>>({});
+const submitting = ref(false);
 
 function validate() {
-  errors.value = {}
-  if (!form.value.firstName.trim()) errors.value.firstName = 'Le prenom est requis'
-  if (!form.value.lastName.trim()) errors.value.lastName = 'Le nom est requis'
-  if (!form.value.email.trim()) errors.value.email = 'L\'email est requis'
-  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.value.email)) errors.value.email = 'Email invalide'
-  if (!form.value.password) errors.value.password = 'Le mot de passe est requis'
-  else if (form.value.password.length < 8) errors.value.password = 'Minimum 8 caracteres'
-  if (form.value.password !== form.value.confirmPassword) errors.value.confirmPassword = 'Les mots de passe ne correspondent pas'
-  return Object.keys(errors.value).length === 0
+  const e: Record<string, string> = {};
+  if (!form.firstName.trim()) e.firstName = t('validation.required');
+  if (!form.lastName.trim()) e.lastName = t('validation.required');
+  if (!form.email.trim()) e.email = t('validation.required');
+  else if (!EMAIL_PATTERN.test(form.email.trim())) e.email = t('validation.email');
+  if (form.phone.trim() && !PHONE_PATTERN.test(form.phone.trim())) e.phone = t('validation.phone');
+  if (form.password.length < 8) e.password = t('validation.passwordLength');
+  if (form.password !== form.confirmPassword) e.confirmPassword = t('validation.passwordMismatch');
+  if (!form.acceptTerms) e.acceptTerms = t('auth.termsRequired');
+  errors.value = e;
+  return Object.keys(e).length === 0;
+}
+
+function redirectTarget() {
+  const redirect = route.query.redirect;
+  return typeof redirect === 'string' && redirect.startsWith('/') && !redirect.startsWith('//')
+    ? redirect
+    : '/mes-darets';
 }
 
 async function handleSubmit() {
-  if (!validate()) return
-  submitting.value = true
+  if (!validate()) return;
+  submitting.value = true;
   try {
-    const response = await auth.register({
-      firstName: form.value.firstName.trim(),
-      lastName: form.value.lastName.trim(),
-      email: form.value.email.trim(),
-      password: form.value.password,
-      phone: form.value.phone.trim() || undefined,
-    })
-    if (response.success) {
-      toast.success('Compte cree avec succes !')
-      router.push('/mes-darets')
-    } else {
-      toast.error(response.message || 'Erreur lors de l\'inscription')
-    }
-  } catch (e: any) {
-    toast.error(e.message || 'Erreur lors de l\'inscription')
+    await auth.register({
+      firstName: form.firstName.trim(),
+      lastName: form.lastName.trim(),
+      email: form.email.trim(),
+      password: form.password,
+      phone: form.phone.trim() || undefined,
+    });
+    toast.success(t('auth.registerSuccess'));
+    await router.replace(redirectTarget());
+  } catch (error) {
+    errors.value = fieldErrors(error);
+    toast.error(errorMessage(error, t('common.error')));
   } finally {
-    submitting.value = false
+    submitting.value = false;
   }
 }
 </script>
 
 <template>
-  <div class="mx-auto max-w-md py-12 animate-fade-in-up">
-    <div class="card p-8">
+  <div class="mx-auto max-w-lg py-6 sm:py-12">
+    <div class="card p-6 sm:p-8">
       <div class="mb-8 text-center">
-        <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/15 text-primary ring-1 ring-inset ring-primary/30">
-          <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM3 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 019.374 21c-2.331 0-4.512-.645-6.374-1.766z" />
-          </svg>
-        </div>
-        <h1 class="text-2xl font-bold">Creer un compte</h1>
-        <p class="mt-2 text-sm text-white/60">Inscrivez-vous pour creer ou rejoindre un Daret</p>
+        <h1 class="text-2xl font-bold">{{ t('auth.registerTitle') }}</h1>
+        <p class="mt-2 text-sm text-white/60">{{ t('auth.registerSubtitle') }}</p>
       </div>
 
-      <form @submit.prevent="handleSubmit" class="space-y-4">
-        <div class="grid grid-cols-2 gap-4">
+      <form class="space-y-5" novalidate @submit.prevent="handleSubmit">
+        <div class="grid gap-4 sm:grid-cols-2">
           <BaseInput
             id="firstName"
-            label="Prenom"
             v-model="form.firstName"
+            :label="t('auth.firstName')"
             :error="errors.firstName"
             required
             autocomplete="given-name"
           />
           <BaseInput
             id="lastName"
-            label="Nom"
             v-model="form.lastName"
+            :label="t('auth.lastName')"
             :error="errors.lastName"
             required
             autocomplete="family-name"
           />
         </div>
-
         <BaseInput
           id="email"
-          label="Email"
-          type="email"
           v-model="form.email"
+          :label="t('auth.email')"
+          type="email"
           :error="errors.email"
           required
           autocomplete="email"
+          inputmode="email"
+          autocapitalize="off"
         />
-
         <BaseInput
           id="phone"
-          label="Telephone (optionnel)"
-          type="tel"
           v-model="form.phone"
-          hint="+212 6XX XXX XXX"
+          :label="`${t('auth.phone')} (${t('common.optional')})`"
+          type="tel"
+          :error="errors.phone"
+          :hint="t('auth.phoneHint')"
           autocomplete="tel"
+          inputmode="tel"
         />
-
         <BaseInput
           id="password"
-          label="Mot de passe"
-          type="password"
           v-model="form.password"
+          :label="t('auth.password')"
+          type="password"
           :error="errors.password"
-          hint="Minimum 8 caracteres"
+          :hint="t('auth.passwordHint')"
           required
           autocomplete="new-password"
         />
-
         <BaseInput
           id="confirmPassword"
-          label="Confirmer le mot de passe"
-          type="password"
           v-model="form.confirmPassword"
+          :label="t('auth.confirmPassword')"
+          type="password"
           :error="errors.confirmPassword"
           required
           autocomplete="new-password"
         />
 
-        <BaseButton type="submit" variant="primary" block :loading="submitting">
-          {{ submitting ? 'Inscription...' : 'Creer mon compte' }}
-        </BaseButton>
+        <div>
+          <label class="flex items-start gap-3 text-sm font-normal text-white/80">
+            <input
+              v-model="form.acceptTerms"
+              type="checkbox"
+              class="mt-0.5 h-5 w-5 flex-shrink-0 rounded border-white/20 p-0 accent-primary"
+              :aria-invalid="errors.acceptTerms ? 'true' : undefined"
+            />
+            <i18n-t keypath="auth.acceptTerms" tag="span">
+              <template #terms>
+                <RouterLink to="/conditions">{{ t('legal.terms') }}</RouterLink>
+              </template>
+              <template #privacy>
+                <RouterLink to="/confidentialite">{{ t('legal.privacy') }}</RouterLink>
+              </template>
+            </i18n-t>
+          </label>
+          <p v-if="errors.acceptTerms" class="mt-1.5 text-xs font-medium text-dangerSoft" role="alert">
+            {{ errors.acceptTerms }}
+          </p>
+        </div>
+
+        <BaseButton type="submit" block :loading="submitting">{{ t('auth.register') }}</BaseButton>
       </form>
 
       <p class="mt-6 text-center text-sm text-white/60">
-        Deja un compte ?
-        <RouterLink to="/login" class="font-semibold text-primary no-underline transition-colors hover:text-primaryHover">
-          Se connecter
+        {{ t('auth.hasAccount') }}
+        <RouterLink
+          :to="{ name: 'login', query: route.query }"
+          class="font-semibold text-primary no-underline hover:text-primaryHover"
+        >
+          {{ t('auth.login') }}
         </RouterLink>
       </p>
     </div>
