@@ -121,10 +121,10 @@ class NotificationServiceTest {
 
     @Test
     fun `markAllAsRead should delegate to repository`() {
-        every { notificationRepository.markAllAsReadByUserId(testUser.id!!) } just runs
+        every { notificationRepository.markAllAsReadByUserId(testUser.id!!, any()) } just runs
 
         notificationService.markAllAsRead(testUser.id!!)
 
-        verify { notificationRepository.markAllAsReadByUserId(testUser.id!!) }
+        verify { notificationRepository.markAllAsReadByUserId(testUser.id!!, any()) }
     }
 }

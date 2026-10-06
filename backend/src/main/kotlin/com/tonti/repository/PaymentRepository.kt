@@ -28,11 +28,11 @@ interface PaymentRepository : JpaRepository<Payment, UUID> {
     @Query("SELECT p FROM Payment p WHERE p.user.id = :userId AND p.round.id = :roundId AND p.statut IN :statuts")
     fun findByUserIdAndRoundIdAndStatutIn(userId: UUID, roundId: UUID, statuts: Collection<PaymentStatus>): List<Payment>
 
-    @Query(
-        "SELECT COUNT(p) > 0 FROM Payment p " +
-            "WHERE p.user.id = :userId AND p.round.id = :roundId AND p.statut = com.tonti.entity.PaymentStatus.SUCCEEDED"
-    )
-    fun existsSucceededByUserIdAndRoundId(userId: UUID, roundId: UUID): Boolean
+    @Query("SELECT COUNT(p) FROM Payment p WHERE p.user.id = :userId AND p.round.id = :roundId AND p.statut = :statut")
+    fun countByUserIdAndRoundIdAndStatut(userId: UUID, roundId: UUID, statut: PaymentStatus): Long
+
+    fun existsSucceededByUserIdAndRoundId(userId: UUID, roundId: UUID): Boolean =
+        countByUserIdAndRoundIdAndStatut(userId, roundId, PaymentStatus.SUCCEEDED) > 0
 
     @Query("SELECT p FROM Payment p WHERE p.statut = :statut")
     fun findByStatut(statut: PaymentStatus): List<Payment>

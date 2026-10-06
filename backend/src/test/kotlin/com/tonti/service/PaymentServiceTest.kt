@@ -205,7 +205,10 @@ class PaymentServiceTest {
             val payment = pendingPayment()
             every { paymentRepository.existsSucceededByUserIdAndRoundId(payer.id!!, round.id!!) } returns true
             every { stripeGateway.refund("pi_dup", null, any()) } returns
-                mockk(relaxed = true) { every { id } returns "re_1"; every { status } returns "succeeded" }
+                mockk<com.stripe.model.Refund>(relaxed = true) {
+                    every { id } returns "re_1"
+                    every { status } returns "succeeded"
+                }
 
             service.onPaymentSucceeded(payment, "pi_dup")
 

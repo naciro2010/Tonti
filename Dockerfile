@@ -3,7 +3,7 @@
 # ============================================
 
 # Stage 1: Build
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 
@@ -29,7 +29,7 @@ ENV VITE_BASE_URL=$VITE_BASE_URL
 RUN npm run build
 
 # Stage 2: Serve
-FROM node:20-alpine AS runner
+FROM node:22-alpine AS runner
 
 WORKDIR /app
 
